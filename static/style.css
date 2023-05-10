@@ -1,0 +1,77 @@
+body {
+  background-color: #f8f9fa;
+  font-family: 'Roboto', sans-serif;
+}
+
+h1 {
+  font-weight: 300;
+  letter-spacing: 1.5px;
+  font-size: 2.5rem;
+  margin-top: 2rem; /* Add margin above the title */
+}
+
+.btn {
+  border-radius: 50px;
+}
+
+.btn-primary {
+  background-color: #007bff;
+}
+
+.card {
+  height: 100%;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+
+html, body {
+  height: 100%;
+}
+
+.container {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  max-width: 800px;
+}
+
+#message-box {
+  flex-grow: 1;
+  overflow-y: scroll;
+  margin-bottom: 1rem;
+}
+
+#message-form {
+  margin-bottom: 1rem;
+}
+
+.sound-icon {
+  font-size: 1.2rem;
+  cursor: pointer;
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.card-body {
+  position: relative;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+#loading-icon {
+  animation: spin 2s linear infinite;
+}
+
+#message-form {
+  margin-bottom: 2rem; /* Add margin below the text box */
+}
