@@ -1,5 +1,24 @@
+:root {
+  --background: #ffffff;
+  --primary: #007bff;
+  --secondary: #2c2c2c;
+  --font-color: #000000;
+  --card-color: #f8f9fa;
+  --shadow: rgba(0, 0, 0, 0.1);
+}
+
+.dark-mode {
+    --background: #121212;
+    /*--primary: #6f9ed6;*/
+    --secondary: #7e7e7e;
+    --font-color: #9c9c9c;
+    --card-color: #ededed;
+    --shadow: rgba(255, 255, 255, 0.1);
+}
+
 body {
-  background-color: #f8f9fa;
+  background-color: var(--background);
+  /*color: var(--font-color);*/
   font-family: 'Roboto', sans-serif;
 }
 
@@ -7,7 +26,8 @@ h1 {
   font-weight: 300;
   letter-spacing: 1.5px;
   font-size: 2.5rem;
-  margin-top: 2rem; /* Add margin above the title */
+  margin-top: 2rem;
+  color: var(--font-color);
 }
 
 .btn {
@@ -15,13 +35,14 @@ h1 {
 }
 
 .btn-primary {
-  background-color: #007bff;
+  background-color: var(--primary);
 }
 
 .card {
   height: 100%;
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  /*background-color: var(--card-color)!important;*/
 }
 
 
@@ -38,12 +59,9 @@ html, body {
 
 #message-box {
   flex-grow: 1;
-  overflow-y: scroll;
+  overflow-y: auto;
   margin-bottom: 1rem;
-}
-
-#message-form {
-  margin-bottom: 1rem;
+  background-color: var(--background)!important;
 }
 
 .sound-icon {
@@ -74,4 +92,31 @@ html, body {
 
 #message-form {
   margin-bottom: 2rem; /* Add margin below the text box */
+}
+
+.row > .col {
+  display: flex;
+  align-items: start;
+}
+
+img.profile-pic {
+  margin-right: 10px;
+  align-self: center;
+}
+
+.button-container {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.button-container .user-button {
+  color: #ffffff;
+  padding: 0;
+}
+
+.button-container .bot-button {
+  color: var(--primary);
+  padding: 0;
 }

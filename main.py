@@ -54,5 +54,23 @@ def toggle_loading_icon():
     action = request.form.get('action')
     return jsonify({'action': action})
 
+@app.route('/start_recording', methods=['POST'])
+def start_recording():
+    print("recording")
+    return jsonify({'message': 'Recording started'})
+
+@app.route('/record_user_message', methods=['POST'])
+def record_user_message():
+    message = request.form['message']
+    print(f"Recording user message: {message}")
+    return jsonify({'message': 'User message recorded successfully'})
+
+@app.route('/set_language', methods=['POST'])
+def set_language():
+    language = request.form['language']
+    print("Setting language to:", language)
+    # Replace with your own logic
+    return jsonify({'message': 'Language set successfully'})
+
 if __name__ == '__main__':
     app.run(debug=True)
