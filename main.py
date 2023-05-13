@@ -1,23 +1,20 @@
+import yaml
 from flask import Flask, render_template, request, jsonify
-#from flask_socketio import SocketIO
-from chatbot import MyChatbot
+from memory import Memory
+from config import Config
+from chatbot import Chatbot
 from functools import wraps
-import time
-
 
 app = Flask(__name__)
-chatbot = MyChatbot()
+app.secret_key = 'chatbot'
 
-messages_dict = {}
+with open("config.yml", "r") as yml_file:
+    config: Config = Config(yaml.safe_load(yml_file))
+memory = Memory()
+chatbot = Chatbot(config=config, memory=memory)
 
-# def toggle_loading_icon(func):
-#     @wraps(func)
-#     def wrapper(*args, **kwargs):
-#         socketio.emit('loading_icon', {'status': 'show'})
-#         result = func(*args, **kwargs)
-#         socketio.emit('loading_icon', {'status': 'hide'})
-#         return result
-#     return wrapper
+message_generator = None
+generated_message = ''
 
 @app.route('/')
 def home():
@@ -25,11 +22,30 @@ def home():
 
 @app.route('/get_response', methods=['POST'])
 def get_response():
+    global message_generator, generated_message
     message = request.form['message']
-    responses = chatbot.get_response(message)
-    return jsonify({'messages': responses})
+    message_generator = chatbot.get_response(message)
+    first_message = next(message_generator)
+    generated_message = first_message
+    # Store the rest of the generator in the user's session
+    return jsonify({'message': first_message})
 
-#@toggle_loading_icon
+@app.route('/get_next_message', methods=['GET'])
+def get_next_message():
+    global message_generator, generated_message
+    if message_generator is None:
+        return jsonify({'message': None})
+    try:
+        next_message = next(message_generator)
+        generated_message += next_message
+        return jsonify({'message': generated_message})
+    except StopIteration:
+        # Generator is exhausted, remove it from the session
+        message_generator = None
+        generated_message = ''
+        return jsonify({'message': None})
+
+
 @app.route('/record_message', methods=['POST'])
 def record_message():
     recorded_text = 'RECORDED TEXT'  # Replace with your own recording logic
@@ -45,9 +61,9 @@ def print_message():
 def store_message():
     sender = request.form['sender']
     message = request.form['message']
-    message_id = len(messages_dict) + 1
-    messages_dict[message_id] = {'sender': sender, 'message': message}
-    return jsonify({'status': 'success', 'message_id': message_id})
+    global memory
+    memory.add(role=sender, message=message)
+    return jsonify({'status': 'success'})
 
 @app.route('/toggle_loading_icon', methods=['POST'])
 def toggle_loading_icon():

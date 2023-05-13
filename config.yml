@@ -1,0 +1,13 @@
+model:
+  name: "gpt-3.5-turbo"
+  temperature: 0
+user:
+  name: "Shaked"
+  image: "/static/user.jpeg"
+bot:
+  name: "Renée"
+  image: "/static/bot.png"
+language:
+  native: "en"
+  learning: "fr"
+  level: "DELF A1.2"

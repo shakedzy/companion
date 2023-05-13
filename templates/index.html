@@ -15,13 +15,13 @@
   </head>
   <body>
     <div class="container my-0">
-      <div class="d-flex justify-content-center align-items-center mb-4">
+      <div class="d-none justify-content-center align-items-center mb-4" id="loading-title">
         <h1 class="text-center mb-4">
           Tech-à-tête
           <i id="loading-icon" class="fas fa-spinner fa-spin"></i>
         </h1>
       </div>
-      <div class="d-none justify-content-center align-items-center mb-4">
+      <div class="d-flex justify-content-center align-items-center mb-4" id="not-loading-title">
         <h1 class="mb-0">Tech-à-tête</h1>
       </div>
       <div id="message-box" class="bg-light p-3"></div>
@@ -30,12 +30,12 @@
           <button type="button" id="mode-toggle-button" class="btn btn-secondary">
             <i id="mode-icon" class="fas fa-moon"></i>
           </button>
-          <button type="button" id="lang-toggle-button" class="btn btn-secondary">
-            <span id="lang-text">A</span>
-          </button>
           <input type="text" id="message-input" class="form-control" placeholder="Type your message here...">
           <button type="submit" class="btn btn-primary">
             <i class="fas fa-paper-plane"></i>
+          </button>
+          <button type="button" id="lang-toggle-button" class="btn btn-secondary">
+            <span id="lang-text">A</span>
           </button>
           <button type="button" id="record-button" class="btn btn-secondary off">
             <i class="fas fa-microphone"></i>

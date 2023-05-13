@@ -1,32 +1,38 @@
 $(document).ready(function() {
+  // get_response('Bonjour!');
   $('#message-form').on('submit', function(e) {
     e.preventDefault();
     var message = $('#message-input').val();
     if (message.trim() !== '') {
       $('#message-input').val('');
-      add_message('You', message);
+      add_message('user', message);
       get_response(message);
     }
   });
 
   $('#record-button').on('click', function() {
-    var recordButton = $(this);
-    if (recordButton.hasClass('off')) {
-      // Start recording
-      recordButton.removeClass('btn-secondary off').addClass('btn-danger on');
-      $.post('/start_recording', {}, function(response) {
-        console.log(response.message);  // Log the server's response
-      });
-    } else {
-      // Stop recording and get the recorded text
-      recordButton.removeClass('btn-danger on').addClass('btn-secondary off');
-      $.post('/record_message', {}, function(response) {
-        var recorded_text = response['recorded_text'];
-        $('#message-input').val(recorded_text);
-        $('#message-input').focus();
-      });
-    }
-  });
+  var recordButton = $(this);
+  var langToggleButton = $('#lang-toggle-button'); // Select the lang-toggle-button
+
+  if (recordButton.hasClass('off')) {
+    // Start recording
+    recordButton.removeClass('btn-secondary off').addClass('btn-danger on');
+    langToggleButton.removeClass('btn-secondary off').addClass('btn-danger on');
+    $.post('/start_recording', {}, function(response) {
+      console.log(response.message);  // Log the server's response
+    });
+  } else {
+    // Stop recording and get the recorded text
+    recordButton.removeClass('btn-danger on').addClass('btn-secondary off');
+    langToggleButton.removeClass('btn-danger on').addClass('btn-secondary off');
+    $.post('/record_message', {}, function(response) {
+      var recorded_text = response['recorded_text'];
+      $('#message-input').val(recorded_text);
+      $('#message-input').focus();
+    });
+  }
+});
+
 
    $('#message-box').on('click', '.record-button', function() {
     var message = $(this).siblings('.card-body').text();
@@ -35,11 +41,11 @@ $(document).ready(function() {
     });
   });
 
-  $(document).keypress(function(e) {
-    if (e.which == 114 || e.which == 82) { // 114 is 'r', and 82 is 'R'
-      $('#record-button').click();
-    }
-  });
+  // $(document).keypress(function(e) {
+  //   if (e.which == 114 || e.which == 82) { // 114 is 'r', and 82 is 'R'
+  //     $('#record-button').click();
+  //   }
+  // });
 
   var darkMode = false;
   var languages = ['A', 'en', 'fr'];
@@ -78,7 +84,7 @@ function add_message(sender, message) {
   var message_body = $('<div class="card-body"></div>');
   message_body.text(message);
 
-  if (sender === 'You') {
+  if (sender === 'user') {
     message_card.addClass('bg-primary text-white');
     var img = $('<img src="/static/user.jpeg" class="profile-pic rounded-circle mr-3" width="50" height="50">');  // Replace path_to_user_image with the actual path
   } else {
@@ -89,7 +95,7 @@ function add_message(sender, message) {
   message_card.append(message_body);
 
   var button_container = $('<div class="button-container"></div>');
-  if (sender === 'You') {
+  if (sender === 'user') {
     var record_button = $('<div class="d-block"><button class="btn btn-link user-button record-button"><i class="fa-solid fa-user"></i></button></div>');
     button_container.append(record_button);
     var sound_on_button = $('<div class="d-block"><button class="btn btn-link user-button sound-on-button"><i class="fas fa-volume-up"></i></button></div>');
@@ -114,7 +120,7 @@ function add_message(sender, message) {
 
   $.post('/store_message', {'sender': sender, 'message': message}, function(response) {
     if (response['status'] === 'success') {
-      console.log('Message stored on the server-side with ID:', response['message_id']);
+      console.log('Message stored on the server-side');
     }
   });
 }
@@ -122,35 +128,41 @@ function add_message(sender, message) {
 function toggleLoadingIcon(action) {
   $.post('/toggle_loading_icon', {action: action}, function(response) {
     if (response.action === 'show') {
-      $('#loading-icon').removeClass('d-none');
+      $('#not-loading-title').addClass('d-none');
+      $('#not-loading-title').removeClass('d-flex');
+      $('#loading-title').addClass('d-flex');
+      $('#loading-title').removeClass('d-none');
     } else if (response.action === 'hide') {
-      $('#loading-icon').addClass('d-none');
+      $('#not-loading-title').addClass('d-flex');
+      $('#not-loading-title').removeClass('d-none');
+      $('#loading-title').addClass('d-none');
+      $('#loading-title').removeClass('d-flex');
     }
   });
 }
 
 
 function get_response(message) {
+  toggleLoadingIcon('show');
   $.post('/get_response', {'message': message}, function(response) {
-    var messages = response['messages'];
-    var delay = 0;
-    var fullMessage = '';
-
-    messages.forEach(function(bot_message, index) {
-      setTimeout(function() {
-        fullMessage += bot_message;
-        if (index < messages.length - 1) {
-          fullMessage += ' ';
-        }
-        if (index === 0) {
-          add_message('Bot', fullMessage);
-        } else {
-          update_last_message(fullMessage);
-        }
-      }, delay);
-      delay += 1000;  // Adjust the delay between message parts as needed
-    });
+      var bot_message = response['message'];
+      add_message('assistant', bot_message);
+      get_next_message();
   });
+}
+
+function get_next_message() {
+    $.get('/get_next_message', function(response) {
+        var bot_message = response['message'];
+        if (bot_message === null) {
+            // No more messages to show
+            toggleLoadingIcon('hide');
+            return;
+        }
+        update_last_message(bot_message);
+        // Get the next message after a delay
+        setTimeout(get_next_message, 0);  // Adjust the delay as needed
+    });
 }
 
 
