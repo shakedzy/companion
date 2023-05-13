@@ -1,0 +1,6 @@
+# brew install portaudio
+flask
+pyyaml
+pyaudio
+pydub
+openai
