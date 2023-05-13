@@ -3,18 +3,19 @@ from flask import Flask, render_template, request, jsonify
 from memory import Memory
 from config import Config
 from chatbot import Chatbot
-from functools import wraps
 
 app = Flask(__name__)
-app.secret_key = 'chatbot'
 
 with open("config.yml", "r") as yml_file:
     config: Config = Config(yaml.safe_load(yml_file))
 memory = Memory()
 chatbot = Chatbot(config=config, memory=memory)
 
-message_generator = None
-generated_message = ''
+class AppCache:
+    message_generator = None
+    generated_message = ''
+
+app_cache = AppCache()
 
 @app.route('/')
 def home():
@@ -22,32 +23,34 @@ def home():
 
 @app.route('/get_response', methods=['POST'])
 def get_response():
-    global message_generator, generated_message
+    global app_cache
     message = request.form['message']
     message_generator = chatbot.get_response(message)
     first_message = next(message_generator)
-    generated_message = first_message
-    # Store the rest of the generator in the user's session
+    app_cache.generated_message = first_message
     return jsonify({'message': first_message})
 
 @app.route('/get_next_message', methods=['GET'])
 def get_next_message():
-    global message_generator, generated_message
-    if message_generator is None:
+    global app_cache
+    if app_cache.message_generator is None:
         return jsonify({'message': None})
     try:
-        next_message = next(message_generator)
-        generated_message += next_message
-        return jsonify({'message': generated_message})
+        next_message = next(app_cache.message_generator)
+        app_cache.generated_message += next_message
+        return jsonify({'message': app_cache.generated_message})
     except StopIteration:
-        # Generator is exhausted, remove it from the session
-        message_generator = None
-        generated_message = ''
+        app_cache.message_generator = None
+        app_cache.generated_message = ''
         return jsonify({'message': None})
 
+@app.route('/start_recording', methods=['POST'])
+def start_recording():
+    print("recording")
+    return jsonify({'message': 'Recording started'})
 
-@app.route('/record_message', methods=['POST'])
-def record_message():
+@app.route('/end_recording', methods=['POST'])
+def end_recording():
     recorded_text = 'RECORDED TEXT'  # Replace with your own recording logic
     return jsonify({'recorded_text': recorded_text})
 
@@ -69,11 +72,6 @@ def store_message():
 def toggle_loading_icon():
     action = request.form.get('action')
     return jsonify({'action': action})
-
-@app.route('/start_recording', methods=['POST'])
-def start_recording():
-    print("recording")
-    return jsonify({'message': 'Recording started'})
 
 @app.route('/record_user_message', methods=['POST'])
 def record_user_message():

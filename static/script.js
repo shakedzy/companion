@@ -25,7 +25,7 @@ $(document).ready(function() {
     // Stop recording and get the recorded text
     recordButton.removeClass('btn-danger on').addClass('btn-secondary off');
     langToggleButton.removeClass('btn-danger on').addClass('btn-secondary off');
-    $.post('/record_message', {}, function(response) {
+    $.post('/end_recording', {}, function(response) {
       var recorded_text = response['recorded_text'];
       $('#message-input').val(recorded_text);
       $('#message-input').focus();
