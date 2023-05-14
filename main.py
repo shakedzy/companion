@@ -25,8 +25,8 @@ def home():
 def get_response():
     global app_cache
     message = request.form['message']
-    message_generator = chatbot.get_response(message)
-    first_message = next(message_generator)
+    app_cache.message_generator = chatbot.get_response(message)
+    first_message = next(app_cache.message_generator)
     app_cache.generated_message = first_message
     return jsonify({'message': first_message})
 
