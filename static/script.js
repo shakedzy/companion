@@ -47,19 +47,23 @@ $(document).ready(function() {
   //   }
   // });
 
-  var darkMode = false;
   var languages = ['fr', 'en', 'A'];
   var currentLanguageIndex = 0;
 
+  // Check if the user's system prefers dark mode
+  var prefersDarkScheme = window.matchMedia('(prefers-color-scheme: dark)');
+  var darkMode = prefersDarkScheme.matches;
+
+  // Set the initial dark mode state
+  setDarkMode(darkMode);
+
   $('#mode-toggle-button').on('click', function() {
     darkMode = !darkMode;
-    if (darkMode) {
-      $('body').addClass('dark-mode');
-      $('#mode-icon').removeClass('fa-moon').addClass('fa-sun');
-    } else {
-      $('body').removeClass('dark-mode');
-      $('#mode-icon').removeClass('fa-sun').addClass('fa-moon');
-    }
+    setDarkMode(darkMode);
+  });
+
+   $('#dark-mode-button').on('click', function() {
+    $('body').toggleClass('dark-mode');
   });
 
   $.post('/set_language', {'language': languages[currentLanguageIndex]}, function(response) {
@@ -185,4 +189,12 @@ function update_last_message(newContent) {
   last_message_card_body.text(newContent);
 }
 
-
+function setDarkMode(isDarkMode) {
+    if (isDarkMode) {
+      $('body').addClass('dark-mode');
+      $('#mode-icon').removeClass('fa-moon').addClass('fa-sun');
+    } else {
+      $('body').removeClass('dark-mode');
+      $('#mode-icon').removeClass('fa-sun').addClass('fa-moon');
+    }
+  }
