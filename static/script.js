@@ -5,8 +5,11 @@ $(document).ready(function() {
     var message = $('#message-input').val();
     if (message.trim() !== '') {
       $('#message-input').val('');
-      add_message('user', message);
-      get_response(message);
+      $.get('/has_user_recording', function(response) {
+        var has_user_recording = response['user_recording'] !== null;
+        add_message('user', message, has_user_recording);
+        get_response(message);
+      });
     }
   });
 
@@ -32,14 +35,6 @@ $(document).ready(function() {
     });
   }
 });
-
-
-   $('#message-box').on('click', '.play-user-button', function() {
-    var message = $(this).siblings('.card-body').text();
-    $.post('/play_user_message', {'message': message}, function(response) {
-      console.log(response);
-    });
-  });
 
   // $(document).keypress(function(e) {
   //   if (e.which == 114 || e.which == 82) { // 114 is 'r', and 82 is 'R'
@@ -84,7 +79,7 @@ $(document).ready(function() {
 });
 
 var message_counter = 1;
-function add_message(sender, message) {
+function add_message(sender, message, has_user_recording) {
   var message_box = $('#message-box');
   var message_row = $('<div class="row mb-3"></div>');
   var message_col = $('<div class="col d-flex align-items-start"></div>');  // Changed to d-flex and align-items-start
@@ -105,15 +100,27 @@ function add_message(sender, message) {
   message_card.append(message_body);
 
   var button_container = $('<div class="button-container"></div>');
-  if (sender === 'user') {
-    var record_button = $('<div class="d-block"><button class="btn btn-link user-button play-user-button"><i class="fa-solid fa-user"></i></button></div>');
+  if (has_user_recording) {
+    if (sender === 'user') {
+      var record_button = $('<div class="d-block"><button class="btn btn-link user-button play-user-button"><i class="fa-solid fa-user"></i></button></div>');
+    } else {
+      var record_button = $('<div class="d-block"><button class="btn btn-link bot-button play-user-button"><i class="fa-solid fa-user"></i></button></div>');
+    }
     button_container.append(record_button);
+    record_button.on('click', function() {
+    $.post('/play_user_recording', {'message_id': message_body.id}, function (response) {
+      if (response['status'] === 'success') {
+        console.log('Request to play user recordings received');
+      }
+    });
+  });
+  }
+  if (sender === 'user') {
     var sound_on_button = $('<div class="d-block"><button class="btn btn-link user-button sound-on-button"><i class="fas fa-volume-up"></i></button></div>');
-    button_container.append(sound_on_button);
   } else {
     var sound_on_button = $('<div class="d-block"><button class="btn btn-link bot-button sound-on-button"><i class="fas fa-volume-up"></i></button></div>');
-    button_container.append(sound_on_button);
   }
+  button_container.append(sound_on_button);
   message_card.append(button_container);
 
   message_col.append(img).append(message_card);
@@ -162,7 +169,7 @@ function get_response(message) {
   toggleLoadingIcon('show');
   $.post('/get_response', {'message': message}, function(response) {
       var bot_message = response['message'];
-      add_message('assistant', bot_message);
+      add_message('assistant', bot_message, false);
       get_next_message();
   });
 }

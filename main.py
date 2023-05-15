@@ -99,6 +99,10 @@ def store_message(sender=None, message=None):
     app_cache.user_recording = None
     return jsonify({'status': 'success'})
 
+@app.route('/has_user_recording', methods=['GET'])
+def has_user_recording():
+    return jsonify({'user_recording': app_cache.user_recording})
+
 @app.route('/toggle_loading_icon', methods=['POST'])
 def toggle_loading_icon():
     action = request.form.get('action')
@@ -116,10 +120,12 @@ def play_bot_message():
             app_cache.play_recordings_queue.put(r)
     return jsonify({'message': 'Recordings inserted to queue'})
 
-@app.route('/play_user_message', methods=['POST'])
+@app.route('/play_user_recording', methods=['POST'])
 def play_user_message():
-    message = request.form['message']
-    print(f"Playing user message: {message}")
+    message_id = int(request.form['message_id'].split('_')[1])
+    user_recording = memory[message_id]['user_recording']
+    if user_recording:
+        app_cache.play_recordings_queue.put(user_recording)
     return jsonify({'message': 'User message played successfully'})
 
 @app.route('/set_language', methods=['POST'])
@@ -142,9 +148,8 @@ def bot_text_to_speech_queue_func():
             item = app_cache.text2speech_queue.get(timeout=1)  # Wait for 1 second to get an item
             idx = item["message_index"]
             filename = bot_text_to_speech(text=item['text'], message_index=idx, counter=item['counter'])
-            recordings = memory[idx]['recording']
-            recordings.append(filename)
-            memory.update(idx, recording=recordings)
+            app_cache.bot_recordings.append(filename)
+            memory.update(idx, recording=app_cache.bot_recordings)
             app_cache.play_recordings_queue.put(filename)
         except EmptyQueue:
             continue
