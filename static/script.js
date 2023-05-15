@@ -48,7 +48,7 @@ $(document).ready(function() {
   // });
 
   var darkMode = false;
-  var languages = ['A', 'en', 'fr'];
+  var languages = ['fr', 'en', 'A'];
   var currentLanguageIndex = 0;
 
   $('#mode-toggle-button').on('click', function() {
@@ -62,6 +62,9 @@ $(document).ready(function() {
     }
   });
 
+  $.post('/set_language', {'language': languages[currentLanguageIndex]}, function(response) {
+    console.log(response.message);
+  });
   $('#lang-toggle-button').on('click', function() {
     currentLanguageIndex = (currentLanguageIndex + 1) % languages.length;
     $('#lang-text').text(languages[currentLanguageIndex]);
@@ -164,8 +167,8 @@ function get_next_message() {
         var bot_message = response['message'];
         if (bot_message === null) {
             // No more messages to show
+            // play_bot();
             toggleLoadingIcon('hide');
-            play_bot();
             return;
         }
         update_last_message(bot_message);

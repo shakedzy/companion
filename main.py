@@ -1,11 +1,15 @@
+import re
 import os
 import yaml
 import speech
-import threading
+import pygame
+from queue import Empty as EmptyQueue
+from threading import Thread
 from flask import Flask, render_template, request, jsonify
 from memory import Memory
 from config import Config
 from chatbot import Chatbot
+from app_cache import AppCache
 
 TEMP_DIR = os.path.join(os.getcwd(), "tmp")
 
@@ -15,13 +19,6 @@ with open("config.yml", "r") as yml_file:
     config: Config = Config(yaml.safe_load(yml_file))
 memory = Memory()
 chatbot = Chatbot(config=config, memory=memory)
-
-class AppCache:
-    message_generator = None
-    generated_message = ''
-    user_recording = None
-    recording_thread: threading.Thread = None
-
 app_cache = AppCache()
 
 @app.route('/')
@@ -30,34 +27,59 @@ def home():
 
 @app.route('/get_response', methods=['POST'])
 def get_response():
-    global app_cache
     message = request.form['message']
     app_cache.message_generator = chatbot.get_response(message)
+    app_cache.last_sentence = ''
+    app_cache.sentences_counter = 0
+    app_cache.bot_recordings = list()
     first_message = next(app_cache.message_generator)
     app_cache.generated_message = first_message
     return jsonify({'message': first_message})
 
 @app.route('/get_next_message', methods=['GET'])
 def get_next_message():
-    global app_cache
     if app_cache.message_generator is None:
         return jsonify({'message': None})
     try:
         next_message = next(app_cache.message_generator)
         app_cache.generated_message += next_message
+        app_cache.last_sentence += next_message
+        split_sentence = split_to_sentences(app_cache.last_sentence)
+        if len(split_sentence) > 1:
+            app_cache.text2speech_queue.put({"text": split_sentence[0],
+                                             "counter": app_cache.sentences_counter,
+                                             "message_index": len(memory)})
+            app_cache.sentences_counter += 1
+            app_cache.last_sentence = split_sentence[1]
         return jsonify({'message': app_cache.generated_message})
     except StopIteration:
+        if app_cache.last_sentence.strip() != '':
+            app_cache.text2speech_queue.put({"text": app_cache.last_sentence,
+                                             "counter": app_cache.sentences_counter,
+                                             "message_index": len(memory)})
         store_message(sender="assistant", message=app_cache.generated_message)
         app_cache.message_generator = None
         app_cache.generated_message = ''
         return jsonify({'message': None})
 
+def split_to_sentences(text):
+    characters = ['.', '!', "?", ":", ";"]
+    escaped_characters = [re.escape(c) for c in characters]
+    if any([c+' ' in text for c in characters]):
+        pattern = '|'.join(escaped_characters)
+        split_list = re.split(pattern + r'\s', text)
+    elif ', ' in text and len(text) > 100:
+        print(f"<{text}>")
+        split_list = re.split(re.escape(',') + r'\s', text)
+    else:
+        split_list = [text]
+    return split_list
+
 @app.route('/start_recording', methods=['POST'])
 def start_recording():
-    global memory, app_cache
     filename = os.path.join(TEMP_DIR, f"user_recording_{len(memory)}.mp3")
     app_cache.user_recording = filename
-    app_cache.recording_thread = threading.Thread(target=speech.record, args=(filename, ))
+    app_cache.recording_thread = Thread(target=speech.record, args=(filename, ))
     app_cache.recording_thread.start()
     return jsonify({'message': 'Recording started'})
 
@@ -65,21 +87,15 @@ def start_recording():
 def end_recording():
     speech.stop_recording()
     app_cache.recording_thread.join()
-    recorded_text = speech.speech2text(app_cache.user_recording)
+    recorded_text = speech.speech2text(app_cache.user_recording, language=app_cache.language)
     return jsonify({'recorded_text': recorded_text})
-
-# @app.route('/print_message', methods=['POST'])
-# def print_message():
-#     message = request.form['message']
-#     print(message)
-#     return jsonify({'status': 'success'})
 
 @app.route('/store_message', methods=['POST'])
 def store_message(sender=None, message=None):
-    global memory, app_cache
     sender = sender or request.form['sender']
     message = message or request.form['message']
-    memory.add(role=sender, message=message, user_recording=app_cache.user_recording)
+    memory.add(role=sender, message=message, user_recording=app_cache.user_recording,
+               recording=app_cache.bot_recordings)
     app_cache.user_recording = None
     return jsonify({'status': 'success'})
 
@@ -97,17 +113,51 @@ def play_user_message():
 @app.route('/set_language', methods=['POST'])
 def set_language():
     language = request.form['language']
-    print("Setting language to:", language)
-    # Replace with your own logic
-    return jsonify({'message': 'Language set successfully'})
+    if language == 'A':
+        language = None
+    app_cache.language = language
+    return jsonify({'message': f'Language set successfully to {request.form["language"]}'})
 
-@app.route('/play_bot', methods=['GET'])
-def play_bot():
-    global memory
-    filename = os.path.join(TEMP_DIR, f"bot_speech_{len(memory)-1}.mp3")
-    speech.text2speech(memory[len(memory)-1]["content"], filename)
-    speech.play_mp3(filename)
-    return jsonify({'message': 'Bot sound played'})
+def bot_text_to_speech(text, message_index, counter):
+    filename = os.path.join(TEMP_DIR, f"bot_speech_{message_index}_{counter}.mp3")
+    speech.text2speech(text, filename)
+    return filename
+
+
+def bot_text_to_speech_queue_func():
+    while True:
+        try:
+            item = app_cache.text2speech_queue.get(timeout=1)  # Wait for 1 second to get an item
+            idx = item["message_index"]
+            filename = bot_text_to_speech(text=item['text'], message_index=idx, counter=item['counter'])
+            recordings = memory[idx]['recording']
+            recordings.append(filename)
+            memory.update(idx, recording=recordings)
+            app_cache.play_recordings_queue.put(filename)
+        except EmptyQueue:
+            continue
+
+def play_recordings_queue_func():
+    while True:
+        try:
+            filename = app_cache.play_recordings_queue.get(timeout=1)  # Wait for 1 second to get an item
+            speech.play_mp3(filename)
+            while pygame.mixer.music.get_busy():
+                continue
+        except EmptyQueue:
+            continue
+
+def X():
+    from time import sleep
+    while True:
+        print("--- MEMORY: ---")
+        for m in memory._memory:
+            print(m)
+        print("--- UPDATES: ---")
+        for u in memory._updates:
+            print(u)
+        print("--- CACHE ---\n", vars(app_cache))
+        sleep(10)
 
 if __name__ == '__main__':
     if os.path.exists(TEMP_DIR):
@@ -115,5 +165,12 @@ if __name__ == '__main__':
             os.remove(os.path.join(TEMP_DIR, f))
     else:
         os.makedirs(TEMP_DIR)
+
+    app_cache.text2speech_thread = Thread(target=bot_text_to_speech_queue_func)
+    app_cache.text2speech_thread.start()
+    app_cache.play_recordings_thread = Thread(target=play_recordings_queue_func)
+    app_cache.play_recordings_thread.start()
+
+    # Thread(target=X).start()
 
     app.run(debug=True)

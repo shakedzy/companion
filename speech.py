@@ -67,9 +67,12 @@ def play_mp3(filename):
     pygame.mixer.music.play()
 
 
-def speech2text(filename):
+def speech2text(filename, language):
     audio_file = open(filename, "rb")
-    transcript = openai.Audio.transcribe("whisper-1", audio_file)
+    if language is None:
+        transcript = openai.Audio.transcribe("whisper-1", audio_file)
+    else:
+        transcript = openai.Audio.transcribe("whisper-1", audio_file, language=language)
     return transcript["text"]
 
 
