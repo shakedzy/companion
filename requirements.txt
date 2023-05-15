@@ -3,4 +3,7 @@ flask
 pyyaml
 pyaudio
 pydub
+pygame
 openai
+ibm-watson
+ibm-cloud-sdk-core

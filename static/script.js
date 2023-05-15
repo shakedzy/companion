@@ -34,9 +34,9 @@ $(document).ready(function() {
 });
 
 
-   $('#message-box').on('click', '.record-button', function() {
+   $('#message-box').on('click', '.play-user-button', function() {
     var message = $(this).siblings('.card-body').text();
-    $.post('/record_user_message', {'message': message}, function(response) {
+    $.post('/play_user_message', {'message': message}, function(response) {
       console.log(response);
     });
   });
@@ -96,7 +96,7 @@ function add_message(sender, message) {
 
   var button_container = $('<div class="button-container"></div>');
   if (sender === 'user') {
-    var record_button = $('<div class="d-block"><button class="btn btn-link user-button record-button"><i class="fa-solid fa-user"></i></button></div>');
+    var record_button = $('<div class="d-block"><button class="btn btn-link user-button play-user-button"><i class="fa-solid fa-user"></i></button></div>');
     button_container.append(record_button);
     var sound_on_button = $('<div class="d-block"><button class="btn btn-link user-button sound-on-button"><i class="fas fa-volume-up"></i></button></div>');
     button_container.append(sound_on_button);
@@ -118,11 +118,13 @@ function add_message(sender, message) {
   message_box.append(message_row);
   message_box.scrollTop(message_box.prop('scrollHeight'));
 
-  $.post('/store_message', {'sender': sender, 'message': message}, function(response) {
-    if (response['status'] === 'success') {
-      console.log('Message stored on the server-side');
-    }
-  });
+  if (sender === 'user') {
+    $.post('/store_message', {'sender': sender, 'message': message}, function (response) {
+      if (response['status'] === 'success') {
+        console.log('Message stored on the server-side');
+      }
+    });
+  }
 }
 
 function toggleLoadingIcon(action) {
@@ -151,12 +153,19 @@ function get_response(message) {
   });
 }
 
+
+function play_bot() {
+  $.get('/play_bot', function(response) {});
+}
+
+
 function get_next_message() {
     $.get('/get_next_message', function(response) {
         var bot_message = response['message'];
         if (bot_message === null) {
             // No more messages to show
             toggleLoadingIcon('hide');
+            play_bot();
             return;
         }
         update_last_message(bot_message);

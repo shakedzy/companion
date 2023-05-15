@@ -11,8 +11,12 @@ class Memory:
     def __str__(self):
         return str(self._memory)
 
+    def __len__(self):
+        return len(self._memory)
+
     def add(self, role, message, recording=None, user_recording=None):
-        self._memory.append({"role": role, "content": message, "recording": recording,
+        message = ' '.join(message.split())
+        self._memory.append({"role": role, "content": message, "recording": recording or list(),
                              "user_recording": user_recording})
 
     def get_chat_history(self):
