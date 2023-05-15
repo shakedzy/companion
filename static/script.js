@@ -83,6 +83,7 @@ $(document).ready(function() {
 
 });
 
+var message_counter = 1;
 function add_message(sender, message) {
   var message_box = $('#message-box');
   var message_row = $('<div class="row mb-3"></div>');
@@ -90,6 +91,8 @@ function add_message(sender, message) {
   var message_card = $('<div class="card flex-grow-1"></div>');
   var message_body = $('<div class="card-body"></div>');
   message_body.text(message);
+  message_body.id = "message_" + message_counter;
+  message_counter += 1;
 
   if (sender === 'user') {
     message_card.addClass('bg-primary text-white');
@@ -119,7 +122,11 @@ function add_message(sender, message) {
   message_box.scrollTop(message_box.prop('scrollHeight'));
 
   sound_on_button.on('click', function() {
-    console.log('Sound on button clicked. Message:', message_body.text());
+    $.post('/play_bot_recording', {'message_id': message_body.id, 'text': message_body.text()}, function (response) {
+      if (response['status'] === 'success') {
+        console.log('Request to play recordings received');
+      }
+    });
   });
 
   message_box.append(message_row);

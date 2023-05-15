@@ -104,6 +104,18 @@ def toggle_loading_icon():
     action = request.form.get('action')
     return jsonify({'action': action})
 
+@app.route('/play_bot_recording', methods=['POST'])
+def play_bot_message():
+    index = int(request.form['message_id'].split('_')[1])
+    recordings = memory[index]["recording"]
+    if recordings is None or len(recordings) == 0:
+        app_cache.text2speech_queue.put({"text": request.form["text"], "counter": 0,
+                                         "message_index": index})
+    else:
+        for r in recordings:
+            app_cache.play_recordings_queue.put(r)
+    return jsonify({'message': 'Recordings inserted to queue'})
+
 @app.route('/play_user_message', methods=['POST'])
 def play_user_message():
     message = request.form['message']
