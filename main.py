@@ -21,20 +21,23 @@ memory = Memory()
 chatbot = Chatbot(config=config, memory=memory)
 app_cache = AppCache()
 
+
 @app.route('/')
 def home():
-    return render_template('index.html')
+    languages = [config.language.learning, config.language.native, 'A']
+    return render_template('index.html', page_title=config.title, languages=languages)
+
 
 @app.route('/get_response', methods=['POST'])
 def get_response():
-    message = request.form['message']
-    app_cache.message_generator = chatbot.get_response(message)
+    app_cache.message_generator = chatbot.get_response()
     app_cache.last_sentence = ''
     app_cache.sentences_counter = 0
     app_cache.bot_recordings = list()
     first_message = next(app_cache.message_generator)
     app_cache.generated_message = first_message
     return jsonify({'message': first_message})
+
 
 @app.route('/get_next_message', methods=['GET'])
 def get_next_message():
@@ -62,6 +65,7 @@ def get_next_message():
         app_cache.generated_message = ''
         return jsonify({'message': None})
 
+
 def split_to_sentences(text):
     characters = ['.', '!', "?", ":", ";"]
     escaped_characters = [re.escape(c) for c in characters]
@@ -74,6 +78,7 @@ def split_to_sentences(text):
     else:
         split_list = [text]
     return split_list
+
 
 @app.route('/start_recording', methods=['POST'])
 def start_recording():
@@ -99,14 +104,17 @@ def store_message(sender=None, message=None):
     app_cache.user_recording = None
     return jsonify({'status': 'success'})
 
+
 @app.route('/has_user_recording', methods=['GET'])
 def has_user_recording():
     return jsonify({'user_recording': app_cache.user_recording})
+
 
 @app.route('/toggle_loading_icon', methods=['POST'])
 def toggle_loading_icon():
     action = request.form.get('action')
     return jsonify({'action': action})
+
 
 @app.route('/play_bot_recording', methods=['POST'])
 def play_bot_message():
@@ -120,6 +128,7 @@ def play_bot_message():
             app_cache.play_recordings_queue.put(r)
     return jsonify({'message': 'Recordings inserted to queue'})
 
+
 @app.route('/play_user_recording', methods=['POST'])
 def play_user_message():
     message_id = int(request.form['message_id'].split('_')[1])
@@ -127,6 +136,7 @@ def play_user_message():
     if user_recording:
         app_cache.play_recordings_queue.put(user_recording)
     return jsonify({'message': 'User message played successfully'})
+
 
 @app.route('/set_language', methods=['POST'])
 def set_language():
@@ -136,9 +146,16 @@ def set_language():
     app_cache.language = language
     return jsonify({'message': f'Language set successfully to {request.form["language"]}'})
 
+
+@app.route('/memory', methods=['GET'])
+def print_memory():
+    print(memory[0]["content"])
+    return str(memory)
+
+
 def bot_text_to_speech(text, message_index, counter):
     filename = os.path.join(TEMP_DIR, f"bot_speech_{message_index}_{counter}.mp3")
-    speech.text2speech(text, filename)
+    speech.text2speech(text, filename, config=config)
     return filename
 
 
@@ -154,6 +171,7 @@ def bot_text_to_speech_queue_func():
         except EmptyQueue:
             continue
 
+
 def play_recordings_queue_func():
     while True:
         try:
@@ -164,17 +182,6 @@ def play_recordings_queue_func():
         except EmptyQueue:
             continue
 
-def X():
-    from time import sleep
-    while True:
-        print("--- MEMORY: ---")
-        for m in memory._memory:
-            print(m)
-        print("--- UPDATES: ---")
-        for u in memory._updates:
-            print(u)
-        print("--- CACHE ---\n", vars(app_cache))
-        sleep(10)
 
 if __name__ == '__main__':
     if os.path.exists(TEMP_DIR):
@@ -187,7 +194,5 @@ if __name__ == '__main__':
     app_cache.text2speech_thread.start()
     app_cache.play_recordings_thread = Thread(target=play_recordings_queue_func)
     app_cache.play_recordings_thread.start()
-
-    # Thread(target=X).start()
 
     app.run(debug=True)

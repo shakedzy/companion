@@ -7,3 +7,4 @@ pygame
 openai
 ibm-watson
 ibm-cloud-sdk-core
+iso639-lang

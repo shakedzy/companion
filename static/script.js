@@ -1,5 +1,4 @@
 $(document).ready(function() {
-  // get_response('Bonjour!');
   $('#message-form').on('submit', function(e) {
     e.preventDefault();
     var message = $('#message-input').val();
@@ -32,17 +31,14 @@ $(document).ready(function() {
       var recorded_text = response['recorded_text'];
       $('#message-input').val(recorded_text);
       $('#message-input').focus();
-    });
-  }
-});
+      });
+    }
+  });
 
-  // $(document).keypress(function(e) {
-  //   if (e.which == 114 || e.which == 82) { // 114 is 'r', and 82 is 'R'
-  //     $('#record-button').click();
-  //   }
-  // });
+  Mousetrap.bind('alt+r', function() {
+    $('#record-button').click();
+  });
 
-  var languages = ['fr', 'en', 'A'];
   var currentLanguageIndex = 0;
 
   // Check if the user's system prefers dark mode
@@ -185,7 +181,6 @@ function get_next_message() {
         var bot_message = response['message'];
         if (bot_message === null) {
             // No more messages to show
-            // play_bot();
             toggleLoadingIcon('hide');
             return;
         }

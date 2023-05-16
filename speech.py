@@ -7,6 +7,7 @@ import pygame
 from pydub import AudioSegment
 from ibm_watson import TextToSpeechV1
 from ibm_cloud_sdk_core.authenticators import IAMAuthenticator
+from config import Config
 
 _is_recording = False
 watson_authenticator = IAMAuthenticator(os.environ["WATSON_API_KEY"])
@@ -76,12 +77,10 @@ def speech2text(filename, language):
     return transcript["text"]
 
 
-def text2speech(text, filename):
+def text2speech(text, filename, config: Config):
     text_to_speech = TextToSpeechV1(authenticator=watson_authenticator)
-    text_to_speech.set_service_url(
-        'https://api.eu-de.text-to-speech.watson.cloud.ibm.com/instances/80347f4c-b1e8-49c0-860a-164e8ae575b4')
-    speech = text_to_speech.synthesize(text, voice='fr-FR_ReneeV3Voice',
-                                             accept='audio/mp3').get_result().content
+    text_to_speech.set_service_url(config.watson.url)
+    speech = text_to_speech.synthesize(text, voice=config.watson.voice, accept='audio/mp3').get_result().content
     with open(filename, "wb") as mp3_file:
         mp3_file.write(speech)
     return filename

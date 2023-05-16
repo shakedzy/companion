@@ -1,3 +1,4 @@
+title: "Tech-à-tête"
 model:
   name: "gpt-3.5-turbo"
   temperature: 0
@@ -11,3 +12,6 @@ language:
   native: "en"
   learning: "fr"
   level: "DELF A1.2"
+watson:
+  url: "https://api.eu-de.text-to-speech.watson.cloud.ibm.com/instances/80347f4c-b1e8-49c0-860a-164e8ae575b4"
+  voice: "fr-FR_ReneeV3Voice"
