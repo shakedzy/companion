@@ -13,7 +13,8 @@ SYSTEM_PROMPT = """You are a {language} teacher named {teacher_name}. You are on
                    language when felt their {language} is not well enough. When that happens, first translate their
                    message to {language}, and then reply.
                    - IMPORTANT: If your student makes any mistake, be it typo or grammar, you MUST first correct
-                   your student and only then reply."""
+                   your student and only then reply.
+                   - You are only allowed to speak {language}."""
 
 class Chatbot:
     def __init__(self, config: Config, memory: Memory):

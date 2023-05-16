@@ -149,8 +149,11 @@ def set_language():
 
 @app.route('/memory', methods=['GET'])
 def print_memory():
-    print(memory[0]["content"])
     return str(memory)
+
+@app.route('/memory/updates', methods=['GET'])
+def print_memory_updates():
+    return str(memory._updates)
 
 
 def bot_text_to_speech(text, message_index, counter):
