@@ -1,15 +1,19 @@
 import re
 import os
 import yaml
+import json
+import atexit
 import speech
 import pygame
 from queue import Empty as EmptyQueue
 from threading import Thread
-from flask import Flask, render_template, request, jsonify
+from flask import Flask, Response, render_template, request, jsonify
 from memory import Memory
 from config import Config
 from chatbot import Chatbot
 from app_cache import AppCache
+from translate import translate
+from datetime import datetime
 
 TEMP_DIR = os.path.join(os.getcwd(), "tmp")
 
@@ -147,6 +151,31 @@ def set_language():
     return jsonify({'message': f'Language set successfully to {request.form["language"]}'})
 
 
+@app.route('/translate_text', methods=['POST'])
+def translate_text():
+    message = request.form["message"]
+    translated = translate(message, origin=config.language.native, to=config.language.learning)
+    return jsonify({'message': translated})
+
+
+@app.route('/download_chat', methods=['GET'])
+def download_chat():
+    filename = f"chat_history_{datetime.now().strftime('%Y-%m-%d_%H:%M:%S')}.json"
+    data = list()
+    for i, m in enumerate(memory.get_chat_history()[1:]):
+        data.append({"index": i+1, "sender": m["role"], "message": m["content"]})
+
+    json_data = json.dumps(data, indent=4)  # Convert the list of dictionaries to JSON format
+
+    response = Response(
+        response=json_data,
+        mimetype="application/json",
+        headers={"Content-disposition": f"attachment; filename={filename}"}
+    )
+
+    return response
+
+
 @app.route('/memory', methods=['GET'])
 def print_memory():
     return str(memory)
@@ -163,7 +192,7 @@ def bot_text_to_speech(text, message_index, counter):
 
 
 def bot_text_to_speech_queue_func():
-    while True:
+    while not app_cache.stop_threads_event.is_set():
         try:
             item = app_cache.text2speech_queue.get(timeout=1)  # Wait for 1 second to get an item
             idx = item["message_index"]
@@ -176,7 +205,7 @@ def bot_text_to_speech_queue_func():
 
 
 def play_recordings_queue_func():
-    while True:
+    while not app_cache.stop_threads_event.is_set():
         try:
             filename = app_cache.play_recordings_queue.get(timeout=1)  # Wait for 1 second to get an item
             speech.play_mp3(filename)
@@ -184,6 +213,16 @@ def play_recordings_queue_func():
                 continue
         except EmptyQueue:
             continue
+
+
+@atexit.register
+def on_exit():
+    print("Terminating...")
+    app_cache.stop_threads_event.set()
+    speech.stop_recording()
+    for thread in [app_cache.text2speech_thread, app_cache.recording_thread, app_cache.play_recordings_thread]:
+        thread.join()
+
 
 
 if __name__ == '__main__':

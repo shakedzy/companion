@@ -13,26 +13,26 @@ $(document).ready(function() {
   });
 
   $('#record-button').on('click', function() {
-  var recordButton = $(this);
-  var langToggleButton = $('#lang-toggle-button'); // Select the lang-toggle-button
+    var recordButton = $(this);
+    var langToggleButton = $('#lang-toggle-button'); // Select the lang-toggle-button
 
-  if (recordButton.hasClass('off')) {
-    // Start recording
-    recordButton.removeClass('btn-secondary off').addClass('btn-danger on');
-    langToggleButton.removeClass('btn-secondary off').addClass('btn-danger on');
-    $.post('/start_recording', {}, function(response) {
-      console.log(response.message);  // Log the server's response
-    });
-  } else {
-    // Stop recording and get the recorded text
-    recordButton.removeClass('btn-danger on').addClass('btn-secondary off');
-    langToggleButton.removeClass('btn-danger on').addClass('btn-secondary off');
-    $.post('/end_recording', {}, function(response) {
-      var recorded_text = response['recorded_text'];
-      $('#message-input').val(recorded_text);
-      $('#message-input').focus();
+    if (recordButton.hasClass('off')) {
+      // Start recording
+      recordButton.removeClass('btn-secondary off').addClass('btn-danger on');
+      langToggleButton.removeClass('btn-secondary off').addClass('btn-danger on');
+      $.post('/start_recording', {}, function(response) {
+        console.log(response.message);  // Log the server's response
       });
-    }
+    } else {
+      // Stop recording and get the recorded text
+      recordButton.removeClass('btn-danger on').addClass('btn-secondary off');
+      langToggleButton.removeClass('btn-danger on').addClass('btn-secondary off');
+      $.post('/end_recording', {}, function(response) {
+        var recorded_text = response['recorded_text'];
+        $('#message-input').val(recorded_text);
+        $('#message-input').focus();
+        });
+      }
   });
 
   Mousetrap.bind('alt+r', function() {
@@ -114,7 +114,18 @@ function add_message(sender, message, has_user_recording) {
   if (sender === 'user') {
     var sound_on_button = $('<div class="d-block"><button class="btn btn-link user-button sound-on-button"><i class="fas fa-volume-up"></i></button></div>');
   } else {
+    var translate_button = $('<div class="d-block"><button class="btn btn-link bot-button translate-button"><i class="fa fa-language"></i></button></div>');
     var sound_on_button = $('<div class="d-block"><button class="btn btn-link bot-button sound-on-button"><i class="fas fa-volume-up"></i></button></div>');
+    button_container.append(translate_button);
+    translate_button.on('click', function () {
+      $.post('/translate_text', {'message': message}, function (response) {
+        if (response['status'] === 'success') {
+          message_body.append('<hr>');
+          var italic_translation = $('<em></em>').text(response['message']);
+          message_body.append(italic_translation);
+        }
+      });
+    });
   }
   button_container.append(sound_on_button);
   message_card.append(button_container);
@@ -207,3 +218,17 @@ function setDarkMode(isDarkMode) {
       $('#mode-icon').removeClass('fa-sun').addClass('fa-moon');
     }
   }
+
+function getCurrentTime() {
+  var now = new Date();
+
+  var year = now.getFullYear();
+  var month = String(now.getMonth() + 1).padStart(2, '0');
+  var day = String(now.getDate()).padStart(2, '0');
+  var hours = String(now.getHours()).padStart(2, '0');
+  var minutes = String(now.getMinutes()).padStart(2, '0');
+  var seconds = String(now.getSeconds()).padStart(2, '0');
+
+  var formattedTime = year + '-' + month + '-' + day + '_' + hours + ':' + minutes + ':' + seconds;
+  return formattedTime;
+}
