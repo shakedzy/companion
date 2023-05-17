@@ -15,6 +15,9 @@
     <script src="https://unpkg.com/mousetrap"></script>
     <script>
       var languages = {{ languages | tojson }};
+      var auto_send_recording = {{ auto_send_recording }};
+      var user_profile_img = "{{ user_profile_img }}";
+      var bot_profile_img = "{{ bot_profile_img }}";
     </script>
   </head>
   <body>
@@ -39,7 +42,7 @@
             <i id="download-icon" class="fa fa-download"></i>
           </button>
           <input type="text" id="message-input" class="form-control" placeholder="Type your message here...">
-          <button type="submit" class="btn btn-primary">
+          <button type="submit" id="submit-button" class="btn btn-primary">
             <i class="fas fa-paper-plane"></i>
           </button>
           <button type="button" id="lang-toggle-button" class="btn btn-secondary">
