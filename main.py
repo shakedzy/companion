@@ -153,8 +153,9 @@ def set_language():
 
 @app.route('/translate_text', methods=['POST'])
 def translate_text():
-    message = request.form["message"]
-    translated = translate(message, origin=config.language.native, to=config.language.learning)
+    message = request.form["text"]
+    translated = translate(message, to=config.language.native)
+    print(translated)
     return jsonify({'message': translated})
 
 
@@ -222,7 +223,6 @@ def on_exit():
     speech.stop_recording()
     for thread in [app_cache.text2speech_thread, app_cache.recording_thread, app_cache.play_recordings_thread]:
         thread.join()
-
 
 
 if __name__ == '__main__':

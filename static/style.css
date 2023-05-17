@@ -18,7 +18,6 @@
 
 body {
   background-color: var(--background);
-  /*color: var(--font-color);*/
   font-family: 'Roboto', sans-serif;
 }
 
@@ -75,6 +74,7 @@ html, body {
 
 .card-body {
   position: relative;
+  padding-right: 35px;
 }
 
 @keyframes spin {

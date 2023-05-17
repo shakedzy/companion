@@ -104,11 +104,7 @@ function add_message(sender, message, has_user_recording) {
     }
     button_container.append(record_button);
     record_button.on('click', function() {
-    $.post('/play_user_recording', {'message_id': message_body.id}, function (response) {
-      if (response['status'] === 'success') {
-        console.log('Request to play user recordings received');
-      }
-    });
+    $.post('/play_user_recording', {'message_id': message_body.id}, function (response) {});
   });
   }
   if (sender === 'user') {
@@ -117,13 +113,14 @@ function add_message(sender, message, has_user_recording) {
     var translate_button = $('<div class="d-block"><button class="btn btn-link bot-button translate-button"><i class="fa fa-language"></i></button></div>');
     var sound_on_button = $('<div class="d-block"><button class="btn btn-link bot-button sound-on-button"><i class="fas fa-volume-up"></i></button></div>');
     button_container.append(translate_button);
-    translate_button.on('click', function () {
-      $.post('/translate_text', {'message': message}, function (response) {
-        if (response['status'] === 'success') {
-          message_body.append('<hr>');
-          var italic_translation = $('<em></em>').text(response['message']);
-          message_body.append(italic_translation);
-        }
+
+    translate_button.on('click', function() {
+      $.post('/translate_text', {'text': message_body.text()}, function (response) {
+        console.log(response['status'], response['message']);
+          var translated_text = response['message'];
+          var original_text = message_body.text();
+          var combined_text = original_text + '<hr><em>' + translated_text + '</em>';
+          message_body.html(combined_text);
       });
     });
   }
@@ -136,22 +133,14 @@ function add_message(sender, message, has_user_recording) {
   message_box.scrollTop(message_box.prop('scrollHeight'));
 
   sound_on_button.on('click', function() {
-    $.post('/play_bot_recording', {'message_id': message_body.id, 'text': message_body.text()}, function (response) {
-      if (response['status'] === 'success') {
-        console.log('Request to play recordings received');
-      }
-    });
+    $.post('/play_bot_recording', {'message_id': message_body.id, 'text': message_body.text()}, function (response) {});
   });
 
   message_box.append(message_row);
   message_box.scrollTop(message_box.prop('scrollHeight'));
 
   if (sender === 'user') {
-    $.post('/store_message', {'sender': sender, 'message': message}, function (response) {
-      if (response['status'] === 'success') {
-        console.log('Message stored on the server-side');
-      }
-    });
+    $.post('/store_message', {'sender': sender, 'message': message}, function (response) {});
   }
 }
 
