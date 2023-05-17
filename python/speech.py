@@ -7,7 +7,7 @@ import pygame
 from pydub import AudioSegment
 from ibm_watson import TextToSpeechV1
 from ibm_cloud_sdk_core.authenticators import IAMAuthenticator
-from config import Config
+from python.config import Config
 
 _is_recording = False
 watson_authenticator = IAMAuthenticator(os.environ["WATSON_API_KEY"])

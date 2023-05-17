@@ -1,8 +1,8 @@
 import openai
 from iso639 import Lang
 from typing import Generator
-from memory import Memory
-from config import Config
+from python.memory import Memory
+from python.config import Config
 
 SYSTEM_PROMPT = """You are a {language} teacher named {teacher_name}. You are on a 1-on-1 session with your
                    student, {user_name}. {user_name}'s {language} level is {level}.

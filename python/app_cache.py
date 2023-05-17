@@ -1,6 +1,7 @@
 from queue import Queue
 from threading import Thread, Event
 
+
 class AppCache:
     message_generator = None
     language = None
