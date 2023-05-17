@@ -1,4 +1,3 @@
-# brew install portaudio ffmpeg
 flask
 pyyaml
 pyaudio
