@@ -29,7 +29,9 @@ app_cache = AppCache()
 @app.route('/')
 def home():
     languages = [config.language.learning, config.language.native, 'A']
-    return render_template('index.html', page_title=config.title, languages=languages)
+    return render_template('index.html', page_title=config.title, languages=languages,
+                           auto_send_recording=int(config.behavior.auto_send_recording),
+                           user_profile_img=config.user.image, bot_profile_img=config.bot.image)
 
 
 @app.route('/get_response', methods=['POST'])
@@ -222,7 +224,6 @@ def on_exit():
     speech.stop_recording()
     for thread in [app_cache.text2speech_thread, app_cache.recording_thread, app_cache.play_recordings_thread]:
         thread.join()
-
 
 
 if __name__ == '__main__':

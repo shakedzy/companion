@@ -30,7 +30,11 @@ $(document).ready(function() {
       $.post('/end_recording', {}, function(response) {
         var recorded_text = response['recorded_text'];
         $('#message-input').val(recorded_text);
-        $('#message-input').focus();
+        if (auto_send_recording) {
+          $('#submit-button').click();
+        } else {
+          $('#message-input').focus();
+        }
         });
       }
   });
@@ -87,10 +91,10 @@ function add_message(sender, message, has_user_recording) {
 
   if (sender === 'user') {
     message_card.addClass('bg-primary text-white');
-    var img = $('<img src="/static/user.jpeg" class="profile-pic rounded-circle mr-3" width="50" height="50">');  // Replace path_to_user_image with the actual path
+    var img = $('<img src="' + user_profile_img + '" class="profile-pic rounded-circle mr-3" width="50" height="50">');  // Replace path_to_user_image with the actual path
   } else {
     message_card.addClass('bg-light');
-    var img = $('<img src="/static/bot.png" class="profile-pic rounded-circle mr-3" width="50" height="50">');  // Replace path_to_bot_image with the actual path
+    var img = $('<img src="' + bot_profile_img + '" class="profile-pic rounded-circle mr-3" width="50" height="50">');  // Replace path_to_bot_image with the actual path
   }
 
   message_card.append(message_body);
