@@ -17,6 +17,7 @@ def stop_recording():
     global _is_recording
     _is_recording = False
 
+
 def record(filename):
     global _is_recording
     FORMAT = pyaudio.paInt16
