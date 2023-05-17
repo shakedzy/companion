@@ -13,6 +13,7 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="{{ url_for('static', filename='script.js') }}"></script>
     <script src="https://unpkg.com/mousetrap"></script>
+    <link rel="icon" type="image/png" href="/static/favicon.png">
     <script>
       var languages = {{ languages | tojson }};
       var auto_send_recording = {{ auto_send_recording }};
