@@ -5,15 +5,16 @@
   --font-color: #000000;
   --card-color: #f8f9fa;
   --shadow: rgba(0, 0, 0, 0.1);
+  --fa-filter: none;
 }
 
 .dark-mode {
     --background: #121212;
-    /*--primary: #6f9ed6;*/
     --secondary: #7e7e7e;
     --font-color: #9c9c9c;
     --card-color: #ededed;
     --shadow: rgba(255, 255, 255, 0.1);
+    --fa-filter: invert(1);
 }
 
 body {
@@ -119,4 +120,8 @@ img.profile-pic {
 .button-container .bot-button {
   color: var(--primary);
   padding: 0;
+}
+
+.fa-spinner {
+    filter: var(--fa-filter);
 }
