@@ -3,16 +3,16 @@ import os
 import yaml
 import json
 import atexit
-import speech
 import pygame
+from python import speech
 from queue import Empty as EmptyQueue
 from threading import Thread
 from flask import Flask, Response, render_template, request, jsonify
-from memory import Memory
-from config import Config
-from chatbot import Chatbot
-from app_cache import AppCache
-from translate import translate
+from python.memory import Memory
+from python.config import Config
+from python.chatbot import Chatbot
+from python.app_cache import AppCache
+from python.translate import translate
 from datetime import datetime
 
 TEMP_DIR = os.path.join(os.getcwd(), "tmp")
@@ -90,9 +90,10 @@ def split_to_sentences(text):
 def start_recording():
     filename = os.path.join(TEMP_DIR, f"user_recording_{len(memory)}.mp3")
     app_cache.user_recording = filename
-    app_cache.recording_thread = Thread(target=speech.record, args=(filename, ))
+    app_cache.recording_thread = Thread(target=speech.record, args=(filename,))
     app_cache.recording_thread.start()
     return jsonify({'message': 'Recording started'})
+
 
 @app.route('/end_recording', methods=['POST'])
 def end_recording():
@@ -100,6 +101,7 @@ def end_recording():
     app_cache.recording_thread.join()
     recorded_text = speech.speech2text(app_cache.user_recording, language=app_cache.language)
     return jsonify({'recorded_text': recorded_text})
+
 
 @app.route('/store_message', methods=['POST'])
 def store_message(sender=None, message=None):
