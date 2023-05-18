@@ -26,7 +26,7 @@ German, Italian, Japanese, Korean, Portuguese (Brazilian), Spanish (Castilian, L
 ## Documentation
 * [Setting up required services](/markdown/setting_up.md)
 * [Installation & configuration](/markdown/install.md)
-* [User interface](/markdown/ui.md)
+* [Running & using](/markdown/run.md)
 
 ---
 

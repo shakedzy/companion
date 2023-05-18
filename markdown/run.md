@@ -1,3 +1,18 @@
+# Running
+1. From the `companion` directory in your terminal, run:
+```bash
+python companion.py
+```
+This will look by default for the `config.yml` file. If you wth to set an alternative configuration file, run:
+```bash
+python companion.py -c CONFIG_FILE
+```
+
+2. Go to [127.0.0.1:5000](127.0.0.1:5000) in your browser.
+
+**Note**: Refreshing the page will restart the chat.
+
+
 # User Interface
 
 ![ui](screen.png)
