@@ -30,4 +30,4 @@ German, Italian, Japanese, Korean, Portuguese (Brazilian), Spanish (Castilian, L
 
 ---
 
-_favicon was <a href="https://www.flaticon.com/free-icons/message" title="message icons">created by Freepik - Flaticon</a>_
+_favicon <a href="https://www.flaticon.com/free-icons/message" title="message icons">created by Freepik - Flaticon</a>_
