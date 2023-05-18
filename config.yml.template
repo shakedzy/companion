@@ -1,0 +1,19 @@
+title: "?"
+model:
+  name: "?"
+  temperature: 0.2
+user:
+  name: "?"
+  image: "?"
+bot:
+  name: "?"
+  image: "?"
+language:
+  native: "?"
+  learning: "?"
+  level: "?"
+watson:
+  url: "?"
+  voice: "?"
+behavior:
+  auto_send_recording: false
