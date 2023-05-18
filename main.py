@@ -227,7 +227,8 @@ def on_exit():
     app_cache.stop_threads_event.set()
     speech.stop_recording()
     for thread in [app_cache.text2speech_thread, app_cache.recording_thread, app_cache.play_recordings_thread]:
-        thread.join()
+        if thread is not None:
+            thread.join()
 
 
 def run(config_yml_file):
