@@ -1,5 +1,7 @@
 # Companion: Generative-AI-Powered Foreign-Language Private Tutor
 
+![demo](demo.gif)
+
 Companion uses [OpenAI ChatGPT](https://chat.openai.com) and [Whisper](https://openai.com/research/whisper), 
 [IBM Watson Text-to-Speech](https://www.ibm.com/demos/live/tts-demo/self-service/home) and 
 [Google Translate](https://translate.google.com/) to create your own personal
