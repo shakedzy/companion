@@ -30,6 +30,7 @@ app_cache = AppCache()
 
 @app.route('/')
 def home():
+    refresh()
     languages = [config.language.learning, config.language.native, 'A']
     return render_template('index.html', page_title=config.title, languages=languages,
                            auto_send_recording=int(config.behavior.auto_send_recording),
@@ -231,9 +232,8 @@ def exit_graceful(signum, frame):
     sys.exit(0)
 
 
-def run(config_yml_file):
-    global config, memory, chatbot
-    config = Config.from_yml_file(config_yml_file)
+def refresh():
+    global memory, chatbot
     memory = Memory()
     chatbot = Chatbot(config=config, memory=memory)
 
@@ -242,6 +242,11 @@ def run(config_yml_file):
             os.remove(os.path.join(TEMP_DIR, f))
     else:
         os.makedirs(TEMP_DIR)
+
+
+def run(config_file):
+    global config
+    config = Config.from_yml_file(config_file)
 
     app_cache.text2speech_thread = Thread(target=bot_text_to_speech_queue_func)
     app_cache.text2speech_thread.start()
@@ -258,4 +263,3 @@ if __name__ == '__main__':
     signal.signal(signal.SIGINT, exit_graceful)
     signal.signal(signal.SIGTERM, exit_graceful)
     run(args.config_file)
-
