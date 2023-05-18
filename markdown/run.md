@@ -17,9 +17,6 @@ python companion.py -c CONFIG_FILE
 
 ![ui](screen.png)
 
-_An example of French learning session_
-
----
 
 The UI should be quite straightforward, and resemble a standard chat. Here are some additional 
 useful functionalities available:
