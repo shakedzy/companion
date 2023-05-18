@@ -1,28 +1,29 @@
 import re
 import os
-import yaml
 import json
 import atexit
 import pygame
-from python import speech
+import argparse
+from typing import Optional
+from datetime import datetime
 from queue import Empty as EmptyQueue
 from threading import Thread
 from flask import Flask, Response, render_template, request, jsonify
+from python import speech
 from python.memory import Memory
 from python.config import Config
 from python.chatbot import Chatbot
 from python.app_cache import AppCache
 from python.translate import translate
-from datetime import datetime
+
 
 TEMP_DIR = os.path.join(os.getcwd(), "tmp")
 
 app = Flask(__name__)
 
-with open("config.yml", "r") as yml_file:
-    config: Config = Config(yaml.safe_load(yml_file))
-memory = Memory()
-chatbot = Chatbot(config=config, memory=memory)
+config: Optional[Config] = None
+memory: Optional[Memory] = None
+chatbot: Optional[Chatbot] = None
 app_cache = AppCache()
 
 
@@ -229,7 +230,12 @@ def on_exit():
         thread.join()
 
 
-if __name__ == '__main__':
+def run(config_yml_file):
+    global config, memory, chatbot
+    config = Config.from_yml_file(config_yml_file)
+    memory = Memory()
+    chatbot = Chatbot(config=config, memory=memory)
+
     if os.path.exists(TEMP_DIR):
         for f in os.listdir(TEMP_DIR):
             os.remove(os.path.join(TEMP_DIR, f))
@@ -242,3 +248,11 @@ if __name__ == '__main__':
     app_cache.play_recordings_thread.start()
 
     app.run(debug=True)
+
+
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-c', '--config', dest='config_file', default='config.yml', help='The config yaml file.')
+    args = parser.parse_args()
+    run(args.config_file)
+

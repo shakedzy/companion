@@ -1,3 +1,6 @@
+import yaml
+
+
 class Config(dict):
     def __init__(self, *args, **kwargs):
         super(Config, self).__init__(*args, **kwargs)
@@ -25,3 +28,9 @@ class Config(dict):
     def __delitem__(self, key):
         super(Config, self).__delitem__(key)
         del self.__dict__[key]
+
+    @staticmethod
+    def from_yml_file(filename):
+        with open(filename, "r") as f:
+            yml_data = yaml.safe_load(f)
+        return Config(yml_data)
