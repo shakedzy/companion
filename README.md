@@ -15,12 +15,12 @@ Note that performance might vary between the different languages.
 ### Input languages
 Languages supported by [OpenAI Whisper](https://help.openai.com/en/articles/7031512-whisper-api-faq):
 
-Afrikaans, Arabic, Armenian, Azerbaijani, Belarusian, Bosnian, Bulgarian, Catalan, Chinese, Croatian, Czech, Danish, Dutch, English, Estonian, Finnish, French, Galician, German, Greek, Hebrew, Hindi, Hungarian, Icelandic, Indonesian, Italian, Japanese, Kannada, Kazakh, Korean, Latvian, Lithuanian, Macedonian, Malay, Marathi, Maori, Nepali, Norwegian, Persian, Polish, Portuguese, Romanian, Russian, Serbian, Slovak, Slovenian, Spanish, Swahili, Swedish, Tagalog, Tamil, Thai, Turkish, Ukrainian, Urdu, Vietnamese, Welsh.
+> Afrikaans, Arabic, Armenian, Azerbaijani, Belarusian, Bosnian, Bulgarian, Catalan, Chinese, Croatian, Czech, Danish, Dutch, English, Estonian, Finnish, French, Galician, German, Greek, Hebrew, Hindi, Hungarian, Icelandic, Indonesian, Italian, Japanese, Kannada, Kazakh, Korean, Latvian, Lithuanian, Macedonian, Malay, Marathi, Maori, Nepali, Norwegian, Persian, Polish, Portuguese, Romanian, Russian, Serbian, Slovak, Slovenian, Spanish, Swahili, Swedish, Tagalog, Tamil, Thai, Turkish, Ukrainian, Urdu, Vietnamese, Welsh.
 
 ### Output languages
 Languages supported by [IBM Watson](https://cloud.ibm.com/docs/text-to-speech?topic=text-to-speech-about#about-languages):
 
-Dutch (Netherlands), English (Australian, United Kingdom, and United States dialects), French (Canadian and France dialects),
+> Dutch (Netherlands), English (Australian, United Kingdom, and United States dialects), French (Canadian and France dialects),
 German, Italian, Japanese, Korean, Portuguese (Brazilian), Spanish (Castilian, Latin American, and North American dialects).
 
 ## Documentation
