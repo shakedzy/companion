@@ -21,7 +21,7 @@ pip install -r requirments.txt
 
 
 # Configuration
-Rname the file `config.template` to `config.yml`, and fill in the details below:
+Rename the file `config.yml.template` to `config.yml`, and fill in the details below:
 
 * `title`: Will appear at the top of the application
 * `model`:
