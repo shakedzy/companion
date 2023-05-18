@@ -1,7 +1,8 @@
 import re
 import os
+import sys
 import json
-import atexit
+import signal
 import pygame
 import argparse
 from typing import Optional
@@ -221,14 +222,13 @@ def play_recordings_queue_func():
             continue
 
 
-@atexit.register
-def on_exit():
-    print("Terminating...")
+def exit_graceful(signum, frame):
     app_cache.stop_threads_event.set()
     speech.stop_recording()
     for thread in [app_cache.text2speech_thread, app_cache.recording_thread, app_cache.play_recordings_thread]:
         if thread is not None:
             thread.join()
+    sys.exit(0)
 
 
 def run(config_yml_file):
@@ -255,5 +255,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('-c', '--config', dest='config_file', default='config.yml', help='The config yaml file.')
     args = parser.parse_args()
+    signal.signal(signal.SIGINT, exit_graceful)
+    signal.signal(signal.SIGTERM, exit_graceful)
     run(args.config_file)
 
