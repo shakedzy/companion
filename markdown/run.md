@@ -8,7 +8,7 @@ This will look by default for the `config.yml` file. If you wth to set an altern
 python companion.py -c CONFIG_FILE
 ```
 
-2. Go to [127.0.0.1:5000](127.0.0.1:5000) in your browser.
+2. Go to [127.0.0.1:5000](http://127.0.0.1:5000) in your browser.
 
 **Note**: Refreshing the page will restart the chat.
 
@@ -26,8 +26,9 @@ recording button to begin recording (it will turn red), and once again to stop r
 The language button next to the recording button indicates the language you speak in the recording. Click it to
 switch between your native language and the one you learn. There's also automatic language recognition option
 (marked by 'A'), but it is less recommended, as processing might take longer and might be more prone to errors.
+_You can use Alt+R to turn recording on and off, and Alt+L to switch languages._
 * **Download chat history**: Will be saved as a JSON file.
-* **Bot reciting**: Clicking this button will play the bot reciting thee text. You can also ask it to to recite
+* **Bot reciting**: Clicking this button will play the bot reciting the text. You can also ask it to recite
 you messages, to hear how it pronounces it.
 * **User recording**: If your message is based on recording, clicking this button will play your recording.
 * **Translate**: Clicking this button will add translation to your tutor messages in your selected native language.

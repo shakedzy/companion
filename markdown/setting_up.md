@@ -1,4 +1,4 @@
-# Setting Up Dependencies
+# Setting Up Required Services
 
 ## OpenAI
 The OpenAI API will be used both for the chat (using ChatGPT) and Speech-to-Text (using Whisper).
