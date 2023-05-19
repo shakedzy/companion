@@ -42,7 +42,9 @@ $(document).ready(function() {
   Mousetrap.bind('alt+r', function() {
     $('#record-button').click();
   });
-
+  Mousetrap.bind('alt+l', function() {
+    $('#lang-toggle-button').click();
+  });
   var currentLanguageIndex = 0;
 
   // Check if the user's system prefers dark mode
