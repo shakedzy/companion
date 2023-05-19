@@ -119,15 +119,18 @@ function add_message(sender, message, has_user_recording) {
     var translate_button = $('<div class="d-block"><button class="btn btn-link bot-button translate-button"><i class="fa fa-language"></i></button></div>');
     var sound_on_button = $('<div class="d-block"><button class="btn btn-link bot-button sound-on-button"><i class="fas fa-volume-up"></i></button></div>');
     button_container.append(translate_button);
-
+    var translated_message = false;
     translate_button.on('click', function() {
-      $.post('/translate_text', {'text': message_body.text()}, function (response) {
-        console.log(response['status'], response['message']);
-          var translated_text = response['message'];
-          var original_text = message_body.text();
-          var combined_text = original_text + '<hr><em>' + translated_text + '</em>';
-          message_body.html(combined_text);
-      });
+      if (!translated_message) {
+          $.post('/translate_text', {'text': message_body.text()}, function (response) {
+            console.log(response['status'], response['message']);
+              var translated_text = response['message'];
+              var original_text = message_body.text();
+              var combined_text = original_text + '<hr><em>' + translated_text + '</em>';
+              translated_message = true;
+              message_body.html(combined_text);
+          });
+      }
     });
   }
   button_container.append(sound_on_button);
