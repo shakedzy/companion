@@ -12,7 +12,7 @@ Companion is distributed free of charge for any non-commercial usage. Note that 
 and services used are not necessarily free, and might charge you based on your usage. 
 
 ## Supported languages
-Note that performance might vary between the different languages.
+Note performance might vary between different languages.
 
 ### Input languages
 Languages supported by [OpenAI Whisper](https://help.openai.com/en/articles/7031512-whisper-api-faq):
