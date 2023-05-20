@@ -7,6 +7,7 @@ import pygame
 import argparse
 from typing import Optional
 from datetime import datetime
+from langdetect import detect
 from queue import Empty as EmptyQueue
 from threading import Thread
 from flask import Flask, Response, render_template, request, jsonify
@@ -45,11 +46,13 @@ def get_response():
     app_cache.bot_recordings = list()
     first_message = next(app_cache.message_generator)
     app_cache.generated_message = first_message
-    return jsonify({'message': first_message})
+    return jsonify({'message': first_message,
+                    'message_index': len(memory)})
 
 
-@app.route('/get_next_message', methods=['GET'])
+@app.route('/get_next_message', methods=['POST'])
 def get_next_message():
+    index = int(request.form['message_index'])
     if app_cache.message_generator is None:
         return jsonify({'message': None})
     try:
@@ -60,7 +63,7 @@ def get_next_message():
         if len(split_sentence) > 1:
             app_cache.text2speech_queue.put({"text": split_sentence[0],
                                              "counter": app_cache.sentences_counter,
-                                             "message_index": len(memory)})
+                                             "message_index": index})
             app_cache.sentences_counter += 1
             app_cache.last_sentence = split_sentence[1]
         return jsonify({'message': app_cache.generated_message})
@@ -68,7 +71,7 @@ def get_next_message():
         if app_cache.last_sentence.strip() != '':
             app_cache.text2speech_queue.put({"text": app_cache.last_sentence,
                                              "counter": app_cache.sentences_counter,
-                                             "message_index": len(memory)})
+                                             "message_index": index})
         store_message(sender="assistant", message=app_cache.generated_message)
         app_cache.message_generator = None
         app_cache.generated_message = ''
@@ -76,14 +79,17 @@ def get_next_message():
 
 
 def split_to_sentences(text):
+    """
+    This function MUST return a list of only one or two elements
+    """
     characters = ['.', '!', "?", ":", ";"]
     escaped_characters = [re.escape(c) for c in characters]
     if any([c+' ' in text for c in characters]):
         pattern = '|'.join(escaped_characters)
         split_list = re.split(pattern + r'\s', text)
     elif ', ' in text and len(text) > 100:
-        print(f"<{text}>")
-        split_list = re.split(re.escape(',') + r'\s', text)
+        lst = re.split(re.escape(',') + r'\s', text)
+        split_list = [lst[0], ", ".join(lst[1:])]
     else:
         split_list = [text]
     return split_list
@@ -116,9 +122,12 @@ def store_message(sender=None, message=None):
     return jsonify({'status': 'success'})
 
 
-@app.route('/has_user_recording', methods=['GET'])
-def has_user_recording():
-    return jsonify({'user_recording': app_cache.user_recording})
+@app.route('/user_message_info', methods=['POST'])
+def user_message_info():
+    message = request.form['message']
+    is_language_learning = detect(message) == config.language.learning
+    return jsonify({'user_recording': app_cache.user_recording,
+                    'is_language_learning': is_language_learning})
 
 
 @app.route('/toggle_loading_icon', methods=['POST'])
@@ -133,7 +142,7 @@ def play_bot_message():
     recordings = memory[index]["recording"]
     if recordings is None or len(recordings) == 0:
         app_cache.text2speech_queue.put({"text": request.form["text"], "counter": 0,
-                                         "message_index": index})
+                                         "message_index": index, 'skip_cache': True})
     else:
         for r in recordings:
             app_cache.play_recordings_queue.put(r)
@@ -162,7 +171,6 @@ def set_language():
 def translate_text():
     message = request.form["text"]
     translated = translate(message, to=config.language.native)
-    print(translated)
     return jsonify({'message': translated})
 
 
@@ -186,11 +194,12 @@ def download_chat():
 
 @app.route('/memory', methods=['GET'])
 def print_memory():
-    return str(memory)
+    return json.dumps(memory.list, indent=4)
+
 
 @app.route('/memory/updates', methods=['GET'])
 def print_memory_updates():
-    return str(memory._updates)
+    return json.dumps(memory._updates, indent=4)
 
 
 def bot_text_to_speech(text, message_index, counter):
@@ -205,8 +214,11 @@ def bot_text_to_speech_queue_func():
             item = app_cache.text2speech_queue.get(timeout=1)  # Wait for 1 second to get an item
             idx = item["message_index"]
             filename = bot_text_to_speech(text=item['text'], message_index=idx, counter=item['counter'])
-            app_cache.bot_recordings.append(filename)
-            memory.update(idx, recording=app_cache.bot_recordings)
+            if item.get('skip_cache', False):
+                memory.update(idx, recording=[filename])
+            else:
+                app_cache.bot_recordings.append(filename)
+                memory.update(idx, recording=app_cache.bot_recordings)
             app_cache.play_recordings_queue.put(filename)
         except EmptyQueue:
             continue
@@ -247,6 +259,8 @@ def refresh():
 def run(config_file):
     global config
     config = Config.from_yml_file(config_file)
+
+    speech.init_watson_text_to_speech(config=config)
 
     app_cache.text2speech_thread = Thread(target=bot_text_to_speech_queue_func)
     app_cache.text2speech_thread.start()

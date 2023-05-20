@@ -1,6 +1,7 @@
 import openai
 from iso639 import Lang
 from typing import Generator
+from langdetect import detect
 from python.memory import Memory
 from python.config import Config
 
@@ -16,11 +17,13 @@ SYSTEM_PROMPT = """You are a {language} teacher named {teacher_name}. You are on
                    your student and only then reply.
                    - You are only allowed to speak {language}."""
 
+
 class Chatbot:
     def __init__(self, config: Config, memory: Memory):
         self._memory = memory
         self._model = config.model.name
         self._temperature = config.model.temperature
+        self._language = config.language.learning
         lang = Lang(config.language.learning).name
         user_lang = Lang(config.language.native).name
         self._memory.add("system", SYSTEM_PROMPT.format(
@@ -29,11 +32,15 @@ class Chatbot:
         ))
 
     def get_response(self) -> Generator:
+        history = self._memory.get_chat_history()
+        last_message_lang = detect(history[-1]["content"])
+        if last_message_lang != self._language:
+            history[-1]["content"] += f"\n---\nNOTE: You MUST reply in {Lang(self._language).name}"
         response = openai.ChatCompletion.create(
             model=self._model,
             temperature=self._temperature,
             stream=True,
-            messages=self._memory.get_chat_history()
+            messages=history
         )
         return self._generate_response(response)
 

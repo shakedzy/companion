@@ -4,9 +4,10 @@ $(document).ready(function() {
     var message = $('#message-input').val();
     if (message.trim() !== '') {
       $('#message-input').val('');
-      $.get('/has_user_recording', function(response) {
+      $.post('/user_message_info', {'message': message}, function(response) {
         var has_user_recording = response['user_recording'] !== null;
-        add_message('user', message, has_user_recording);
+        var is_language_learning = response['is_language_learning'];
+        add_message('user', message, has_user_recording, is_language_learning);
         get_response(message);
       });
     }
@@ -81,7 +82,7 @@ $(document).ready(function() {
 });
 
 var message_counter = 1;
-function add_message(sender, message, has_user_recording) {
+function add_message(sender, message, has_user_recording, is_language_learning) {
   var message_box = $('#message-box');
   var message_row = $('<div class="row mb-3"></div>');
   var message_col = $('<div class="col d-flex align-items-start"></div>');  // Changed to d-flex and align-items-start
@@ -114,16 +115,21 @@ function add_message(sender, message, has_user_recording) {
   });
   }
   if (sender === 'user') {
-    var sound_on_button = $('<div class="d-block"><button class="btn btn-link user-button sound-on-button"><i class="fas fa-volume-up"></i></button></div>');
+    if (is_language_learning) {
+        var sound_on_button = $('<div class="d-block"><button class="btn btn-link user-button sound-on-button"><i class="fas fa-volume-up"></i></button></div>');
+        button_container.append(sound_on_button);
+    } else {
+        var sound_on_button = null;
+    }
   } else {
     var translate_button = $('<div class="d-block"><button class="btn btn-link bot-button translate-button"><i class="fa fa-language"></i></button></div>');
     var sound_on_button = $('<div class="d-block"><button class="btn btn-link bot-button sound-on-button"><i class="fas fa-volume-up"></i></button></div>');
     button_container.append(translate_button);
+    button_container.append(sound_on_button);
     var translated_message = false;
     translate_button.on('click', function() {
       if (!translated_message) {
           $.post('/translate_text', {'text': message_body.text()}, function (response) {
-            console.log(response['status'], response['message']);
               var translated_text = response['message'];
               var original_text = message_body.text();
               var combined_text = original_text + '<hr><em>' + translated_text + '</em>';
@@ -133,7 +139,6 @@ function add_message(sender, message, has_user_recording) {
       }
     });
   }
-  button_container.append(sound_on_button);
   message_card.append(button_container);
 
   message_col.append(img).append(message_card);
@@ -141,9 +146,11 @@ function add_message(sender, message, has_user_recording) {
   message_box.append(message_row);
   message_box.scrollTop(message_box.prop('scrollHeight'));
 
-  sound_on_button.on('click', function() {
-    $.post('/play_bot_recording', {'message_id': message_body.id, 'text': message_body.text()}, function (response) {});
+  if (sound_on_button !== null) {
+    sound_on_button.on('click', function() {
+      $.post('/play_bot_recording', {'message_id': message_body.id, 'text': message_body.text(), 'play_existing': 1}, function (response) {});
   });
+  }
 
   message_box.append(message_row);
   message_box.scrollTop(message_box.prop('scrollHeight'));
@@ -174,8 +181,9 @@ function get_response(message) {
   toggleLoadingIcon('show');
   $.post('/get_response', {'message': message}, function(response) {
       var bot_message = response['message'];
+      var message_index = response['message_index'];
       add_message('assistant', bot_message, false);
-      get_next_message();
+      get_next_message(message_index);
   });
 }
 
@@ -185,8 +193,8 @@ function play_bot() {
 }
 
 
-function get_next_message() {
-    $.get('/get_next_message', function(response) {
+function get_next_message(message_index) {
+    $.post('/get_next_message', {'message_index': message_index}, function(response) {
         var bot_message = response['message'];
         if (bot_message === null) {
             // No more messages to show
@@ -194,8 +202,7 @@ function get_next_message() {
             return;
         }
         update_last_message(bot_message);
-        // Get the next message after a delay
-        setTimeout(get_next_message, 0);  // Adjust the delay as needed
+        get_next_message(message_index)
     });
 }
 

@@ -8,3 +8,4 @@ ibm-watson
 ibm-cloud-sdk-core
 iso639-lang
 google-cloud-translate
+langdetect

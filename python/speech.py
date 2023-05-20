@@ -11,6 +11,11 @@ from python.config import Config
 
 _is_recording = False
 watson_authenticator = IAMAuthenticator(os.environ["WATSON_API_KEY"])
+watson_text_to_speech = TextToSpeechV1(authenticator=watson_authenticator)
+
+
+def init_watson_text_to_speech(config: Config):
+    watson_text_to_speech.set_service_url(config.watson.url)
 
 
 def stop_recording():
@@ -79,12 +84,11 @@ def speech2text(filename, language):
 
 
 def text2speech(text, filename, config: Config):
-    text_to_speech = TextToSpeechV1(authenticator=watson_authenticator)
-    text_to_speech.set_service_url(config.watson.url)
-    speech = text_to_speech.synthesize(text, voice=config.watson.voice, accept='audio/mp3').get_result().content
+    speech = watson_text_to_speech.synthesize(text, voice=config.watson.voice, accept='audio/mp3').get_result().content
     with open(filename, "wb") as mp3_file:
         mp3_file.write(speech)
     return filename
+
 
 
 
