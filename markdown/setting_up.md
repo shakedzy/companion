@@ -11,20 +11,9 @@ The OpenAI API will be used both for the chat (using ChatGPT) and Speech-to-Text
 export OPENAI_API_KEY="YOUR_KEY"
 ```
 
-## IBM Watson
-IBM Watson will be used for Speech-to-Text.
 
-1. Sign up for the [Text-to-Speech](https://cloud.ibm.com/catalog/services/text-to-speech) plan
-2. From the [Watson Dashboard](https://cloud.ibm.com/developer/watson/dashboard), select Text-to-Speech
-3. Set a new API, you'll get both an API key and a URL
-4. Save the API key as an environment variable named `WATSON_API_KEY`:
-```bash
-export WATSON_API_KEY="YOUR_KEY"
-```
-5. Keep the URL, you'll need to add it to the config file later
-
-
-## Google Translate
+## Google 
+Google Text-to-Speech is used to narrate your tutor, and 
 Google Translate is used to translate your tutor's messages to your own language.
 
 ### 1. Setting up a Google Cloud Project
@@ -38,5 +27,9 @@ Google Translate is used to translate your tutor's messages to your own language
 2. Run `~/google-cloud-sdk/install.sh`
 3. Run `~/google-cloud-sdk/bin/gcloud init`
 4. **Open a new terminal** and run `gcloud auth application-default login`
-5. Enable Translate API on [Google Cloud](https://console.cloud.google.com/apis/library/translate.googleapis.com). MAke sure the project you created is the one appearing on thee dropdown box at the top. 
+5. Enable Translate API on [Google Cloud](https://console.cloud.google.com/apis/library/translate.googleapis.com). MAke sure the project you created is the one appearing on thee dropdown box at the top.
+
+### 3. Enable APIs
+1. Enable [Google Translate API](https://console.cloud.google.com/marketplace/product/google/translate.googleapis.com) for your project
+2. Enable [Google Text-to-Speech API](https://console.cloud.google.com/marketplace/product/google/texttospeech.googleapis.com) for your project
 

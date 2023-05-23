@@ -37,9 +37,8 @@ Rename the file `config.yml.template` to `config.yml`, and fill in the details b
   * `native`: Your native language. ISO-639 format (i.e. "en", "fr", ...)
   * `learning`: The language you with the tutor to speak. ISO-639 format
   * `level`: Your level of the language you wish to learn. Can be specific (like "DELF A1.2" in French) or less specific, like "intermediate"
-* `watson`:
-  * `url`: your Watson URL
-  * `voice`: the tutor's voice (see [Watson documentation](https://cloud.ibm.com/apidocs/text-to-speech?code=python#listvoices) for list of voices)
+* `text_to_speech`:
+  * `voice`: the tutor's voice (see [Google TTS documentation](https://cloud.google.com/text-to-speech/docs/voices) for list of voices)
 * `behavior`:
   * `auto_send_recording`: If `true`, text transcribed from your recordings will be sent directly to the bot. It is recommended
 to use this option only when the chances for incorrect transcribing of your recordings are low. When set
