@@ -28,6 +28,7 @@ $(document).ready(function() {
       // Stop recording and get the recorded text
       recordButton.removeClass('btn-danger on').addClass('btn-secondary off');
       langToggleButton.removeClass('btn-danger on').addClass('btn-secondary off');
+      toggleLoadingIcon('show');
       $.post('/end_recording', {}, function(response) {
         var recorded_text = response['recorded_text'];
         $('#message-input').val(recorded_text);
@@ -36,6 +37,7 @@ $(document).ready(function() {
         } else {
           $('#message-input').focus();
         }
+        toggleLoadingIcon('hide');
         });
       }
   });
@@ -161,19 +163,17 @@ function add_message(sender, message, has_user_recording, is_language_learning) 
 }
 
 function toggleLoadingIcon(action) {
-  $.post('/toggle_loading_icon', {action: action}, function(response) {
-    if (response.action === 'show') {
+    if (action === 'show') {
       $('#not-loading-title').addClass('d-none');
       $('#not-loading-title').removeClass('d-flex');
       $('#loading-title').addClass('d-flex');
       $('#loading-title').removeClass('d-none');
-    } else if (response.action === 'hide') {
+    } else if (action === 'hide') {
       $('#not-loading-title').addClass('d-flex');
       $('#not-loading-title').removeClass('d-none');
       $('#loading-title').addClass('d-none');
       $('#loading-title').removeClass('d-flex');
     }
-  });
 }
 
 

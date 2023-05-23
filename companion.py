@@ -130,12 +130,6 @@ def user_message_info():
                     'is_language_learning': is_language_learning})
 
 
-@app.route('/toggle_loading_icon', methods=['POST'])
-def toggle_loading_icon():
-    action = request.form.get('action')
-    return jsonify({'action': action})
-
-
 @app.route('/play_bot_recording', methods=['POST'])
 def play_bot_message():
     index = int(request.form['message_id'].split('_')[1])
