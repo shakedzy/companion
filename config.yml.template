@@ -1,4 +1,3 @@
-title: "?"
 model:
   name: "?"
   temperature: 0.2
@@ -12,8 +11,7 @@ language:
   native: "?"
   learning: "?"
   level: "?"
-watson:
-  url: "?"
+text_to_speech:
   voice: "?"
 behavior:
   auto_send_recording: false

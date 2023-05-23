@@ -33,7 +33,7 @@ app_cache = AppCache()
 def home():
     refresh()
     languages = [config.language.learning, config.language.native, 'A']
-    return render_template('index.html', page_title=config.title, languages=languages,
+    return render_template('index.html', languages=languages,
                            auto_send_recording=int(config.behavior.auto_send_recording),
                            user_profile_img=config.user.image, bot_profile_img=config.bot.image)
 
@@ -128,12 +128,6 @@ def user_message_info():
     is_language_learning = detect(message) == config.language.learning
     return jsonify({'user_recording': app_cache.user_recording,
                     'is_language_learning': is_language_learning})
-
-
-@app.route('/toggle_loading_icon', methods=['POST'])
-def toggle_loading_icon():
-    action = request.form.get('action')
-    return jsonify({'action': action})
 
 
 @app.route('/play_bot_recording', methods=['POST'])
@@ -260,7 +254,7 @@ def run(config_file):
     global config
     config = Config.from_yml_file(config_file)
 
-    speech.init_watson_text_to_speech(config=config)
+    speech.init_google_text_to_speech(config=config)
 
     app_cache.text2speech_thread = Thread(target=bot_text_to_speech_queue_func)
     app_cache.text2speech_thread.start()
