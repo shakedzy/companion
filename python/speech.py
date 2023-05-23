@@ -5,17 +5,22 @@ import wave
 import logging
 import pygame
 from pydub import AudioSegment
-from ibm_watson import TextToSpeechV1
-from ibm_cloud_sdk_core.authenticators import IAMAuthenticator
+from google.cloud import texttospeech
 from python.config import Config
 
+
 _is_recording = False
-watson_authenticator = IAMAuthenticator(os.environ["WATSON_API_KEY"])
-watson_text_to_speech = TextToSpeechV1(authenticator=watson_authenticator)
+
+t2s_client = texttospeech.TextToSpeechClient()
+t2s_audio_config = texttospeech.AudioConfig(audio_encoding=texttospeech.AudioEncoding.MP3)
+t2s_voice = None
 
 
-def init_watson_text_to_speech(config: Config):
-    watson_text_to_speech.set_service_url(config.watson.url)
+def init_google_text_to_speech(config: Config):
+    global t2s_voice
+    l = config.text_to_speech.voice.split("-")
+    t2s_voice = texttospeech.VoiceSelectionParams(name=config.text_to_speech.voice,
+                                                  language_code=f"{l[0]}-{l[1]}")
 
 
 def stop_recording():
@@ -84,7 +89,10 @@ def speech2text(filename, language):
 
 
 def text2speech(text, filename, config: Config):
-    speech = watson_text_to_speech.synthesize(text, voice=config.watson.voice, accept='audio/mp3').get_result().content
+    synthesis_input = texttospeech.SynthesisInput(text=text)
+    speech = t2s_client.synthesize_speech(
+        input=synthesis_input, voice=t2s_voice, audio_config=t2s_audio_config
+    ).audio_content
     with open(filename, "wb") as mp3_file:
         mp3_file.write(speech)
     return filename

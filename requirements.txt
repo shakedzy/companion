@@ -4,8 +4,8 @@ pyaudio
 pydub
 pygame
 openai
-ibm-watson
-ibm-cloud-sdk-core
 iso639-lang
 google-cloud-translate
+google-cloud-texttospeech
 langdetect
+langcodes

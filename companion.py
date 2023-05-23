@@ -260,7 +260,7 @@ def run(config_file):
     global config
     config = Config.from_yml_file(config_file)
 
-    speech.init_watson_text_to_speech(config=config)
+    speech.init_google_text_to_speech(config=config)
 
     app_cache.text2speech_thread = Thread(target=bot_text_to_speech_queue_func)
     app_cache.text2speech_thread.start()
