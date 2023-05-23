@@ -23,7 +23,6 @@ pip install -r requirments.txt
 # Configuration
 Rename the file `config.yml.template` to `config.yml`, and fill in the details below:
 
-* `title`: Will appear at the top of the application
 * `model`:
   * `name`: The OpenAI chat model to be used. See [OpenAI API reference](https://platform.openai.com/docs/api-reference/chat) for list of options
   * `temperature`: What sampling temperature to use, between 0 and 2. Higher values like 0.8 will make the output more random, while lower values like 0.2 will make it more focused and deterministic

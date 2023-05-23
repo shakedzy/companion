@@ -33,7 +33,7 @@ app_cache = AppCache()
 def home():
     refresh()
     languages = [config.language.learning, config.language.native, 'A']
-    return render_template('index.html', page_title=config.title, languages=languages,
+    return render_template('index.html', languages=languages,
                            auto_send_recording=int(config.behavior.auto_send_recording),
                            user_profile_img=config.user.image, bot_profile_img=config.bot.image)
 
