@@ -1,9 +1,9 @@
 import openai
 from iso639 import Lang
 from typing import Generator
-from langdetect import detect
 from python.memory import Memory
 from python.config import Config
+from python.language import is_text_of_language
 
 SYSTEM_PROMPT = """You are a {language} teacher named {teacher_name}. You are on a 1-on-1 session with your
                    student, {user_name}. {user_name}'s {language} level is {level}.
@@ -33,8 +33,7 @@ class Chatbot:
 
     def get_response(self) -> Generator:
         history = self._memory.get_chat_history()
-        last_message_lang = detect(history[-1]["content"])
-        if last_message_lang != self._language:
+        if not is_text_of_language(history[-1]["content"], language_code=self._language):
             history[-1]["content"] += f"\n---\nNOTE: You MUST reply in {Lang(self._language).name}"
         response = openai.ChatCompletion.create(
             model=self._model,

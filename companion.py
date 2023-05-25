@@ -7,7 +7,6 @@ import pygame
 import argparse
 from typing import Optional
 from datetime import datetime
-from langdetect import detect
 from queue import Empty as EmptyQueue
 from threading import Thread
 from flask import Flask, Response, render_template, request, jsonify
@@ -16,7 +15,7 @@ from python.memory import Memory
 from python.config import Config
 from python.chatbot import Chatbot
 from python.app_cache import AppCache
-from python.translate import translate
+from python.language import translate, is_text_of_language
 
 
 TEMP_DIR = os.path.join(os.getcwd(), "tmp")
@@ -125,7 +124,7 @@ def store_message(sender=None, message=None):
 @app.route('/user_message_info', methods=['POST'])
 def user_message_info():
     message = request.form['message']
-    is_language_learning = detect(message) == config.language.learning
+    is_language_learning = is_text_of_language(message, config.language.learning)
     return jsonify({'user_recording': app_cache.user_recording,
                     'is_language_learning': is_language_learning})
 
