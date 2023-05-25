@@ -39,7 +39,8 @@ def home():
 
 @app.route('/get_response', methods=['POST'])
 def get_response():
-    app_cache.message_generator = chatbot.get_response()
+    is_initial_message = bool(int(request.form['is_initial_message']))
+    app_cache.message_generator = chatbot.get_response(is_initial_message)
     app_cache.last_sentence = ''
     app_cache.sentences_counter = 0
     app_cache.bot_recordings = list()

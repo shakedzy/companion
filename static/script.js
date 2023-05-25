@@ -1,4 +1,5 @@
 $(document).ready(function() {
+  get_response(is_initial_message=1);
   $('#message-form').on('submit', function(e) {
     e.preventDefault();
     var message = $('#message-input').val();
@@ -8,7 +9,7 @@ $(document).ready(function() {
         var has_user_recording = response['user_recording'] !== null;
         var is_language_learning = response['is_language_learning'];
         add_message('user', message, has_user_recording, is_language_learning);
-        get_response(message);
+        get_response(is_initial_message=0);
       });
     }
   });
@@ -177,9 +178,9 @@ function toggleLoadingIcon(action) {
 }
 
 
-function get_response(message) {
+function get_response(is_initial_message) {
   toggleLoadingIcon('show');
-  $.post('/get_response', {'message': message}, function(response) {
+  $.post('/get_response', {'is_initial_message': is_initial_message}, function(response) {
       var bot_message = response['message'];
       var message_index = response['message_index'];
       add_message('assistant', bot_message, false);

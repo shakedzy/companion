@@ -17,6 +17,9 @@ SYSTEM_PROMPT = """You are a {language} teacher named {teacher_name}. You are on
                    your student and only then reply.
                    - You are only allowed to speak {language}."""
 
+INITIAL_MESSAGE = """Greet me, and then suggest 3 optional subjects for our lesson suiting my level. 
+                     You must reply in {language}."""
+
 
 class Chatbot:
     def __init__(self, config: Config, memory: Memory):
@@ -31,9 +34,11 @@ class Chatbot:
             level=config.language.level
         ))
 
-    def get_response(self) -> Generator:
+    def get_response(self, is_initial_message=False) -> Generator:
         history = self._memory.get_chat_history()
-        if not is_text_of_language(history[-1]["content"], language_code=self._language):
+        if is_initial_message:
+            history.append({"role": "user", "content": INITIAL_MESSAGE.format(language=self._language)})
+        elif not is_text_of_language(history[-1]["content"], language_code=self._language):
             history[-1]["content"] += f"\n---\nNOTE: You MUST reply in {Lang(self._language).name}"
         response = openai.ChatCompletion.create(
             model=self._model,
