@@ -87,6 +87,10 @@ def split_to_sentences(text):
     if any([c+' ' in text for c in characters]):
         pattern = '|'.join(escaped_characters)
         split_list = re.split(pattern + r'\s', text)
+    elif '\n' in text:
+        lst = text.split('\n')
+        lst = [s for s in lst if len(s.strip()) > 0]
+        split_list = [lst[0], "\n".join(lst[1:])]
     elif ', ' in text and len(text) > 100:
         lst = re.split(re.escape(',') + r'\s', text)
         split_list = [lst[0], ", ".join(lst[1:])]
