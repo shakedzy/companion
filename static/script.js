@@ -201,6 +201,7 @@ function get_next_message(message_index) {
             toggleLoadingIcon('hide');
             return;
         }
+        bot_message = bot_message.replace(/\n/g, "<br>");
         update_last_message(bot_message);
         get_next_message(message_index)
     });
@@ -211,7 +212,7 @@ function update_last_message(newContent) {
   var message_box = $('#message-box');
   var last_message_row = message_box.find('.row:last');
   var last_message_card_body = last_message_row.find('.card-body');
-  last_message_card_body.text(newContent);
+  last_message_card_body.html(newContent);
 }
 
 function setDarkMode(isDarkMode) {
