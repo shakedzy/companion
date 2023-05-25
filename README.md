@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="static/logo.png" style="width: 500px;">
+</p>
+
 # Companion: Generative-AI-Powered Foreign-Language Private Tutor
 
 ![demo](demo.gif)
