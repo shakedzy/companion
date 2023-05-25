@@ -48,6 +48,15 @@ $(document).ready(function() {
   Mousetrap.bind('alt+l', function() {
     $('#lang-toggle-button').click();
   });
+  Mousetrap.bindGlobal('alt+r', function(e) {
+    e.preventDefault();
+    $('#record-button').click();
+  });
+  Mousetrap.bindGlobal('alt+l', function(e) {
+    e.preventDefault();
+    $('#lang-toggle-button').click();
+  });
+
   var currentLanguageIndex = 0;
 
   // Check if the user's system prefers dark mode
