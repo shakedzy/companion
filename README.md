@@ -4,6 +4,14 @@
 
 # Companion: Generative-AI-Powered Foreign-Language Private Tutor
 
+<br><hr>
+<p align="center">
+  <b> Work towards a running Companion as a Streamlit app is underway!</b><br>
+  Follow progress and join the effort here on the 
+  <a href="https://github.com/shakedzy/companion/milestone/1">milestone page!</a>
+</p>
+<hr><br><br>
+
 ![demo](demo.gif)
 
 Companion uses [OpenAI ChatGPT](https://chat.openai.com) & [Whisper](https://openai.com/research/whisper) and 
