@@ -118,38 +118,29 @@ function add_message(sender, message, has_user_recording, is_language_learning) 
   if (has_user_recording) {
     if (sender === 'user') {
       var record_button = $('<div class="d-block"><button class="btn btn-link user-button play-user-button"><i class="fa-solid fa-user"></i></button></div>');
+      button_container.append(record_button);
+        record_button.on('click', function() {
+        $.post('/play_user_recording', {'message_id': message_body.id}, function (response) {});
+      });
     } else {
-      var record_button = $('<div class="d-block"><button class="btn btn-link bot-button play-user-button"><i class="fa-solid fa-user"></i></button></div>');
+      var record_button = null;
     }
-    button_container.append(record_button);
-    record_button.on('click', function() {
-    $.post('/play_user_recording', {'message_id': message_body.id}, function (response) {});
-  });
   }
   if (sender === 'user') {
     if (is_language_learning) {
         var sound_on_button = $('<div class="d-block"><button class="btn btn-link user-button sound-on-button"><i class="fas fa-volume-up"></i></button></div>');
+        var translate_button = null;
         button_container.append(sound_on_button);
     } else {
         var sound_on_button = null;
+        var translate_button = $('<div class="d-block"><button class="btn btn-link user-button translate-button"><i class="fa fa-language"></i></button></div>');
+        button_container.append(translate_button);
     }
   } else {
     var translate_button = $('<div class="d-block"><button class="btn btn-link bot-button translate-button"><i class="fa fa-language"></i></button></div>');
     var sound_on_button = $('<div class="d-block"><button class="btn btn-link bot-button sound-on-button"><i class="fas fa-volume-up"></i></button></div>');
     button_container.append(translate_button);
     button_container.append(sound_on_button);
-    var translated_message = false;
-    translate_button.on('click', function() {
-      if (!translated_message) {
-          $.post('/translate_text', {'text': message_body.text()}, function (response) {
-              var translated_text = response['message'];
-              var original_text = message_body.text();
-              var combined_text = original_text + '<hr><em>' + translated_text + '</em>';
-              translated_message = true;
-              message_body.html(combined_text);
-          });
-      }
-    });
   }
   message_card.append(button_container);
 
@@ -158,6 +149,20 @@ function add_message(sender, message, has_user_recording, is_language_learning) 
   message_box.append(message_row);
   message_box.scrollTop(message_box.prop('scrollHeight'));
 
+  var translated_message = false;
+  if (translate_button !== null) {
+      translate_button.on('click', function() {
+        if (!translated_message) {
+            $.post('/translate_text', {'text': message_body.html(), 'sender': sender}, function (response) {
+                var translated_text = response['message'].replace(/\n/g, "<br>");;
+                var original_text = message_body.html();
+                var combined_text = original_text + '<hr><em>' + translated_text + '</em>';
+                translated_message = true;
+                message_body.html(combined_text);
+            });
+        }
+      });
+    }
   if (sound_on_button !== null) {
     sound_on_button.on('click', function() {
       $.post('/play_bot_recording', {'message_id': message_body.id, 'text': message_body.text(), 'play_existing': 1}, function (response) {});
