@@ -6,8 +6,9 @@
 
 <br><hr>
 <p align="center">
+  <img src="https://res.cloudinary.com/crunchbase-production/image/upload/c_lpad,h_256,w_256,f_auto,q_auto:eco,dpr_1/z3ahdkytzwi1jxlpazje" width=50><br>
   <b> Work towards a running Companion as a Streamlit app is underway!</b><br>
-  Follow progress and join the effort here on the 
+  Follow progress and join the effort on the 
   <a href="https://github.com/shakedzy/companion/milestone/1">milestone page!</a>
 </p>
 <hr><br><br>
