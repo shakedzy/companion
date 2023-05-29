@@ -54,7 +54,7 @@ html, body {
   height: 100%;
   display: flex;
   flex-direction: column;
-  max-width: 800px;
+  max-width: 850px;
 }
 
 #message-box {

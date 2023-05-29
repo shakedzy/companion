@@ -1,5 +1,9 @@
 $(document).ready(function() {
-  get_response(is_initial_message=1);
+  if (past_messages !== null) {
+    loadPastMessages();
+    past_messages = null;
+  }
+//  get_response(is_initial_message=1);
   $('#message-form').on('submit', function(e) {
     e.preventDefault();
     var message = $('#message-input').val();
@@ -89,6 +93,18 @@ $(document).ready(function() {
 
   $('#dark-mode-button').on('click', function() {
     $('body').toggleClass('dark-mode');
+  });
+
+  $('#save-session').on('click', function() {
+    $.get("/save_session", function(response) {
+        console.log(response.message);
+    });
+  });
+
+  $('#load-saved-session').on('click', function() {
+    $.get("/load_session", function(response) {
+        console.log(response.message);
+    });
   });
 
 });
@@ -230,6 +246,7 @@ function update_last_message(newContent) {
   last_message_card_body.html(newContent);
 }
 
+
 function setDarkMode(isDarkMode) {
     if (isDarkMode) {
       $('body').addClass('dark-mode');
@@ -238,18 +255,14 @@ function setDarkMode(isDarkMode) {
       $('body').removeClass('dark-mode');
       $('#mode-icon').removeClass('fa-sun').addClass('fa-moon');
     }
-  }
+}
 
-function getCurrentTime() {
-  var now = new Date();
 
-  var year = now.getFullYear();
-  var month = String(now.getMonth() + 1).padStart(2, '0');
-  var day = String(now.getDate()).padStart(2, '0');
-  var hours = String(now.getHours()).padStart(2, '0');
-  var minutes = String(now.getMinutes()).padStart(2, '0');
-  var seconds = String(now.getSeconds()).padStart(2, '0');
-
-  var formattedTime = year + '-' + month + '-' + day + '_' + hours + ':' + minutes + ':' + seconds;
-  return formattedTime;
+function loadPastMessages() {
+  $.get('/load_session', function(response) {
+    for (var i = 0; i < past_messages.length; i++) {
+      var msg = messages[i];
+      add_message(msg.role, msg.content, false, msg.is_language_learning);
+    }
+  });
 }

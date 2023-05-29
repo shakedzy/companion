@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8">
     <title>Companion</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css">
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
     <!-- Add Bootstrap CSS and custom styles -->
@@ -20,6 +20,7 @@
       var auto_send_recording = {{ auto_send_recording }};
       var user_profile_img = "{{ user_profile_img }}";
       var bot_profile_img = "{{ bot_profile_img }}";
+      var past_messages = {{ past_messages }};
     </script>
   </head>
   <body>
@@ -39,9 +40,11 @@
           <button type="button" id="mode-toggle-button" class="btn btn-secondary" title="Dark/Light Mode">
             <i id="mode-icon" class="fas fa-moon"></i>
           </button>
-          <button type="button" id="download-chat-button" class="btn btn-secondary" title="Download Chat"
-                  onclick="location.href='/download_chat';">
-            <i id="download-icon" class="fa fa-download"></i>
+          <button type="button" id="load-saved-session" class="btn btn-secondary" title="Continue last saved session">
+            <i id=load-saved-icon" class="fa-solid fa-rotate-right"></i>
+          </button>
+          <button type="button" id="save-session" class="btn btn-secondary" title="Save session for later">
+            <i id="save-icon" class="fa-solid fa-floppy-disk"></i>
           </button>
           <input type="text" id="message-input" class="form-control" placeholder="Type your message here...">
           <button type="submit" id="submit-button" class="btn btn-primary" title="Submit Message">
