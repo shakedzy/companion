@@ -82,15 +82,18 @@ def split_to_sentences(text):
     """
     This function MUST return a list of only one or two elements
     """
-    characters = ['.', '!', "?", ":", ";"]
+    characters = [c+' ' for c in ['.', '!', "?", ":", ";"]]
     escaped_characters = [re.escape(c) for c in characters]
-    if any([c+' ' in text for c in characters]):
+    if any([c in text for c in characters]):
         pattern = '|'.join(escaped_characters)
-        split_list = re.split(pattern + r'\s', text)
+        split_list = re.split(pattern, text)
     elif '\n' in text:
         lst = text.split('\n')
         lst = [s for s in lst if len(s.strip()) > 0]
-        split_list = [lst[0], "\n".join(lst[1:])]
+        if len(lst) > 1:
+            split_list = [lst[0], "\n".join(lst[1:])]
+        else:
+            split_list = lst
     elif ', ' in text and len(text) > 100:
         lst = re.split(re.escape(',') + r'\s', text)
         split_list = [lst[0], ", ".join(lst[1:])]
@@ -121,7 +124,7 @@ def store_message(sender=None, message=None):
     sender = sender or request.form['sender']
     message = message or request.form['message']
     memory.add(role=sender, message=message, user_recording=app_cache.user_recording,
-               recording=app_cache.bot_recordings)
+               recording=app_cache.bot_recordings if sender == "assistant" else [])
     app_cache.user_recording = None
     return jsonify({'status': 'success'})
 
@@ -168,7 +171,9 @@ def set_language():
 @app.route('/translate_text', methods=['POST'])
 def translate_text():
     message = request.form["text"]
-    translated = translate(message, to=config.language.native)
+    sender = request.form["sender"]
+    lang = config.language.native if sender == "assistant" else config.language.learning
+    translated = translate(message, to=lang)
     return jsonify({'message': translated})
 
 
@@ -265,7 +270,7 @@ def run(config_file):
     app_cache.play_recordings_thread = Thread(target=play_recordings_queue_func)
     app_cache.play_recordings_thread.start()
 
-    app.run(debug=True)
+    app.run()
 
 
 if __name__ == '__main__':
