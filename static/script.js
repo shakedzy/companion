@@ -188,7 +188,7 @@ function add_message(sender, message, has_user_recording, is_language_learning) 
   message_box.append(message_row);
   message_box.scrollTop(message_box.prop('scrollHeight'));
 
-  if (sender === 'user') {
+  if (sender === 'user' && past_messages === null) {
     $.post('/store_message', {'sender': sender, 'message': message}, function (response) {});
   }
 }
@@ -259,10 +259,10 @@ function setDarkMode(isDarkMode) {
 
 
 function loadPastMessages() {
-  $.get('/load_session', function(response) {
+    toggleLoadingIcon('show');
     for (var i = 0; i < past_messages.length; i++) {
       var msg = messages[i];
       add_message(msg.role, msg.content, false, msg.is_language_learning);
     }
-  });
+    toggleLoadingIcon('hide');
 }
