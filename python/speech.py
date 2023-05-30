@@ -6,18 +6,27 @@ import logging
 import pygame
 from pydub import AudioSegment
 from google.cloud import texttospeech
+from google.oauth2 import service_account
 from python.config import Config
 
 
 _is_recording = False
 
-t2s_client = texttospeech.TextToSpeechClient()
 t2s_audio_config = texttospeech.AudioConfig(audio_encoding=texttospeech.AudioEncoding.MP3)
+t2s_client = None
 t2s_voice = None
 
 
-def init_google_text_to_speech(config: Config):
-    global t2s_voice
+def init_speech(config: Config):
+    global t2s_client, t2s_voice
+
+    sa = config.get("google_sa", None)
+    if sa:
+        credentials = service_account.Credentials.from_service_account_info(sa)
+        t2s_client = texttospeech.TextToSpeechClient(credentials=credentials)
+    else:
+        t2s_client = texttospeech.TextToSpeechClient()
+
     l = config.text_to_speech.voice.split("-")
     t2s_voice = texttospeech.VoiceSelectionParams(name=config.bot.voice, language_code=f"{l[0]}-{l[1]}")
 

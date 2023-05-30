@@ -51,3 +51,12 @@ like "intermediate"
 * `auto_send_recording`: If `true`, text transcribed from your recordings will be sent directly to the bot. It is 
 recommended to use this option only when the chances for incorrect transcribing of your recordings are low. 
 When set to `false`, the transcribed text will be inserted to the text box, so it can be edited before submitted.
+
+#### [openai]
+This configuration is optional and less recommended.
+* `api_key`: Use this Open API key instead of the one found in your `OPENAI_API_KEY` environment variable
+
+#### [google_sa]
+Insert here all your Google Service Account credentials key-values in order to authenticate with Google Cloud
+using this Service Account instead of using Google Cloud SDK client. This configuration is optional and less
+recommended.

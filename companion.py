@@ -4,6 +4,7 @@ import sys
 import json
 import signal
 import pygame
+import openai
 import argparse
 from typing import Optional
 from datetime import datetime
@@ -259,11 +260,18 @@ def refresh():
         os.makedirs(TEMP_DIR)
 
 
+def init_openai():
+    openai_config = config.get("openai", None)
+    if openai_config and "api_key" in openai_config:
+        openai.api_key = openai_config["api_key"]
+
+
 def run(config_file):
     global config
     config = Config.from_toml_file(config_file)
 
-    speech.init_google_text_to_speech(config=config)
+    init_openai()
+    speech.init_speech(config=config)
 
     app_cache.text2speech_thread = Thread(target=bot_text_to_speech_queue_func)
     app_cache.text2speech_thread.start()
