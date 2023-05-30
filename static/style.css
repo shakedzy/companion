@@ -125,3 +125,8 @@ img.profile-pic {
 .fa-spinner {
     filter: var(--fa-filter);
 }
+
+.btn-green {
+    background-color: green !important;
+    color: white !important;
+}

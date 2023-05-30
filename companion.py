@@ -201,7 +201,7 @@ def save_session():
     with open(SAVED_SESSION_FILE, "w") as f:
         f.write(json_data)
 
-    return jsonify({"message": "session saved successfully"})
+    return jsonify({"success": True})
 
 
 @app.route('/load_session', methods=['GET'])

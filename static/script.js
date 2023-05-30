@@ -1,5 +1,5 @@
 $(document).ready(function() {
-//  get_response(is_initial_message=1);
+  get_response(is_initial_message=1);
   $('#message-form').on('submit', function(e) {
     e.preventDefault();
     var message = $('#message-input').val();
@@ -93,7 +93,22 @@ $(document).ready(function() {
 
   $('#save-session').on('click', function() {
     $.get("/save_session", function(response) {
-        console.log(response.message);
+        if (response['success']) {
+            var saveButton = $('#save-session');
+            var saveIcon = $('#save-icon');
+
+            saveButton.addClass('btn-green');
+            saveIcon.removeClass('fa-floppy-disk');
+            saveIcon.addClass('fa-check');
+            saveIcon.addClass('fa-bounce');
+
+            setTimeout(function () {
+                saveButton.removeClass('btn-green');
+                saveIcon.removeClass('fa-check');
+                saveIcon.removeClass('fa-bounce');
+                saveIcon.addClass('fa-floppy-disk');
+            }, 2000); // 2000 ms = 2 seconds
+        }
     });
   });
 
