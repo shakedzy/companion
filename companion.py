@@ -6,10 +6,9 @@ import signal
 import pygame
 import argparse
 from typing import Optional
-from datetime import datetime
 from queue import Empty as EmptyQueue
 from threading import Thread
-from flask import Flask, Response, render_template, request, jsonify
+from flask import Flask, render_template, request, jsonify
 from python import speech
 from python.memory import Memory
 from python.config import Config
@@ -19,6 +18,8 @@ from python.language import translate, is_text_of_language
 
 
 TEMP_DIR = os.path.join(os.getcwd(), "tmp")
+LTM_DIR = os.path.join(os.getcwd(), "ltm")  # Long Term Memory
+SAVED_SESSION_FILE = os.path.join(LTM_DIR, "last_session.json")
 
 app = Flask(__name__)
 
@@ -30,7 +31,19 @@ app_cache = AppCache()
 
 @app.route('/')
 def home():
-    refresh()
+    global memory, chatbot
+    memory = Memory()
+    chatbot = Chatbot(config=config, memory=memory)
+
+    if os.path.exists(TEMP_DIR):
+        for f in os.listdir(TEMP_DIR):
+            os.remove(os.path.join(TEMP_DIR, f))
+    else:
+        os.makedirs(TEMP_DIR)
+
+    if not os.path.exists(LTM_DIR):
+        os.makedirs(LTM_DIR)
+
     languages = [config.language.learning, config.language.native, 'A']
     return render_template('index.html', languages=languages,
                            auto_send_recording=int(config.behavior.auto_send_recording),
@@ -177,22 +190,41 @@ def translate_text():
     return jsonify({'message': translated})
 
 
-@app.route('/download_chat', methods=['GET'])
-def download_chat():
-    filename = f"chat_history_{datetime.now().strftime('%Y-%m-%d_%H:%M:%S')}.json"
+@app.route('/save_session', methods=['GET'])
+def save_session():
     data = list()
-    for i, m in enumerate(memory.get_chat_history()[1:]):
-        data.append({"index": i+1, "sender": m["role"], "message": m["content"]})
+    for m in memory.get_chat_history()[1:]:
+        data.append({"role": m["role"], "content": m["content"]})
 
     json_data = json.dumps(data, indent=4)  # Convert the list of dictionaries to JSON format
 
-    response = Response(
-        response=json_data,
-        mimetype="application/json",
-        headers={"Content-disposition": f"attachment; filename={filename}"}
-    )
+    with open(SAVED_SESSION_FILE, "w") as f:
+        f.write(json_data)
 
-    return response
+    return jsonify({"success": True})
+
+
+@app.route('/load_session', methods=['GET'])
+def load_session():
+    global memory, chatbot
+    if os.path.isfile(SAVED_SESSION_FILE):
+        with open(SAVED_SESSION_FILE, 'r') as f:
+            messages = json.load(f)
+
+            memory = Memory()
+            chatbot = Chatbot(config=config, memory=memory)
+
+            for message in messages:
+                memory.add(role=message["role"], message=message["content"])
+                if message["role"] == "user":
+                    message["is_language_learning"] = is_text_of_language(message["content"], config.language.learning)
+                else:
+                    message["is_language_learning"] = True
+
+    else:
+        messages = []
+
+    return jsonify({"messages": messages})
 
 
 @app.route('/memory', methods=['GET'])
@@ -245,18 +277,6 @@ def exit_graceful(signum, frame):
         if thread is not None:
             thread.join()
     sys.exit(0)
-
-
-def refresh():
-    global memory, chatbot
-    memory = Memory()
-    chatbot = Chatbot(config=config, memory=memory)
-
-    if os.path.exists(TEMP_DIR):
-        for f in os.listdir(TEMP_DIR):
-            os.remove(os.path.join(TEMP_DIR, f))
-    else:
-        os.makedirs(TEMP_DIR)
 
 
 def run(config_file):
