@@ -31,7 +31,23 @@ app_cache = AppCache()
 
 @app.route('/')
 def home():
-    return refresh()
+    global memory, chatbot
+    memory = Memory()
+    chatbot = Chatbot(config=config, memory=memory)
+
+    if os.path.exists(TEMP_DIR):
+        for f in os.listdir(TEMP_DIR):
+            os.remove(os.path.join(TEMP_DIR, f))
+    else:
+        os.makedirs(TEMP_DIR)
+
+    if not os.path.exists(LTM_DIR):
+        os.makedirs(LTM_DIR)
+
+    languages = [config.language.learning, config.language.native, 'A']
+    return render_template('index.html', languages=languages,
+                           auto_send_recording=int(config.behavior.auto_send_recording),
+                           user_profile_img=config.user.image, bot_profile_img=config.bot.image)
 
 
 @app.route('/get_response', methods=['POST'])
@@ -190,19 +206,25 @@ def save_session():
 
 @app.route('/load_session', methods=['GET'])
 def load_session():
+    global memory, chatbot
     if os.path.isfile(SAVED_SESSION_FILE):
         with open(SAVED_SESSION_FILE, 'r') as f:
             messages = json.load(f)
+
+            memory = Memory()
+            chatbot = Chatbot(config=config, memory=memory)
+
             for message in messages:
+                memory.add(role=message["role"], message=message["content"])
                 if message["role"] == "user":
                     message["is_language_learning"] = is_text_of_language(message["content"], config.language.learning)
                 else:
                     message["is_language_learning"] = True
 
-        return refresh(past_messages=messages)
-
     else:
-        return jsonify({"message": "No session to load."})
+        messages = []
+
+    return jsonify({"messages": messages})
 
 
 @app.route('/memory', methods=['GET'])
@@ -255,31 +277,6 @@ def exit_graceful(signum, frame):
         if thread is not None:
             thread.join()
     sys.exit(0)
-
-
-def refresh(past_messages=None):
-    global memory, chatbot
-    memory = Memory()
-    chatbot = Chatbot(config=config, memory=memory)
-
-    if past_messages is not None:
-        for message in past_messages:
-            memory.add(role=message["role"], message=message["content"])
-
-    if os.path.exists(TEMP_DIR):
-        for f in os.listdir(TEMP_DIR):
-            os.remove(os.path.join(TEMP_DIR, f))
-    else:
-        os.makedirs(TEMP_DIR)
-
-    if not os.path.exists(LTM_DIR):
-        os.makedirs(LTM_DIR)
-
-    languages = [config.language.learning, config.language.native, 'A']
-    return render_template('index.html', languages=languages,
-                           auto_send_recording=int(config.behavior.auto_send_recording),
-                           user_profile_img=config.user.image, bot_profile_img=config.bot.image,
-                           past_messages=jsonify(past_messages) if past_messages is not None else None)
 
 
 def run(config_file):

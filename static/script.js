@@ -1,8 +1,4 @@
 $(document).ready(function() {
-  if (past_messages !== null) {
-    loadPastMessages();
-    past_messages = null;
-  }
 //  get_response(is_initial_message=1);
   $('#message-form').on('submit', function(e) {
     e.preventDefault();
@@ -103,14 +99,14 @@ $(document).ready(function() {
 
   $('#load-saved-session').on('click', function() {
     $.get("/load_session", function(response) {
-        console.log(response.message);
+        loadPastMessages(response);
     });
   });
 
 });
 
 var message_counter = 1;
-function add_message(sender, message, has_user_recording, is_language_learning) {
+function add_message(sender, message, has_user_recording, is_language_learning, do_not_store) {
   var message_box = $('#message-box');
   var message_row = $('<div class="row mb-3"></div>');
   var message_col = $('<div class="col d-flex align-items-start"></div>');  // Changed to d-flex and align-items-start
@@ -188,7 +184,7 @@ function add_message(sender, message, has_user_recording, is_language_learning) 
   message_box.append(message_row);
   message_box.scrollTop(message_box.prop('scrollHeight'));
 
-  if (sender === 'user' && past_messages === null) {
+  if (sender === 'user' && !do_not_store) {
     $.post('/store_message', {'sender': sender, 'message': message}, function (response) {});
   }
 }
@@ -258,11 +254,16 @@ function setDarkMode(isDarkMode) {
 }
 
 
-function loadPastMessages() {
-    toggleLoadingIcon('show');
-    for (var i = 0; i < past_messages.length; i++) {
-      var msg = messages[i];
-      add_message(msg.role, msg.content, false, msg.is_language_learning);
+function loadPastMessages(response) {
+    var messages = response['messages'];
+    if (messages.length > 0) {
+        toggleLoadingIcon('show');
+        var message_box = $('#message-box');
+        message_box.html("");
+        for (var i = 0; i < messages.length; i++) {
+          var msg = messages[i];
+          add_message(msg.role, msg.content, false, msg.is_language_learning, true);
+        }
+        toggleLoadingIcon('hide');
     }
-    toggleLoadingIcon('hide');
 }
