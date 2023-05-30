@@ -261,7 +261,7 @@ def refresh():
 
 def run(config_file):
     global config
-    config = Config.from_yml_file(config_file)
+    config = Config.from_toml_file(config_file)
 
     speech.init_google_text_to_speech(config=config)
 
@@ -275,7 +275,7 @@ def run(config_file):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('-c', '--config', dest='config_file', default='config.yml', help='The config yaml file.')
+    parser.add_argument('-c', '--config', dest='config_file', default='config.toml', help='A config toml file.')
     args = parser.parse_args()
     signal.signal(signal.SIGINT, exit_graceful)
     signal.signal(signal.SIGTERM, exit_graceful)

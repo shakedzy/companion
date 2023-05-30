@@ -1,4 +1,4 @@
-import yaml
+import tomllib
 
 
 class Config(dict):
@@ -30,7 +30,7 @@ class Config(dict):
         del self.__dict__[key]
 
     @staticmethod
-    def from_yml_file(filename):
-        with open(filename, "r") as f:
-            yml_data = yaml.safe_load(f)
-        return Config(yml_data)
+    def from_toml_file(filename):
+        with open(filename, "rb") as f:
+            data = tomllib.load(f)
+        return Config(data)

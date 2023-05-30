@@ -2,6 +2,7 @@
 .DS_Store
 tmp/*
 config.yml
+config.toml
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
