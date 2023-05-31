@@ -1,0 +1,42 @@
+body {
+    background-color: #f8f9fa;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+}
+
+.container {
+    text-align: center;
+}
+
+img {
+    max-width: 50px;  /* set maximum width of images */
+    height: auto;
+    border-radius: 50%;  /* make images circular */
+}
+
+.profile-input {
+    display: flex;
+    flex-direction: column;  /* stack elements vertically */
+    align-items: center;
+}
+
+.profile-img {
+    max-width: 50px;  /* set maximum width of images */
+    height: auto;
+    border-radius: 50%;  /* make images circular */
+}
+
+
+.form-check {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 1em;
+}
+
+.form-check img {
+    margin-right: 0.5em;
+}
