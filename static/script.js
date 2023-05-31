@@ -229,15 +229,9 @@ function add_message(sender, message, has_user_recording, is_language_learning, 
 
 function toggleLoadingIcon(action) {
     if (action === 'show') {
-      $('#not-loading-title').addClass('d-none');
-      $('#not-loading-title').removeClass('d-flex');
-      $('#loading-title').addClass('d-flex');
-      $('#loading-title').removeClass('d-none');
+      $('#logo-image').attr('src', '/static/logo-loading.gif');
     } else if (action === 'hide') {
-      $('#not-loading-title').addClass('d-flex');
-      $('#not-loading-title').removeClass('d-none');
-      $('#loading-title').addClass('d-none');
-      $('#loading-title').removeClass('d-flex');
+      $('#logo-image').attr('src', '/static/logo.png');
     }
 }
 
