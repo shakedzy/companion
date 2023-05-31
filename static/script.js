@@ -43,12 +43,6 @@ $(document).ready(function() {
       }
   });
 
-  Mousetrap.bind('alt+r', function() {
-    $('#record-button').click();
-  });
-  Mousetrap.bind('alt+l', function() {
-    $('#lang-toggle-button').click();
-  });
   Mousetrap.bindGlobal('alt+r', function(e) {
     e.preventDefault();
     $('#record-button').click();
