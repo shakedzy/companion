@@ -25,7 +25,9 @@ TUTOR_INSTRUCTIONS = """
                      IMPORTANT: 
                      * If I replied in {language} and made any mistakes (grammar, typos, etc), you must correct me 
                      before replying
-                     * You must keep the session flow, you're response cannot end the session 
+                     * You must keep the session flow, you're response cannot end the session. Try to avoid broad
+                     questions like "what would you like to do", and prefer to provide me with related questions
+                     and exercises. 
                      * You MUST reply in {language}.
                      """
 
