@@ -114,7 +114,30 @@ $(document).ready(function() {
 
   $('#load-saved-session').on('click', function() {
     $.get("/load_session", function(response) {
-        loadPastMessages(response);
+        var messages = response['messages'];
+        if (messages.length > 0) {
+            var loadIcon = $('#load-saved-icon');
+            loadIcon.addClass("fa-spin");
+            loadPastMessages(messages);
+            setTimeout(function () {
+                loadIcon.removeClass("fa-spin")
+            }, 2000);
+        } else {
+            var loadButton = $('#load-saved-session');
+            var loadIcon = $('#load-saved-icon');
+
+            loadButton.addClass('btn-danger on');
+            loadIcon.removeClass('fa-rotate-right');
+            loadIcon.addClass('fa-comment-slash');
+            loadIcon.addClass('fa-shake');
+
+            setTimeout(function () {
+                loadButton.removeClass('btn-danger off');
+                loadIcon.removeClass('fa-comment-slash');
+                loadIcon.removeClass('fa-shake');
+                loadIcon.addClass('fa-rotate-right');
+            }, 2000); // 2000 ms = 2 seconds
+        }
     });
   });
 
@@ -206,15 +229,9 @@ function add_message(sender, message, has_user_recording, is_language_learning, 
 
 function toggleLoadingIcon(action) {
     if (action === 'show') {
-      $('#not-loading-title').addClass('d-none');
-      $('#not-loading-title').removeClass('d-flex');
-      $('#loading-title').addClass('d-flex');
-      $('#loading-title').removeClass('d-none');
+      $('#logo-image').attr('src', '/static/logo-loading.gif');
     } else if (action === 'hide') {
-      $('#not-loading-title').addClass('d-flex');
-      $('#not-loading-title').removeClass('d-none');
-      $('#loading-title').addClass('d-none');
-      $('#loading-title').removeClass('d-flex');
+      $('#logo-image').attr('src', '/static/logo.png');
     }
 }
 
@@ -269,16 +286,13 @@ function setDarkMode(isDarkMode) {
 }
 
 
-function loadPastMessages(response) {
-    var messages = response['messages'];
-    if (messages.length > 0) {
-        toggleLoadingIcon('show');
-        var message_box = $('#message-box');
-        message_box.html("");
-        for (var i = 0; i < messages.length; i++) {
-          var msg = messages[i];
-          add_message(msg.role, msg.content, false, msg.is_language_learning, true);
-        }
-        toggleLoadingIcon('hide');
+function loadPastMessages(messages) {
+    toggleLoadingIcon('show');
+    var message_box = $('#message-box');
+    message_box.html("");
+    for (var i = 0; i < messages.length; i++) {
+      var msg = messages[i];
+      add_message(msg.role, msg.content, false, msg.is_language_learning, true);
     }
+    toggleLoadingIcon('hide');
 }
