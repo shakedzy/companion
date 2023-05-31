@@ -1,5 +1,5 @@
 $(document).ready(function() {
-  //get_response(is_initial_message=1);
+  get_response(is_initial_message=1);
   $('#message-form').on('submit', function(e) {
     e.preventDefault();
     var message = $('#message-input').val();
