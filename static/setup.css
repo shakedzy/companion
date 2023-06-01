@@ -57,3 +57,7 @@ img {
 .fa-triangle-exclamation {
     color: red;
 }
+
+.gender-check-input {
+    margin-right: 10px;
+}
