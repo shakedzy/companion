@@ -18,9 +18,8 @@ t2s_voice = None
 
 def init_google_text_to_speech(config: Config):
     global t2s_voice
-    l = config.text_to_speech.voice.split("-")
-    t2s_voice = texttospeech.VoiceSelectionParams(name=config.text_to_speech.voice,
-                                                  language_code=f"{l[0]}-{l[1]}")
+    l = config.bot.voice.split("-")
+    t2s_voice = texttospeech.VoiceSelectionParams(name=config.bot.voice, language_code=f"{l[0]}-{l[1]}")
 
 
 def stop_recording():
