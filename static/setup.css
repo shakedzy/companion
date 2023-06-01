@@ -9,34 +9,51 @@ body {
 
 .container {
     text-align: center;
+    max-width: 1000px;
+    border: 1px solid #AAAAAA;  /* add a border */
+    border-radius: 10px;  /* round the corners */
+    padding: 20px;  /* add some padding */
+    box-sizing: border-box;
 }
 
 img {
-    max-width: 50px;  /* set maximum width of images */
+    max-width: 100%;
     height: auto;
-    border-radius: 50%;  /* make images circular */
+    border-radius: 50%;  /* make all images circular */
 }
 
 .profile-input {
     display: flex;
-    flex-direction: column;  /* stack elements vertically */
+    justify-content: center;
     align-items: center;
 }
-
-.profile-img {
-    max-width: 50px;  /* set maximum width of images */
-    height: auto;
-    border-radius: 50%;  /* make images circular */
-}
-
 
 .form-check {
     display: flex;
-    justify-content: center;
-    align-items: center;
     margin-bottom: 1em;
 }
 
 .form-check img {
     margin-right: 0.5em;
+}
+
+.form-label {
+    text-align: left;
+    display: block;
+    width: 100%;
+}
+
+.profile-img {
+    max-width: 60px;  /* set maximum width of images */
+    height: auto;
+    border-radius: 50%;  /* make images circular */
+    border: 3px solid transparent;
+}
+
+.image-label.selected img {
+    border: 3px solid #007BFF; /* Use any color you like for the border */
+}
+
+.fa-triangle-exclamation {
+    color: red;
 }

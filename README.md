@@ -35,4 +35,4 @@ Languages supported by [Google Text-to-Speech](https://cloud.google.com/text-to-
 
 ---
 
-_favicon <a href="https://www.flaticon.com/free-icons/message" title="message icons">created by Freepik - Flaticon</a>_
+[Companion Licences](/markdown/licenses.md)

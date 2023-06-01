@@ -3,6 +3,21 @@ import json
 
 app = Flask(__name__)
 
+MALE_TUTORS = [
+    "Nicolas",
+    "James",
+    "Michael",
+    "Mario",
+    "Henry"
+]
+
+FEMALE_TUTORS = [
+    "Renée",
+    "Charlotte",
+    "Sofia",
+    "Kate",
+    "Marie"
+]
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
@@ -15,7 +30,7 @@ def index():
         with open('data.txt', 'w') as outfile:
             json.dump(data, outfile)
         return 'Data saved successfully'
-    return render_template('setup.html')
+    return render_template('setup.html', males=MALE_TUTORS, females=FEMALE_TUTORS)
 
 
 if __name__ == '__main__':

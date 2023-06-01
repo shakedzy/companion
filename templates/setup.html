@@ -3,55 +3,117 @@
 <head>
     <title>Set Up</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" type="text/css" href="/static/setup.css">
+    <link rel="icon" type="image/png" href="/static/favicon.png">
 </head>
 <body>
     <div class="container">
         <h1 class="mt-5 mb-5">Set Up</h1>
         <form method="post">
-            <div class="mb-3 profile-input">
-                <img id="profile_image" src="" alt="Profile Image" class="profile-img mt-3 mr-3">
-                <label for="image_url" class="form-label">Profile Image URL</label>
-                <input type="text" class="form-control" id="image_url" name="image_url" required>
+            <div class="row mb-3 mt-3 profile-input">
+                <div class="col-1"></div>
+                <div class="col-3">
+                    <label for="user-name" class="form-label">Your name</label>
+                    <input type="text" class="form-control" id="user-name"required>
+                </div>
+                <div class="col-4">
+                    <label for="user-lang-dropdown" class="form-label">You speak</label>
+                    <select class="form-select" id="user-lang-dropdown" required>
+                        <option selected disabled value="">Choose...</option>
+                        <option value="option1">Option 1</option>
+                        <option value="option2">Option 2</option>
+                    </select>
+                </div>
+                <div class="col-2 d-flex flex-column align-items-center">
+                    <div class="form-check form-switch mb-1">
+                        <input class="form-check-input" type="checkbox" id="auto-send-switch" />
+                    </div>
+                  <label class="form-check-label" for="auto-send-switch">Auto send recording</label>
+                </div>
             </div>
-            <div class="row mb-3">
-                <div class="col">
-                    <!-- Repeat this block for each chip -->
+            <div class="row mb-5 mt-3 profile-input">
+                <div class="col-1">
+                    <img id="profile_image" src="/static/user.png" alt="Profile Image" class="profile-img mt-3 mr-3">
+                </div>
+                <div class="col-9">
+                    <label for="image_url" class="form-label">Profile image URL</label>
+                    <input type="text" class="form-control" id="image_url" name="image_url" required>
+                </div>
+            </div>
+            <hr>
+            <div class="row mt-5 d-flex align-items-center justify-content-center">
+                <div class="col-2">
+                    <label for="tutors" class="form-label">Your tutor is</label>
+                </div>
+                <div class="col-8"></div>
+            </div><br>
+            <div class="row mb-5 d-flex align-items-center justify-content-center" id="tutors">
+                {% for i in range(females|length) %}
+                <div class="col-auto">
                     <div class="form-check">
-                        <input class="form-check-input" type="radio" name="selected_chip" id="chip1" value="chip1">
-                        <label class="form-check-label" for="chip1">
-                            <img src="chip1.jpg" alt="chip1" class="img-thumbnail"> Chip 1
+                        <input class="form-check-input" type="radio" id="{{females[i] | lower}}-female"
+                               value="{{ females[i] }}" style="display: none;">
+                        <label class="form-check-label image-label" for="{{females[i] | lower}}-female">
+                            <img src="/static/bots_profile/{{females[i] | lower}}.png" alt="{{ females[i] }}"
+                                 class="profile-img"> {{ females[i] }}
+                        </label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" id="{{males[i] | lower}}-male"
+                               value="{{ males[i] }}" style="display: none;">
+                        <label class="form-check-label image-label" for="{{males[i] | lower}}-male">
+                            <img src="/static/bots_profile/{{males[i] | lower}}.png" alt="{{ males[i] }}"
+                                 class="profile-img"> {{ males[i] }}
                         </label>
                     </div>
                 </div>
-                <div class="col">
-                    <!-- Repeat this block for each chip -->
-                    <div class="form-check">
-                        <input class="form-check-input" type="radio" name="selected_chip" id="chip2" value="chip2">
-                        <label class="form-check-label" for="chip2">
-                            <img src="chip2.jpg" alt="chip2" class="img-thumbnail"> Chip 2
-                        </label>
-                    </div>
+                {% endfor %}
+            </div>
+            <div class="row mb-3 align-items-center justify-content-center">
+                <div class="col-1">
+                    <i class="fa-solid fa-triangle-exclamation fa-2xl"></i>
                 </div>
+                <div class="col-4">
+                    <label for="tutor-lang-dropdown" class="form-label">Your tutor speaks</label>
+                    <select class="form-select" id="tutor-lang-dropdown" required>
+                        <option selected disabled value="">Choose...</option>
+                        <option value="option1">Option 1</option>
+                        <option value="option2">Option 2</option>
+                    </select>
+                </div>
+                <div class="col-4">
+                    <label for="voices-dropdown" class="form-label">Your tutor's voice</label>
+                    <select class="form-select" id="voices-dropdown" name="voices-dropdown" required>
+                        <option selected disabled value="">Choose...</option>
+                        <option value="option1">Option 1</option>
+                        <option value="option2">Option 2</option>
+                    </select>
+                </div>
+                <div class="col-1"></div>
             </div>
-            <div class="mb-3">
-                <label for="dropdown_selection" class="form-label">Select an option</label>
-                <select class="form-select" id="dropdown_selection" name="dropdown_selection" required>
-                    <option selected disabled value="">Choose...</option>
-                    <option value="option1">Option 1</option>
-                    <option value="option2">Option 2</option>
-                </select>
-            </div>
-            <button type="submit" class="btn btn-primary">Submit</button>
+            <button type="submit" class="btn btn-primary mb-5 mt-5">Submit</button>
         </form>
     </div>
     <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
     <script>
         $(document).ready(function(){
+
+            $('.image-label').click(function() {
+                $('.image-label').removeClass('selected');
+                $(this).addClass('selected');
+            });
+
             $('#image_url').change(function(){
                 var imageUrl = $(this).val();
-                $('#profile_image').attr('src', imageUrl);
+                var defaultImageUrl = "/static/user.png";
+                var profileImage = $('#profile_image');
+                profileImage.attr('src', imageUrl);
+                profileImage[0].onerror = function() {
+                    profileImage.attr('src', defaultImageUrl);
+                };
             });
+
         });
     </script>
 </body>
