@@ -10,6 +10,7 @@ from typing import Optional
 from datetime import datetime
 from queue import Empty as EmptyQueue
 from threading import Thread
+from google.oauth2.service_account import Credentials
 from flask import Flask, Response, render_template, request, jsonify
 from python import speech
 from python.memory import Memory
@@ -266,12 +267,22 @@ def init_openai():
         openai.api_key = openai_config["api_key"]
 
 
+def get_gcs_credentials() -> Credentials:
+    sa = config.get("google_sa", None)
+    if sa:
+        credentials = Credentials.from_service_account_info(sa)
+    else:
+        credentials = None
+    return credentials
+
+
 def run(config_file):
     global config
     config = Config.from_toml_file(config_file)
 
     init_openai()
-    speech.init_speech(config=config)
+    gcs_creds = get_gcs_credentials()
+    speech.init_speech(config=config, credentials=gcs_creds)
 
     app_cache.text2speech_thread = Thread(target=bot_text_to_speech_queue_func)
     app_cache.text2speech_thread.start()

@@ -1,6 +1,12 @@
-from google.cloud import translate_v2 as translate
+from google.oauth2.service_account import Credentials
+from google.cloud import translate_v2
 
-translate_client = translate.Client()
+translate_client = translate_v2.Client()
+
+
+def init_language(credentials: Credentials):
+    global translate_client
+    translate_client = translate_v2.Client(credentials=credentials) if credentials else translate_v2.Client()
 
 
 def translate(text, to) -> str:
