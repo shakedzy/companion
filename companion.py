@@ -13,11 +13,11 @@ from threading import Thread
 from google.oauth2.service_account import Credentials
 from flask import Flask, Response, render_template, request, jsonify
 from python import speech
+from python import language
 from python.memory import Memory
 from python.config import Config
 from python.chatbot import Chatbot
 from python.app_cache import AppCache
-from python.language import translate, is_text_of_language
 
 
 TEMP_DIR = os.path.join(os.getcwd(), "tmp")
@@ -134,7 +134,7 @@ def store_message(sender=None, message=None):
 @app.route('/user_message_info', methods=['POST'])
 def user_message_info():
     message = request.form['message']
-    is_language_learning = is_text_of_language(message, config.language.learning)
+    is_language_learning = language.is_text_of_language(message, config.language.learning)
     return jsonify({'user_recording': app_cache.user_recording,
                     'is_language_learning': is_language_learning})
 
@@ -175,7 +175,7 @@ def translate_text():
     message = request.form["text"]
     sender = request.form["sender"]
     lang = config.language.native if sender == "assistant" else config.language.learning
-    translated = translate(message, to=lang)
+    translated = language.translate(message, to=lang)
     return jsonify({'message': translated})
 
 
@@ -282,6 +282,7 @@ def run(config_file):
 
     init_openai()
     gcs_creds = get_gcs_credentials()
+    language.init_language(credentials=gcs_creds)
     speech.init_speech(config=config, credentials=gcs_creds)
 
     app_cache.text2speech_thread = Thread(target=bot_text_to_speech_queue_func)
