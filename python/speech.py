@@ -97,6 +97,22 @@ def text2speech(text, filename, config: Config):
     return filename
 
 
+def list_voices_by_features():  # Returns dict: {lang: {gender: [list of voices]}}
+    voices_dict = dict()
+    voices = t2s_client.list_voices().voices
 
+    for voice in voices:
+        language_code = voice.language_code
+        name = voice.name
+        gender = texttospeech.SsmlVoiceGender(voice.ssml_gender).name
 
+        if language_code not in voices_dict:
+            voices_dict[language_code] = dict()
 
+        lang_dict = voices_dict[language_code]
+        if gender not in lang_dict:
+            lang_dict[gender] = list()
+
+        lang_dict[gender].append(name)
+
+    return voices_dict

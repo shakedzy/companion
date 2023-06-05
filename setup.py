@@ -1,6 +1,7 @@
 import json
 from flask import Flask, render_template, request
-from python.language import language_name_to_iso6391
+from python.language import language_name_to_iso6391, locale_code_to_language
+from python.speech import list_voices_by_features
 
 app = Flask(__name__)
 
@@ -80,8 +81,13 @@ INPUT_LANGUAGES = [  # Supported languages by OpenAI Whisper
     "Welsh"
 ]
 
+voices_by_features = dict()
+
+
 @app.route('/', methods=['GET', 'POST'])
 def index():
+    global voices_by_features
+
     if request.method == 'POST':
         data = {
             'image_url': request.form.get('image_url'),
@@ -91,10 +97,13 @@ def index():
         with open('data.txt', 'w') as outfile:
             json.dump(data, outfile)
         return 'Data saved successfully'
-    return render_template('setup.html', males=MALE_TUTORS, females=FEMALE_TUTORS,
-                           input_languages_codes_and_names=[[language_name_to_iso6391(lang), lang] for lang in INPUT_LANGUAGES],
-                           output_languages_locales_and_names=[],
-                           voices=[])
+
+    else:
+        voices_by_features = list_voices_by_features()
+        return render_template('setup.html', males=MALE_TUTORS, females=FEMALE_TUTORS,
+                               input_languages_codes_and_names=[[language_name_to_iso6391(lang), lang] for lang in INPUT_LANGUAGES],
+                               output_languages_locales_and_names=[locale_code_to_language(k, True) for k in voices_by_features.keys()]
+                               )
 
 
 if __name__ == '__main__':

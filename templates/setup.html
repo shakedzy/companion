@@ -2,7 +2,7 @@
 <html>
 <head>
     <title>Set Up</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.0.2/css/bootstrap.min.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" type="text/css" href="/static/setup.css">
     <link rel="icon" type="image/png" href="/static/favicon.png">
@@ -11,12 +11,11 @@
     <script>
         var input_languages_codes_and_names = {{ input_languages_codes_and_names | tojson }};
         var output_languages_locales_and_names = {{ output_languages_locales_and_names | tojson }};
-        var voices = {{ voices | tojson }};
     </script>
 </head>
 <body>
     <div class="container">
-        <h1 class="mt-5 mb-5">Set Up</h1>
+        <h1 class="mt-5 mb-5">Configure Your Companion</h1>
         <form method="post">
             <div class="row mb-3 mt-3 profile-input">
                 <div class="col-1"></div>
@@ -53,7 +52,7 @@
                 </div>
                 <div class="col-4">
                     <label for="lang-level" class="form-label">Your level</label>
-                    <input type="text" class="form-control" id="lang-level" required>
+                    <input type="text" class="form-control" id="lang-level" value="intermediate" required>
                 </div>
                 <div class="col-2 d-flex flex-column align-items-center">
                     <div class="form-check form-switch mb-1">
