@@ -9,9 +9,9 @@
 ---
 ## 🗺️ Roadmap: 
 - **Improved session experience:**
-  - [x] Tutor kicks-off sessions
-  - [x] Improving tutor responses
-  - [x] Save and load sessions
+  - [x] ~Tutor kicks-off sessions~
+  - [x] ~Improving tutor responses~
+  - [x] ~Save and load sessions~
   - [ ] Improved error handling
 
 - **Fully-functioning web application:**
