@@ -1,16 +1,10 @@
-import tomllib
+import yaml
 
 
 class Config(dict):
     def __init__(self, *args, **kwargs):
         super(Config, self).__init__(*args, **kwargs)
-        for arg in args:
-            if isinstance(arg, dict):
-                for k, v in arg.items():
-                    self[k] = v if not isinstance(v, dict) else Config(v)
-        if kwargs:
-            for k, v in kwargs.items():
-                self[k] = v if not isinstance(v, dict) else Config(v)
+        self.update(*args, **kwargs)
 
     def __getattr__(self, attr):
         return self.get(attr)
@@ -29,8 +23,22 @@ class Config(dict):
         super(Config, self).__delitem__(key)
         del self.__dict__[key]
 
+    def update(self, *args, **kwargs):
+        for arg in args:
+            if isinstance(arg, dict):
+                for k, v in arg.items():
+                    self[k] = v if not isinstance(v, dict) else Config(v)
+        if kwargs:
+            for k, v in kwargs.items():
+                self[k] = v if not isinstance(v, dict) else Config(v)
+
     @staticmethod
-    def from_toml_file(filename):
-        with open(filename, "rb") as f:
-            data = tomllib.load(f)
+    def from_yml_file(filename):
+        with open(filename, "r") as f:
+            data = yaml.safe_load(f)
         return Config(data)
+
+    def update_from_yml_file(self, filename):
+        with open(filename, "r") as f:
+            data = yaml.safe_load(f)
+        self.update(data)

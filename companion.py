@@ -276,9 +276,11 @@ def get_gcs_credentials() -> Credentials:
     return credentials
 
 
-def run(config_file):
+def run(config_file, keys_file=None):
     global config
-    config = Config.from_toml_file(config_file)
+    config = Config.from_yml_file(config_file)
+    if keys_file:
+        config.update_from_yml_file(keys_file)
 
     init_openai()
     gcs_creds = get_gcs_credentials()
@@ -295,8 +297,9 @@ def run(config_file):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('-c', '--config', dest='config_file', default='config.toml', help='A config toml file.')
+    parser.add_argument('-c', '--config', dest='config_file', default='config.yml', help='A config yml file.')
+    parser.add_argument('-k', '--keys', dest='keys_file', help='A keys yml file [optional].')
     args = parser.parse_args()
     signal.signal(signal.SIGINT, exit_graceful)
     signal.signal(signal.SIGTERM, exit_graceful)
-    run(args.config_file)
+    run(args.config_file, args.keys_file)
