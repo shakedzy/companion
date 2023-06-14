@@ -54,7 +54,7 @@ html, body {
   height: 100%;
   display: flex;
   flex-direction: column;
-  max-width: 800px;
+  max-width: 850px;
 }
 
 #message-box {
@@ -124,4 +124,9 @@ img.profile-pic {
 
 .fa-spinner {
     filter: var(--fa-filter);
+}
+
+.btn-green {
+    background-color: green !important;
+    color: white !important;
 }

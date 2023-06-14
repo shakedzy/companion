@@ -43,12 +43,6 @@ $(document).ready(function() {
       }
   });
 
-  Mousetrap.bind('alt+r', function() {
-    $('#record-button').click();
-  });
-  Mousetrap.bind('alt+l', function() {
-    $('#lang-toggle-button').click();
-  });
   Mousetrap.bindGlobal('alt+r', function(e) {
     e.preventDefault();
     $('#record-button').click();
@@ -91,10 +85,60 @@ $(document).ready(function() {
     $('body').toggleClass('dark-mode');
   });
 
+  $('#save-session').on('click', function() {
+    $.get("/save_session", function(response) {
+        if (response['success']) {
+            var saveButton = $('#save-session');
+            var saveIcon = $('#save-icon');
+
+            saveButton.addClass('btn-green');
+            saveIcon.removeClass('fa-floppy-disk');
+            saveIcon.addClass('fa-check');
+            saveIcon.addClass('fa-bounce');
+
+            setTimeout(function () {
+                saveButton.removeClass('btn-green');
+                saveIcon.removeClass('fa-check');
+                saveIcon.removeClass('fa-bounce');
+                saveIcon.addClass('fa-floppy-disk');
+            }, 2000); // 2000 ms = 2 seconds
+        }
+    });
+  });
+
+  $('#load-saved-session').on('click', function() {
+    $.get("/load_session", function(response) {
+        var messages = response['messages'];
+        if (messages.length > 0) {
+            var loadIcon = $('#load-saved-icon');
+            loadIcon.addClass("fa-spin");
+            loadPastMessages(messages);
+            setTimeout(function () {
+                loadIcon.removeClass("fa-spin")
+            }, 2000);
+        } else {
+            var loadButton = $('#load-saved-session');
+            var loadIcon = $('#load-saved-icon');
+
+            loadButton.addClass('btn-danger on');
+            loadIcon.removeClass('fa-rotate-right');
+            loadIcon.addClass('fa-comment-slash');
+            loadIcon.addClass('fa-shake');
+
+            setTimeout(function () {
+                loadButton.removeClass('btn-danger off');
+                loadIcon.removeClass('fa-comment-slash');
+                loadIcon.removeClass('fa-shake');
+                loadIcon.addClass('fa-rotate-right');
+            }, 2000); // 2000 ms = 2 seconds
+        }
+    });
+  });
+
 });
 
 var message_counter = 1;
-function add_message(sender, message, has_user_recording, is_language_learning) {
+function add_message(sender, message, has_user_recording, is_language_learning, do_not_store) {
   var message_box = $('#message-box');
   var message_row = $('<div class="row mb-3"></div>');
   var message_col = $('<div class="col d-flex align-items-start"></div>');  // Changed to d-flex and align-items-start
@@ -172,22 +216,16 @@ function add_message(sender, message, has_user_recording, is_language_learning) 
   message_box.append(message_row);
   message_box.scrollTop(message_box.prop('scrollHeight'));
 
-  if (sender === 'user') {
+  if (sender === 'user' && !do_not_store) {
     $.post('/store_message', {'sender': sender, 'message': message}, function (response) {});
   }
 }
 
 function toggleLoadingIcon(action) {
     if (action === 'show') {
-      $('#not-loading-title').addClass('d-none');
-      $('#not-loading-title').removeClass('d-flex');
-      $('#loading-title').addClass('d-flex');
-      $('#loading-title').removeClass('d-none');
+      $('#logo-image').attr('src', '/static/logo-loading.gif');
     } else if (action === 'hide') {
-      $('#not-loading-title').addClass('d-flex');
-      $('#not-loading-title').removeClass('d-none');
-      $('#loading-title').addClass('d-none');
-      $('#loading-title').removeClass('d-flex');
+      $('#logo-image').attr('src', '/static/logo.png');
     }
 }
 
@@ -230,6 +268,7 @@ function update_last_message(newContent) {
   last_message_card_body.html(newContent);
 }
 
+
 function setDarkMode(isDarkMode) {
     if (isDarkMode) {
       $('body').addClass('dark-mode');
@@ -238,18 +277,16 @@ function setDarkMode(isDarkMode) {
       $('body').removeClass('dark-mode');
       $('#mode-icon').removeClass('fa-sun').addClass('fa-moon');
     }
-  }
+}
 
-function getCurrentTime() {
-  var now = new Date();
 
-  var year = now.getFullYear();
-  var month = String(now.getMonth() + 1).padStart(2, '0');
-  var day = String(now.getDate()).padStart(2, '0');
-  var hours = String(now.getHours()).padStart(2, '0');
-  var minutes = String(now.getMinutes()).padStart(2, '0');
-  var seconds = String(now.getSeconds()).padStart(2, '0');
-
-  var formattedTime = year + '-' + month + '-' + day + '_' + hours + ':' + minutes + ':' + seconds;
-  return formattedTime;
+function loadPastMessages(messages) {
+    toggleLoadingIcon('show');
+    var message_box = $('#message-box');
+    message_box.html("");
+    for (var i = 0; i < messages.length; i++) {
+      var msg = messages[i];
+      add_message(msg.role, msg.content, false, msg.is_language_learning, true);
+    }
+    toggleLoadingIcon('hide');
 }
