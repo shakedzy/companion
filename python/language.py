@@ -6,7 +6,7 @@ translate_client = translate_v2.Client()
 
 def init_language(credentials: Credentials):
     global translate_client
-    translate_client = translate_v2.Client(credentials=credentials) if credentials else translate_v2.Client()
+    translate_client = translate_v2.Client(credentials=credentials)
 
 
 def translate(text, to) -> str:

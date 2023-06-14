@@ -20,8 +20,7 @@ t2s_voice = None
 def init_speech(config: Config, credentials: Credentials):
     global t2s_client, t2s_voice
 
-    if credentials:
-        t2s_client = texttospeech.TextToSpeechClient(credentials=credentials)
+    t2s_client = texttospeech.TextToSpeechClient(credentials=credentials)
 
     l = config.bot.voice.split("-")
     t2s_voice = texttospeech.VoiceSelectionParams(name=config.bot.voice, language_code=f"{l[0]}-{l[1]}")
