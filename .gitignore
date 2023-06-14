@@ -3,6 +3,7 @@
 tmp/*
 ltm/*
 config.yml
+keys.yml
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

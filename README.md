@@ -17,7 +17,7 @@
 - **Fully-functioning web application:**
   - [ ] Move configurations from YML file to a web-apge _(in progress)_
   - [ ] Allow launching on Streamlit cloud
-    - [ ] Allow authenticating to Google Cloud Services using Service Account _(ready on branch)_
+    - [x] ~Allow authenticating to Google Cloud Services using Service Account~
   - [ ] Documentation website
 ---
 
