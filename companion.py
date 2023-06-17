@@ -4,17 +4,19 @@ import sys
 import json
 import signal
 import pygame
+import openai
 import argparse
 from typing import Optional
 from queue import Empty as EmptyQueue
 from threading import Thread
-from flask import Flask, render_template, request, jsonify
+from google.oauth2.service_account import Credentials
+from flask import Flask, Response, render_template, request, jsonify
 from python import speech
+from python import language
 from python.memory import Memory
 from python.config import Config
 from python.chatbot import Chatbot
 from python.app_cache import AppCache
-from python.language import translate, is_text_of_language
 
 
 TEMP_DIR = os.path.join(os.getcwd(), "tmp")
@@ -145,7 +147,7 @@ def store_message(sender=None, message=None):
 @app.route('/user_message_info', methods=['POST'])
 def user_message_info():
     message = request.form['message']
-    is_language_learning = is_text_of_language(message, config.language.learning)
+    is_language_learning = language.is_text_of_language(message, config.language.learning)
     return jsonify({'user_recording': app_cache.user_recording,
                     'is_language_learning': is_language_learning})
 
@@ -186,7 +188,7 @@ def translate_text():
     message = request.form["text"]
     sender = request.form["sender"]
     lang = config.language.native if sender == "assistant" else config.language.learning
-    translated = translate(message, to=lang)
+    translated = language.translate(message, to=lang)
     return jsonify({'message': translated})
 
 
@@ -279,11 +281,43 @@ def exit_graceful(signum, frame):
     sys.exit(0)
 
 
-def run(config_file):
+def refresh():
+    global memory, chatbot
+    memory = Memory()
+    chatbot = Chatbot(config=config, memory=memory)
+
+    if os.path.exists(TEMP_DIR):
+        for f in os.listdir(TEMP_DIR):
+            os.remove(os.path.join(TEMP_DIR, f))
+    else:
+        os.makedirs(TEMP_DIR)
+
+
+def init_openai():
+    openai_config = config.get("openai", None)
+    if openai_config and "api_key" in openai_config:
+        openai.api_key = openai_config["api_key"]
+
+
+def get_gcs_credentials() -> Credentials:
+    sa = config.get("google_sa", None)
+    if sa:
+        credentials = Credentials.from_service_account_info(sa)
+    else:
+        credentials = None
+    return credentials
+
+
+def run(config_file, keys_file=None):
     global config
     config = Config.from_yml_file(config_file)
+    if keys_file:
+        config.update_from_yml_file(keys_file)
 
-    speech.init_google_text_to_speech(config=config)
+    init_openai()
+    gcs_creds = get_gcs_credentials()
+    language.init_language(credentials=gcs_creds)
+    speech.init_speech(config=config, credentials=gcs_creds)
 
     app_cache.text2speech_thread = Thread(target=bot_text_to_speech_queue_func)
     app_cache.text2speech_thread.start()
@@ -295,8 +329,9 @@ def run(config_file):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('-c', '--config', dest='config_file', default='config.yml', help='The config yaml file.')
+    parser.add_argument('-c', '--config', dest='config_file', default='config.yml', help='A config yml file.')
+    parser.add_argument('-k', '--keys', dest='keys_file', help='A keys yml file [optional].')
     args = parser.parse_args()
     signal.signal(signal.SIGINT, exit_graceful)
     signal.signal(signal.SIGTERM, exit_graceful)
-    run(args.config_file)
+    run(args.config_file, args.keys_file)

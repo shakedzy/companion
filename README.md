@@ -6,6 +6,21 @@
 
 ![demo](demo.gif)
 
+---
+## 🗺️ Roadmap: 
+- **Improved session experience:**
+  - [x] ~Tutor kicks-off sessions~
+  - [x] ~Improving tutor responses~
+  - [x] ~Save and load sessions~
+  - [ ] Improved error handling
+
+- **Fully-functioning web application:**
+  - [ ] Move configurations from YML file to a web-apge _(in progress)_
+  - [ ] Allow launching on Streamlit cloud
+    - [x] ~Allow authenticating to Google Cloud Services using Service Account~
+  - [ ] Documentation website
+---
+
 Companion uses [OpenAI ChatGPT](https://chat.openai.com) & [Whisper](https://openai.com/research/whisper) and 
 [Google Text-to-Speech](https://cloud.google.com/text-to-speech) & 
 [Translate](https://translate.google.com/) to create your own personal

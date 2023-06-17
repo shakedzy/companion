@@ -1,7 +1,13 @@
 from langcodes import Language, find
-from google.cloud import translate_v2 as translate
+from google.cloud import translate_v2
+from google.oauth2.service_account import Credentials
 
-translate_client = translate.Client()
+translate_client = translate_v2.Client()
+
+
+def init_language(credentials: Credentials):
+    global translate_client
+    translate_client = translate_v2.Client(credentials=credentials)
 
 
 def translate(text, to) -> str:

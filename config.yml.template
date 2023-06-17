@@ -1,17 +1,20 @@
 model:
-  name: "?"
-  temperature: 0.2
+  name: "gpt-3.5-turbo"
+  temperature: 0.8
+
 user:
   name: "?"
   image: "?"
+
 bot:
   name: "?"
   image: "?"
+  voice: "?"
+
 language:
   native: "?"
   learning: "?"
-  level: "?"
-text_to_speech:
-  voice: "?"
+  level: "intermediate"
+
 behavior:
   auto_send_recording: false
