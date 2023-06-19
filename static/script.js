@@ -235,6 +235,10 @@ function get_response(is_initial_message) {
   $.post('/get_response', {'is_initial_message': is_initial_message}, function(response) {
       var bot_message = response['message'];
       var message_index = response['message_index'];
+      var error_message = response['error'];
+      if (error_message !== null) {
+          showNotification(error_message);
+      }
       add_message('assistant', bot_message, false);
       get_next_message(message_index);
   });
@@ -290,3 +294,34 @@ function loadPastMessages(messages) {
     }
     toggleLoadingIcon('hide');
 }
+
+function showNotification(message) {
+  // Create notification div
+  var notification = document.createElement('div');
+  notification.className = 'notification';
+  notification.innerHTML = message;
+
+  // Create close button
+  var closeButton = document.createElement('button');
+  closeButton.type = 'button';
+  closeButton.className = 'close';
+  closeButton.innerHTML = '&times;';
+
+  // Add event listener to close button
+  closeButton.addEventListener('click', function() {
+    notification.remove();
+  });
+
+  // Add close button to notification
+  notification.appendChild(closeButton);
+
+  // Add notification to notification area
+  var notificationArea = document.getElementById('notification-area');
+  notificationArea.appendChild(notification);
+
+  // Remove notification after 3 seconds
+  setTimeout(function() {
+    notification.remove();
+  }, 5000);
+}
+

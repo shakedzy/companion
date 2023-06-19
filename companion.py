@@ -54,15 +54,24 @@ def home():
 
 @app.route('/get_response', methods=['POST'])
 def get_response():
-    is_initial_message = bool(int(request.form['is_initial_message']))
-    app_cache.message_generator = chatbot.get_response(is_initial_message)
-    app_cache.last_sentence = ''
-    app_cache.sentences_counter = 0
-    app_cache.bot_recordings = list()
-    first_message = next(app_cache.message_generator)
-    app_cache.generated_message = first_message
-    return jsonify({'message': first_message,
-                    'message_index': len(memory)})
+    error_message = None
+    first_message = ''
+    try:
+        is_initial_message = bool(int(request.form['is_initial_message']))
+        app_cache.message_generator = chatbot.get_response(is_initial_message)
+        app_cache.last_sentence = ''
+        app_cache.sentences_counter = 0
+        app_cache.bot_recordings = list()
+        first_message = next(app_cache.message_generator)
+        app_cache.generated_message = first_message
+    except Exception as e:
+        print(e)
+        error_message = f"{e.__class__.__name__}: {e}"
+    finally:
+        print("ERROR: ", error_message)
+        return jsonify({'message': first_message,
+                        'message_index': len(memory),
+                        'error': error_message})
 
 
 @app.route('/get_next_message', methods=['POST'])
@@ -219,7 +228,7 @@ def load_session():
             for message in messages:
                 memory.add(role=message["role"], message=message["content"])
                 if message["role"] == "user":
-                    message["is_language_learning"] = is_text_of_language(message["content"], config.language.learning)
+                    message["is_language_learning"] = language.is_text_of_language(message["content"], config.language.learning)
                 else:
                     message["is_language_learning"] = True
 
