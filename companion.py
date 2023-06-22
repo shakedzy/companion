@@ -5,7 +5,6 @@ import signal
 import argparse
 from typing import Optional
 from threading import Thread
-from functools import partial
 from flask import Flask, render_template, request, jsonify
 from python import speech, language, utils, threads
 from python.memory import Memory
@@ -56,10 +55,8 @@ def get_response():
         first_message = next(app_cache.message_generator)
         app_cache.generated_message = first_message
     except Exception as e:
-        print(e)
-        error_message = f"{e.__class__.__name__}: {e}"
+        error_message = utils.get_error_message_from_exception(e)
     finally:
-        print("ERROR: ", error_message)
         return jsonify({'message': first_message,
                         'message_index': len(memory),
                         'error': error_message})
@@ -106,8 +103,16 @@ def start_recording():
 def end_recording():
     speech.stop_recording()
     app_cache.recording_thread.join()
-    recorded_text = speech.speech2text(app_cache.user_recording, language=app_cache.language)
-    return jsonify({'recorded_text': recorded_text})
+
+    recorded_text = None
+    error_message = None
+    try:
+        recorded_text = speech.speech2text(app_cache.user_recording, language=app_cache.language)
+    except Exception as e:
+        error_message = utils.get_error_message_from_exception(e)
+    finally:
+        return jsonify({'recorded_text': recorded_text,
+                        'error': error_message})
 
 
 @app.route('/store_message', methods=['POST'])
@@ -122,10 +127,16 @@ def store_message(sender=None, message=None):
 
 @app.route('/user_message_info', methods=['POST'])
 def user_message_info():
+    error_message = None
     message = request.form['message']
-    is_language_learning = language.is_text_of_language(message, config.language.learning)
+    try:
+        is_language_learning = language.is_text_of_language(message, config.language.learning)
+    except Exception as e:
+        is_language_learning = False
+        error_message = utils.get_error_message_from_exception(e)
     return jsonify({'user_recording': app_cache.user_recording,
-                    'is_language_learning': is_language_learning})
+                    'is_language_learning': is_language_learning,
+                    'error': error_message})
 
 
 @app.route('/play_bot_recording', methods=['POST'])
@@ -164,7 +175,11 @@ def translate_text():
     message = request.form["text"]
     sender = request.form["sender"]
     lang = config.language.native if sender == "assistant" else config.language.learning
-    translated = language.translate(message, to=lang)
+    try:
+        translated = language.translate(message, to=lang)
+    except Exception as e:
+        app_cache.server_errors.append(utils.get_error_message_from_exception(e))
+        translated = None
     return jsonify({'message': translated})
 
 
@@ -195,7 +210,11 @@ def load_session():
             for message in messages:
                 memory.add(role=message["role"], message=message["content"])
                 if message["role"] == "user":
-                    message["is_language_learning"] = language.is_text_of_language(message["content"], config.language.learning)
+                    try:
+                        message["is_language_learning"] = language.is_text_of_language(message["content"], config.language.learning)
+                    except Exception as e:
+                        message["is_language_learning"] = False
+                        app_cache.server_errors.append(utils.get_error_message_from_exception(e))
                 else:
                     message["is_language_learning"] = True
 
@@ -203,6 +222,13 @@ def load_session():
         messages = []
 
     return jsonify({"messages": messages})
+
+
+@app.route('/check_server_errors', methods=['GET'])
+def check_server_errors():
+    server_errors = app_cache.server_errors.copy()
+    app_cache.server_errors = []
+    return jsonify({'server_errors': server_errors})
 
 
 @app.route('/memory', methods=['GET'])
@@ -247,12 +273,7 @@ def run(config_file, keys_file=None):
     language.init_language(credentials=gcs_creds)
     speech.init_speech(config=config, credentials=gcs_creds)
 
-    app_cache.text2speech_thread = Thread(target=partial(
-        threads.bot_text_to_speech_queue_func(config=config, memory=memory, app_cache=app_cache)
-    ))
-    app_cache.text2speech_thread.start()
-    app_cache.play_recordings_thread = Thread(target=partial(threads.play_recordings_queue_func(app_cache=app_cache)))
-    app_cache.play_recordings_thread.start()
+    threads.init_threads(config, memory, app_cache)
 
     app.run()
 

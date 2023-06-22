@@ -1,5 +1,6 @@
 $(document).ready(function() {
   get_response(is_initial_message=1);
+
   $('#message-form').on('submit', function(e) {
     e.preventDefault();
     var message = $('#message-input').val();
@@ -8,6 +9,10 @@ $(document).ready(function() {
       $.post('/user_message_info', {'message': message}, function(response) {
         var has_user_recording = response['user_recording'] !== null;
         var is_language_learning = response['is_language_learning'];
+        var error_message = response['error'];
+        if (error_message !== null) {
+            showNotification(error_message);
+        }
         add_message('user', message, has_user_recording, is_language_learning);
         get_response(is_initial_message=0);
       });
@@ -32,6 +37,10 @@ $(document).ready(function() {
       toggleLoadingIcon('show');
       $.post('/end_recording', {}, function(response) {
         var recorded_text = response['recorded_text'];
+        var error_message = response['error'];
+        if (error_message !== null) {
+            showNotification(error_message);
+        }
         $('#message-input').val(recorded_text);
         if (auto_send_recording) {
           $('#submit-button').click();
@@ -134,6 +143,13 @@ $(document).ready(function() {
         }
     });
   });
+
+  setInterval(function () {
+      $.get("/check_server_errors", function (response) {
+          var server_errors = response['server_errors'];
+          server_errors.forEach(showNotification)
+      });
+  }, 3000);
 
 });
 

@@ -10,6 +10,7 @@ TEMP_DIR = os.path.join(os.getcwd(), "tmp")
 LTM_DIR = os.path.join(os.getcwd(), "ltm")  # Long Term Memory
 SAVED_SESSION_FILE = os.path.join(LTM_DIR, "last_session.json")
 
+
 def split_to_sentences(text):
     """
     This function MUST return a list of only one or two elements
@@ -53,3 +54,7 @@ def get_gcs_credentials(config: Config) -> Credentials:
     else:
         credentials = None
     return credentials
+
+
+def get_error_message_from_exception(e: Exception):
+    return f"{e.__class__.__name__}: {e}"
