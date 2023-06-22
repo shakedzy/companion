@@ -7,6 +7,7 @@ class AppCache:
     language = None
     user_recording = None
     bot_recordings = list()
+    server_errors = list()
     sentences_counter: int = 0
     generated_message: str = ''
     last_sentence: str = ''
