@@ -2,15 +2,17 @@ import os
 import sys
 import json
 import signal
+import pygame
 import argparse
 from typing import Optional
 from threading import Thread
 from flask import Flask, render_template, request, jsonify
-from python import speech, language, utils, threads
+from python import speech, language, utils
 from python.memory import Memory
 from python.config import Config
 from python.chatbot import Chatbot
 from python.app_cache import AppCache
+from queue import Empty as EmptyQueue
 
 
 app = Flask(__name__)
@@ -273,9 +275,49 @@ def run(config_file, keys_file=None):
     language.init_language(credentials=gcs_creds)
     speech.init_speech(config=config, credentials=gcs_creds)
 
-    threads.init_threads(config, memory, app_cache)
+    app_cache.text2speech_thread = Thread(target=bot_text_to_speech_queue_func)
+    app_cache.text2speech_thread.start()
+    app_cache.play_recordings_thread = Thread(target=play_recordings_queue_func)
+    app_cache.play_recordings_thread.start()
 
     app.run()
+
+
+########## THREADS ##########
+
+def bot_text_to_speech_queue_func():
+    global config, memory, app_cache
+    while not app_cache.stop_threads_event.is_set():
+        try:
+            item = app_cache.text2speech_queue.get(timeout=1)  # Wait for 1 second to get an item
+            idx = item["message_index"]
+            filename = utils.bot_text_to_speech(text=item['text'], message_index=idx, counter=item['counter'], config=config)
+            if item.get('skip_cache', False):
+                memory.update(idx, recording=[filename])
+            else:
+                app_cache.bot_recordings.append(filename)
+                memory.update(idx, recording=app_cache.bot_recordings)
+            app_cache.play_recordings_queue.put(filename)
+        except EmptyQueue:
+            continue
+        except Exception as e:
+            app_cache.server_errors.append(utils.get_error_message_from_exception(e))
+
+
+def play_recordings_queue_func():
+    global app_cache
+    while not app_cache.stop_threads_event.is_set():
+        try:
+            filename = app_cache.play_recordings_queue.get(timeout=1)  # Wait for 1 second to get an item
+            speech.play_mp3(filename)
+            while pygame.mixer.music.get_busy():
+                continue
+        except EmptyQueue:
+            continue
+        except Exception as e:
+            app_cache.server_errors.append(utils.get_error_message_from_exception(e))
+
+#############################
 
 
 if __name__ == '__main__':
