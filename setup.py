@@ -81,13 +81,9 @@ INPUT_LANGUAGES = [  # Supported languages by OpenAI Whisper
     "Welsh"
 ]
 
-voices_by_features = dict()
-
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
-    global voices_by_features
-
     if request.method == 'POST':
         data = {
             'image_url': request.form.get('image_url'),
