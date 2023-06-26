@@ -5,10 +5,12 @@ model:
 user:
   name: "?"
   image: "?"
+  gender: "male" or "female"
 
 bot:
   name: "?"
   image: "?"
+  gender: "male" or "female"
   voice: "?"
 
 language:
