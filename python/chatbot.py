@@ -5,9 +5,9 @@ from typing import Generator
 from python.memory import Memory
 from python.config import Config
 
-SYSTEM_PROMPT = """You are a {language} teacher named {teacher_name}. You are on a 1-on-1 session with your
-                   student, {user_name}. {user_name}'s {language} level is: {level}.
-                   Your task is to assist your student in advancing their {language}.
+SYSTEM_PROMPT = """You are a {language} teacher named {teacher_name}, and you are a {bot_gender}. You are on a 1-on-1 
+                   session with your  student, {user_name}, who is a {user_gender}. {user_name}'s {language} level 
+                   is: {level}. Your task is to assist your student in advancing their {language}.
                    * When the session begins, offer a suitable session for {user_name}, unless asked for 
                    something else.
                    * {user_name}'s native language is {user_language}. {user_name} might address you in their own
@@ -42,7 +42,7 @@ class Chatbot:
         user_lang = Language.get(config.language.native).display_name()
         self._memory.add("system", dedent(SYSTEM_PROMPT.format(
             teacher_name=config.bot.name, user_name=config.user.name, language=lang, user_language=user_lang,
-            level=config.language.level
+            level=config.language.level, user_gender=config.user.gender, bot_gender=config.bot.gender
         )))
 
     def get_response(self, is_initial_message=False) -> Generator:

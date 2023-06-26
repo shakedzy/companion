@@ -34,10 +34,12 @@ while lower values like 0.2 will make it more focused and deterministic
 #### user
 * `name`: Your name
 * `image`: A URL to your profile image. Can be relative or full
+* `gender`: Either `male` or `female`
 
 #### bot
 * `name`: The bot name. You can refer to the tutor by this name
 * `image`: A URL which will function as the profile image of your tutor. Can be relative or full
+* `gender`: Either `male` or `female`
 * `voice`: the voice used by the tutor (see [Google TTS documentation](https://cloud.google.com/text-to-speech/docs/voices) 
 for list of voices
 
