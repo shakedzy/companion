@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Set Up</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.0.2/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='common.css') }}" />
+    <link rel="stylesheet" type="text/css" href="/static/setup.css">
+    <link rel="icon" type="image/png" href="/static/favicon.png">
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="{{ url_for('static', filename='setup.js') }}"></script>
+    <script>
+        var input_languages_codes_and_names = {{ input_languages_codes_and_names | tojson }};
+        var output_languages_locales_and_names = {{ output_languages_locales_and_names | tojson }};
+    </script>
+</head>
+<body>
+    <div id="notification-area"></div>
+    <div class="container">
+        <h1 class="mt-5 mb-5">Configure Your Companion</h1>
+        <form id="setup-form" name="setup-form" method="post">
+            <div class="row mb-3 mt-3 profile-input">
+                <div class="col-1"></div>
+                <div class="col-5">
+                    <label for="user-name" class="form-label">Your name</label>
+                    <input type="text" class="form-control" id="user-name" name="user-name" required>
+                </div>
+                <div class="col-3">
+                    <label for="gender-form" class="form-label">Gender</label>
+                    <div id="gender-form">
+                        <input class="gender-check-input" type="radio" name="gender" id="female" value="Female" checked>
+                        <label class="gender-check-input" for="female">Female</label>
+                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                        <input class="gender-check-input" type="radio" name="gender" id="male" value="Male">
+                        <label class="gender-check-input" for="male">Male</label>
+                    </div>
+                </div>
+                <div class="col-1"></div>
+            </div>
+            <div class="row mb-5 mt-3 profile-input">
+                <div class="col-1">
+                    <img id="profile_image" src="/static/user.png" alt="Profile Image" class="profile-img mt-3 mr-3">
+                </div>
+                <div class="col-8">
+                    <label for="profile-img-url" class="form-label">Profile image URL</label>
+                    <input type="text" class="form-control" id="profile-img-url" name="profile-img-url" required>
+                </div>
+                <div class="col-1"></div>
+            </div>
+            <div class="row mb-5 mt-3 profile-input">
+                <div class="col-1"></div>
+                <div class="col-4">
+                    <label for="user-lang-dropdown" class="form-label">You speak</label>
+                    <select class="form-select" id="user-lang-dropdown" name="user-lang-dropdown" required>
+                        <option selected disabled value="">Choose...</option>
+                    </select>
+                </div>
+                <div class="col-4">
+                    <label for="lang-level" class="form-label">Your foreign-language level</label>
+                    <input type="text" class="form-control" id="lang-level" name="lang-level" value="intermediate" required>
+                </div>
+                <div class="col-1"></div>
+            </div>
+            <hr>
+            <div class="row mt-5 d-flex align-items-center justify-content-center">
+                <div class="col-2">
+                    <label for="tutors" class="form-label">Your tutor is</label>
+                </div>
+                <div class="col-8"></div>
+            </div><br>
+            <div class="row mb-5 d-flex align-items-center justify-content-center" id="tutors">
+                {% for i in range(females|length) %}
+                <div class="col-auto">
+                    <div class="form-check">
+                        <input class="form-check-tutor" type="radio" id="{{females[i] | lower}}-female"
+                               name="tutor" value="{{ females[i] }}-female" style="display: none;">
+                        <label class="form-check-label image-label" for="{{females[i] | lower}}-female">
+                            <img src="/static/bots_profile/{{females[i] | lower}}.png" alt="{{ females[i] }}"
+                                 class="profile-img"> {{ females[i] }}
+                        </label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-tutor" type="radio" id="{{males[i] | lower}}-male"
+                               name="tutor" value="{{ males[i] }}-male" style="display: none;">
+                        <label class="form-check-label image-label" for="{{males[i] | lower}}-male">
+                            <img src="/static/bots_profile/{{males[i] | lower}}.png" alt="{{ males[i] }}"
+                                 class="profile-img"> {{ males[i] }}
+                        </label>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            <div class="row mb-3 align-items-center justify-content-center">
+                <div class="col-4">
+                    <label for="tutor-lang-dropdown" class="form-label">Your tutor speaks</label>
+                    <select class="form-select" id="tutor-lang-dropdown" name="tutor-lang-dropdown" required>
+                        <option selected disabled value="">Choose...</option>
+                    </select>
+                </div>
+                <div class="col-4">
+                    <label for="voices-dropdown" class="form-label">Your tutor's voice</label>
+                    <select class="form-select" id="voices-dropdown" name="voices-dropdown" required>
+                        <option selected disabled value=""></option>
+                    </select>
+                </div>
+                <div class="col-2">
+                    <div class="row">
+                        <div class="col-12 d-flex justify-content-start">
+                            <label for="listen-to-tutor">Try voice</label>
+                        </div>
+                        <div class="col-12 d-flex justify-content-center mt-sm-2">
+                            <button class="btn btn-primary" id="listen-to-tutor" style="width: 100%">
+                                <i class="fas fa-volume-up"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row mt-5">
+                <div class="col-1"></div>
+                <div class="col-10">
+                    <details>
+                        <summary style="text-align: left; padding-left: 20px;"><em>Advanced options</em></summary>
+                        <div class="row mt-3 align-items-center justify-content-center">
+                            <div class="col-3">
+                                <label for="model-name" class="form-label">Model name</label>
+                                <input type="text" class="form-control" id="model-name" name="model-name" value="gpt-3.5-turbo" required>
+                            </div>
+                            <div class="col-2">
+                                <label for="temperature" class="form-label">Temperature</label>
+                                <input type="number" class="form-control" id="temperature" name="temperature"
+                                       min="0.0" max="2.0" step="0.1" value="0.8" required>
+                            </div>
+                            <div class="col-2 d-flex flex-column align-items-center">
+                                <label class="form-check-label" for="auto-send-switch">
+                                    Auto send recording
+                                    <i class="fa-sharp fa-solid fa-circle-info"></i>
+                                </label>
+                                <input class="form-check-input mt-1" type="checkbox" id="auto-send-switch" name="auto-send-switch"/>
+                            </div>
+                            <div class="col-3">
+                                <label for="filename" class="form-label">File Name (YAML)</label>
+                                <input type="text" class="form-control" id="filename" name="filename" value="config.yml" required>
+                            </div>
+                        </div>
+                    </details>
+                </div>
+                <div class="col-1"></div>
+            </div>
+            <button type="submit" id="submit" name="submit" class="btn btn-primary mb-3 mt-5" style="width: 100px;">
+                <i class="fa-sharp fa-solid fa-check fa-lg" id="submit-icon"></i>
+            </button>
+            <br><em>App must be restarted for changes to take effect</em>
+        </form>
+    </div>
+</body>
+</html>

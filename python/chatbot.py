@@ -1,9 +1,9 @@
 import openai
 from textwrap import dedent
-from langcodes import Language
 from typing import Generator
 from python.memory import Memory
 from python.config import Config
+from python.language import iso6391_to_language_name
 
 SYSTEM_PROMPT = """You are a {language} teacher named {teacher_name}, and you are a {bot_gender}. You are on a 1-on-1 
                    session with your  student, {user_name}, who is a {user_gender}. {user_name}'s {language} level 
@@ -38,8 +38,8 @@ class Chatbot:
         self._model = config.model.name
         self._temperature = config.model.temperature
         self._language = config.language.learning
-        lang = Language.get(config.language.learning).display_name()
-        user_lang = Language.get(config.language.native).display_name()
+        lang = iso6391_to_language_name(config.language.learning)
+        user_lang = iso6391_to_language_name(config.language.native)
         self._memory.add("system", dedent(SYSTEM_PROMPT.format(
             teacher_name=config.bot.name, user_name=config.user.name, language=lang, user_language=user_lang,
             level=config.language.level, user_gender=config.user.gender, bot_gender=config.bot.gender
@@ -51,7 +51,7 @@ class Chatbot:
             history.append({"role": "user", "content": dedent(INITIAL_MESSAGE.format(language=self._language))})
         else:
             history[-1]["content"] += dedent(TUTOR_INSTRUCTIONS.format(
-                language=Language.get(self._language).display_name())
+                language=iso6391_to_language_name(self._language))
             )
 
         response = openai.ChatCompletion.create(

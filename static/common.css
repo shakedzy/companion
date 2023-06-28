@@ -1,0 +1,29 @@
+.btn-green {
+    background-color: green !important;
+    color: white !important;
+}
+
+#notification-area {
+  position: fixed;
+  top: 10px;
+  left: 10px;
+  z-index: 9999;  /* To ensure notifications float above other elements */
+}
+
+.notification {
+  position: relative;
+  margin-bottom: 10px;
+  background-color: #f8d7da; /* light red */
+  border-radius: .25rem;
+  padding: .75rem 1.25rem;
+  width: 300px;
+}
+
+.notification button.close {
+  position: absolute;
+  top: 0;
+  right: 0;
+  padding: .75rem 1.25rem;
+  border: none;
+  background: transparent;
+}

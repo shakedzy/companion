@@ -1,18 +1,20 @@
 import os
 import sys
 import json
+import yaml
 import signal
 import pygame
 import argparse
 from typing import Optional
 from threading import Thread
 from flask import Flask, render_template, request, jsonify
+from queue import Empty as EmptyQueue
 from python import speech, language, utils
 from python.memory import Memory
 from python.config import Config
 from python.chatbot import Chatbot
 from python.app_cache import AppCache
-from queue import Empty as EmptyQueue
+from python.consts import TEMP_DIR, LTM_DIR, SAVED_SESSION_FILE, MALE_TUTORS, FEMALE_TUTORS, INPUT_LANGUAGES
 
 
 app = Flask(__name__)
@@ -21,27 +23,97 @@ config: Optional[Config] = None
 memory: Optional[Memory] = None
 chatbot: Optional[Chatbot] = None
 app_cache = AppCache()
-
+voices_by_features = dict()
 
 @app.route('/')
 def home():
     global memory, chatbot
     memory = Memory()
-    chatbot = Chatbot(config=config, memory=memory)
+    try:
+        chatbot = Chatbot(config=config, memory=memory)
+        languages = [config.language.learning, config.language.native, 'A']
+        auto_send_recording = int(config.behavior.auto_send_recording)
+        user_profile_img = config.user.image
+        bot_profile_img = config.bot.image
+    except Exception as e:
+        languages = ['A']
+        auto_send_recording = 0
+        app_cache.server_errors.append(utils.get_error_message_from_exception(e))
+        user_profile_img = ''
+        bot_profile_img = ''
 
-    if os.path.exists(utils.TEMP_DIR):
-        for f in os.listdir(utils.TEMP_DIR):
-            os.remove(os.path.join(utils.TEMP_DIR, f))
+    if os.path.exists(TEMP_DIR):
+        for f in os.listdir(TEMP_DIR):
+            os.remove(os.path.join(TEMP_DIR, f))
     else:
-        os.makedirs(utils.TEMP_DIR)
+        os.makedirs(TEMP_DIR)
 
-    if not os.path.exists(utils.LTM_DIR):
-        os.makedirs(utils.LTM_DIR)
+    if not os.path.exists(LTM_DIR):
+        os.makedirs(LTM_DIR)
 
-    languages = [config.language.learning, config.language.native, 'A']
-    return render_template('index.html', languages=languages,
-                           auto_send_recording=int(config.behavior.auto_send_recording),
-                           user_profile_img=config.user.image, bot_profile_img=config.bot.image)
+    return render_template('index.html', languages=languages, auto_send_recording=auto_send_recording,
+                           user_profile_img=user_profile_img, bot_profile_img=bot_profile_img)
+
+
+@app.route('/setup', methods=['GET', 'POST'])
+def setup():
+    if request.method == 'POST':
+        filename = request.form.get('filename')
+        data = {
+            "model": {
+                "name": request.form.get('model-name'),
+                "temperature": float(request.form.get('temperature'))
+            },
+            "user": {
+                "name": request.form.get('user-name'),
+                "image": request.form.get('profile-img-url'),
+                "gender": request.form.get('gender')
+            },
+            "bot": {
+                "name": request.form.get('tutor').split("-")[0],
+                "image": f"/static/bots_profile/{request.form.get('tutor').split('-')[0].lower()}.png",
+                "gender": request.form.get('tutor').split("-")[1].lower(),
+                "voice": request.form.get('voices-dropdown')
+            },
+            "language": {
+                "native": request.form.get('user-lang-dropdown').lower(),
+                "learning": request.form.get('tutor-lang-dropdown').split("-")[0].lower(),
+                "level": request.form.get('lang-level')
+            },
+            "behavior": {
+                "auto_send_recording": bool(request.form.get('auto-send-switch'))
+            }
+        }
+        with open(os.path.join(os.getcwd(), filename), 'w') as outfile:
+            yaml.dump(data, outfile, allow_unicode=True)
+        return jsonify({'status': 'success'})
+
+    else:
+        return render_template('setup.html', males=MALE_TUTORS, females=FEMALE_TUTORS,
+                               input_languages_codes_and_names=[[language.language_name_to_iso6391(lang), lang]
+                                                                for lang in INPUT_LANGUAGES],
+                               output_languages_locales_and_names=[[k, language.locale_code_to_language(k, name_in_same_language=True)]
+                                                                   for k in voices_by_features.keys()]
+                               )
+
+
+@app.route('/get_language_voices', methods=['POST'])
+def get_language_voices():
+    lang_locale = request.form['language']
+    gender = request.form['gender'].lower()
+    voices = voices_by_features.get(lang_locale, {}).get(gender, [])
+    return jsonify({'voices': voices})
+
+
+@app.route('/play_bot_test_text', methods=['POST'])
+def play_bot_test_text():
+    text = request.form['text']
+    print(text)
+    filename = utils.bot_text_to_speech(text, "test", "test")
+    speech.play_mp3(filename)
+    while pygame.mixer.music.get_busy():
+        continue
+    return jsonify({'status': 'success'})
 
 
 @app.route('/get_response', methods=['POST'])
@@ -94,7 +166,7 @@ def get_next_message():
 
 @app.route('/start_recording', methods=['POST'])
 def start_recording():
-    filename = os.path.join(utils.TEMP_DIR, f"user_recording_{len(memory)}.mp3")
+    filename = os.path.join(TEMP_DIR, f"user_recording_{len(memory)}.mp3")
     app_cache.user_recording = filename
     app_cache.recording_thread = Thread(target=speech.record, args=(filename,))
     app_cache.recording_thread.start()
@@ -193,7 +265,7 @@ def save_session():
 
     json_data = json.dumps(data, indent=4)  # Convert the list of dictionaries to JSON format
 
-    with open(utils.SAVED_SESSION_FILE, "w") as f:
+    with open(SAVED_SESSION_FILE, "w") as f:
         f.write(json_data)
 
     return jsonify({"success": True})
@@ -202,8 +274,8 @@ def save_session():
 @app.route('/load_session', methods=['GET'])
 def load_session():
     global memory, chatbot
-    if os.path.isfile(utils.SAVED_SESSION_FILE):
-        with open(utils.SAVED_SESSION_FILE, 'r') as f:
+    if os.path.isfile(SAVED_SESSION_FILE):
+        with open(SAVED_SESSION_FILE, 'r') as f:
             messages = json.load(f)
 
             memory = Memory()
@@ -257,16 +329,21 @@ def refresh():
     memory = Memory()
     chatbot = Chatbot(config=config, memory=memory)
 
-    if os.path.exists(utils.TEMP_DIR):
-        for f in os.listdir(utils.TEMP_DIR):
-            os.remove(os.path.join(utils.TEMP_DIR, f))
+    if os.path.exists(TEMP_DIR):
+        for f in os.listdir(TEMP_DIR):
+            os.remove(os.path.join(TEMP_DIR, f))
     else:
-        os.makedirs(utils.TEMP_DIR)
+        os.makedirs(TEMP_DIR)
 
 
 def run(config_file, keys_file=None):
-    global config
-    config = Config.from_yml_file(config_file)
+    global config, voices_by_features
+    try:
+        config = Config.from_yml_file(config_file)
+    except FileNotFoundError:
+        app_cache.server_errors.append("Config file not found. Got to /setup to configure the app.")
+        config = Config({'bot': {'voice': 'xx-xx'}})
+
     if keys_file:
         config.update_from_yml_file(keys_file)
 
@@ -274,6 +351,7 @@ def run(config_file, keys_file=None):
     gcs_creds = utils.get_gcs_credentials(config)
     language.init_language(credentials=gcs_creds)
     speech.init_speech(config=config, credentials=gcs_creds)
+    voices_by_features = speech.voices_by_features()
 
     app_cache.text2speech_thread = Thread(target=bot_text_to_speech_queue_func)
     app_cache.text2speech_thread.start()
@@ -291,7 +369,7 @@ def bot_text_to_speech_queue_func():
         try:
             item = app_cache.text2speech_queue.get(timeout=1)  # Wait for 1 second to get an item
             idx = item["message_index"]
-            filename = utils.bot_text_to_speech(text=item['text'], message_index=idx, counter=item['counter'], config=config)
+            filename = utils.bot_text_to_speech(text=item['text'], message_index=idx, counter=item['counter'])
             if item.get('skip_cache', False):
                 memory.update(idx, recording=[filename])
             else:

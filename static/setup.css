@@ -1,0 +1,91 @@
+body {
+    background-color: #f8f9fa;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+}
+
+.container {
+    text-align: center;
+    max-width: 1000px;
+    border: 1px solid #AAAAAA;  /* add a border */
+    border-radius: 10px;  /* round the corners */
+    padding: 20px;  /* add some padding */
+    box-sizing: border-box;
+}
+
+img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 50%;  /* make all images circular */
+}
+
+.profile-input {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.form-check {
+    display: flex;
+    margin-bottom: 1em;
+}
+
+.form-check img {
+    margin-right: 0.5em;
+}
+
+.form-label {
+    text-align: left;
+    display: block;
+    width: 100%;
+}
+
+.profile-img {
+    max-width: 60px;  /* set maximum width of images */
+    height: auto;
+    border-radius: 50%;  /* make images circular */
+    border: 3px solid transparent;
+}
+
+.image-label.selected img {
+    border: 3px solid #007BFF; /* Use any color you like for the border */
+}
+
+.gender-check-input {
+    margin-right: 10px;
+}
+
+.form-check-input {
+    appearance: none;
+    width: 3em;
+    height: 1.5em;
+    background: #ddd;
+    outline: none;
+    border-radius: 0.75em;
+    transition: background-color 0.2s ease-in-out;
+    position: relative;
+    padding: 0.15em;
+}
+
+.form-check-input:before {
+    content: '';
+    width: 1.2em;
+    height: 1.2em;
+    background: white;
+    border-radius: 0.3em;
+    position: absolute;
+    transition: transform 0.2s ease-in-out;
+    left: 0.1em;
+    top: 0.1em;
+}
+
+.form-check-input:checked {
+    background-color: #4caf50;
+}
+
+.form-check-input:checked:before {
+    transform: translateX(1.4em);
+}
