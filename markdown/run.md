@@ -3,10 +3,11 @@
 ```bash
 python companion.py
 ```
-This will look by default for the `config.yml` file. If you wth to set an alternative configuration file, run:
-```bash
-python companion.py -c CONFIG_FILE
-```
+You may also add:
+* `-c CONFIG_FILE` to select an alternative configuration file
+* `-k KEYS_FILE` to select a keys file.
+
+Both options are optional.
 
 2. Go to [127.0.0.1:5000](http://127.0.0.1:5000) in your browser.
 If this is the first time you run the app (or you'd like to change its configurations), 
