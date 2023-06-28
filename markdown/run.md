@@ -11,7 +11,7 @@ python companion.py -c CONFIG_FILE
 2. Go to [127.0.0.1:5000](http://127.0.0.1:5000) in your browser.
 If this is the first time you run the app (or you'd like to change its configurations), 
 go to [127.0.0.1:5000/setup](http://127.0.0.1:5000/setup). The app must be restarted
-for changes to take effect.
+after setup for changes to take effect.
 
 **Note**: Refreshing the page will restart the chat.
 
