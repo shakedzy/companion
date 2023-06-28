@@ -34,4 +34,4 @@ def iso6391_to_language_name(language_code, name_in_same_language=False):
 
 def locale_code_to_language(locale_code, name_in_same_language=False):
     display_lang = locale_code.split('-')[0] if name_in_same_language else "en"
-    return Language.get(locale_code).display_name(display_lang)
+    return Language.get(locale_code).display_name(display_lang).title()

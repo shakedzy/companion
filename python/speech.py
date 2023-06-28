@@ -91,7 +91,7 @@ def speech2text(filename, language):
     return transcript["text"]
 
 
-def text2speech(text, filename, config: Config):
+def text2speech(text, filename):
     synthesis_input = texttospeech.SynthesisInput(text=text)
     speech = t2s_client.synthesize_speech(
         input=synthesis_input, voice=t2s_voice, audio_config=t2s_audio_config
@@ -101,14 +101,14 @@ def text2speech(text, filename, config: Config):
     return filename
 
 
-def list_voices_by_features():  # Returns dict: {lang: {gender: [list of voices]}}
+def voices_by_features():  # Returns dict: {lang: {gender: [list of voices]}}
     voices_dict = dict()
     voices = t2s_client.list_voices().voices
 
     for voice in voices:
         language_codes = voice.language_codes
         name = voice.name
-        gender = texttospeech.SsmlVoiceGender(voice.ssml_gender).name
+        gender = texttospeech.SsmlVoiceGender(voice.ssml_gender).name.lower()
 
         for language_code in language_codes:
             if language_code not in voices_dict:

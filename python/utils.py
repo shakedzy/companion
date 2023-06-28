@@ -31,9 +31,9 @@ def split_to_sentences(text):
     return split_list
 
 
-def bot_text_to_speech(text, message_index, counter, config: Config):
+def bot_text_to_speech(text, message_index, counter):
     filename = os.path.join(TEMP_DIR, f"bot_speech_{message_index}_{counter}.mp3")
-    speech.text2speech(text, filename, config=config)
+    speech.text2speech(text, filename)
     return filename
 
 
