@@ -1,3 +1,5 @@
+$.getScript("/static/common.js");
+
 $(document).ready(function(){
     for (const input_code_and_lang of input_languages_codes_and_names) {  // [iso-6391, language_name]
         $('#user-lang-dropdown').append(new Option(input_code_and_lang[1], input_code_and_lang[0]));

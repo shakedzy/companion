@@ -89,8 +89,3 @@ img {
 .form-check-input:checked:before {
     transform: translateX(1.4em);
 }
-
-.btn-green {
-    background-color: green !important;
-    color: white !important;
-}
