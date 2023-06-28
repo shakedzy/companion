@@ -4,11 +4,7 @@ import openai
 from google.oauth2.service_account import Credentials
 from python import speech
 from python.config import Config
-
-
-TEMP_DIR = os.path.join(os.getcwd(), "tmp")
-LTM_DIR = os.path.join(os.getcwd(), "ltm")  # Long Term Memory
-SAVED_SESSION_FILE = os.path.join(LTM_DIR, "last_session.json")
+from python.consts import TEMP_DIR
 
 
 def split_to_sentences(text):

@@ -7,12 +7,13 @@ import argparse
 from typing import Optional
 from threading import Thread
 from flask import Flask, render_template, request, jsonify
+from queue import Empty as EmptyQueue
 from python import speech, language, utils
 from python.memory import Memory
 from python.config import Config
 from python.chatbot import Chatbot
 from python.app_cache import AppCache
-from queue import Empty as EmptyQueue
+from python.consts import TEMP_DIR, LTM_DIR, SAVED_SESSION_FILE, MALE_TUTORS, FEMALE_TUTORS, INPUT_LANGUAGES
 
 
 app = Flask(__name__)
@@ -29,19 +30,41 @@ def home():
     memory = Memory()
     chatbot = Chatbot(config=config, memory=memory)
 
-    if os.path.exists(utils.TEMP_DIR):
-        for f in os.listdir(utils.TEMP_DIR):
-            os.remove(os.path.join(utils.TEMP_DIR, f))
+    if os.path.exists(TEMP_DIR):
+        for f in os.listdir(TEMP_DIR):
+            os.remove(os.path.join(TEMP_DIR, f))
     else:
-        os.makedirs(utils.TEMP_DIR)
+        os.makedirs(TEMP_DIR)
 
-    if not os.path.exists(utils.LTM_DIR):
-        os.makedirs(utils.LTM_DIR)
+    if not os.path.exists(LTM_DIR):
+        os.makedirs(LTM_DIR)
 
     languages = [config.language.learning, config.language.native, 'A']
     return render_template('index.html', languages=languages,
                            auto_send_recording=int(config.behavior.auto_send_recording),
                            user_profile_img=config.user.image, bot_profile_img=config.bot.image)
+
+
+@app.route('/setup', methods=['GET', 'POST'])
+def setup():
+    if request.method == 'POST':
+        data = {
+            'image_url': request.form.get('image_url'),
+            'selected_chip': request.form.get('selected_chip'),
+            'dropdown_selection': request.form.get('dropdown_selection')
+        }
+        with open('data.txt', 'w') as outfile:
+            json.dump(data, outfile)
+        return 'Data saved successfully'
+
+    else:
+        voices_by_features = speech.list_voices_by_features()
+        return render_template('setup.html', males=MALE_TUTORS, females=FEMALE_TUTORS,
+                               input_languages_codes_and_names=[[language.language_name_to_iso6391(lang), lang]
+                                                                for lang in INPUT_LANGUAGES],
+                               output_languages_locales_and_names=[language.locale_code_to_language(k, True)
+                                                                   for k in voices_by_features.keys()]
+                               )
 
 
 @app.route('/get_response', methods=['POST'])
@@ -94,7 +117,7 @@ def get_next_message():
 
 @app.route('/start_recording', methods=['POST'])
 def start_recording():
-    filename = os.path.join(utils.TEMP_DIR, f"user_recording_{len(memory)}.mp3")
+    filename = os.path.join(TEMP_DIR, f"user_recording_{len(memory)}.mp3")
     app_cache.user_recording = filename
     app_cache.recording_thread = Thread(target=speech.record, args=(filename,))
     app_cache.recording_thread.start()
@@ -193,7 +216,7 @@ def save_session():
 
     json_data = json.dumps(data, indent=4)  # Convert the list of dictionaries to JSON format
 
-    with open(utils.SAVED_SESSION_FILE, "w") as f:
+    with open(SAVED_SESSION_FILE, "w") as f:
         f.write(json_data)
 
     return jsonify({"success": True})
@@ -202,8 +225,8 @@ def save_session():
 @app.route('/load_session', methods=['GET'])
 def load_session():
     global memory, chatbot
-    if os.path.isfile(utils.SAVED_SESSION_FILE):
-        with open(utils.SAVED_SESSION_FILE, 'r') as f:
+    if os.path.isfile(SAVED_SESSION_FILE):
+        with open(SAVED_SESSION_FILE, 'r') as f:
             messages = json.load(f)
 
             memory = Memory()
@@ -257,11 +280,11 @@ def refresh():
     memory = Memory()
     chatbot = Chatbot(config=config, memory=memory)
 
-    if os.path.exists(utils.TEMP_DIR):
-        for f in os.listdir(utils.TEMP_DIR):
-            os.remove(os.path.join(utils.TEMP_DIR, f))
+    if os.path.exists(TEMP_DIR):
+        for f in os.listdir(TEMP_DIR):
+            os.remove(os.path.join(TEMP_DIR, f))
     else:
-        os.makedirs(utils.TEMP_DIR)
+        os.makedirs(TEMP_DIR)
 
 
 def run(config_file, keys_file=None):

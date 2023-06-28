@@ -23,7 +23,7 @@
                     <label for="user-name" class="form-label">Your name</label>
                     <input type="text" class="form-control" id="user-name" required>
                 </div>
-                <div class="col-4">
+                <div class="col-3">
                     <label for="gender-form" class="form-label">Gender</label>
                     <div id="gender-form">
                         <input class="gender-check-input" type="radio" id="female" value="Female" checked>
@@ -33,18 +33,21 @@
                         <label class="gender-check-input" for="male">Male</label>
                     </div>
                 </div>
+                <div class="col-1"></div>
             </div>
             <div class="row mb-5 mt-3 profile-input">
                 <div class="col-1">
                     <img id="profile_image" src="/static/user.png" alt="Profile Image" class="profile-img mt-3 mr-3">
                 </div>
-                <div class="col-9">
+                <div class="col-8">
                     <label for="image_url" class="form-label">Profile image URL</label>
                     <input type="text" class="form-control" id="image_url" name="image_url" required>
                 </div>
+                <div class="col-1"></div>
             </div>
             <div class="row mb-5 mt-3 profile-input">
-             <div class="col-4">
+                <div class="col-1"></div>
+                <div class="col-4">
                     <label for="user-lang-dropdown" class="form-label">You speak</label>
                     <select class="form-select" id="user-lang-dropdown" required>
                         <option selected disabled value="">Choose...</option>
@@ -54,15 +57,7 @@
                     <label for="lang-level" class="form-label">Your level</label>
                     <input type="text" class="form-control" id="lang-level" value="intermediate" required>
                 </div>
-                <div class="col-2 d-flex flex-column align-items-center">
-                    <div class="form-check form-switch mb-1">
-                        <input class="form-check-input" type="checkbox" id="auto-send-switch" />
-                    </div>
-                  <label class="form-check-label" for="auto-send-switch">
-                      Auto send recording
-                      <i class="fa-sharp fa-solid fa-circle-info"></i>
-                  </label>
-                </div>
+                <div class="col-1"></div>
             </div>
             <hr>
             <div class="row mt-5 d-flex align-items-center justify-content-center">
@@ -94,9 +89,7 @@
                 {% endfor %}
             </div>
             <div class="row mb-3 align-items-center justify-content-center">
-                <div class="col-1">
-                    <i class="fa-solid fa-triangle-exclamation fa-2xl"></i>
-                </div>
+                <div class="col-1"></div>
                 <div class="col-4">
                     <label for="tutor-lang-dropdown" class="form-label">Your tutor speaks</label>
                     <select class="form-select" id="tutor-lang-dropdown" required>
@@ -117,25 +110,37 @@
                     <details>
                         <summary style="text-align: left; padding-left: 20px;"><em>Advanced options</em></summary>
                         <div class="row mt-3 align-items-center justify-content-center">
-                            <div class="col-1"></div>
-                            <div class="col-4">
+                            <div class="col-3">
                                 <label for="model-name" class="form-label">Model name</label>
                                 <input type="text" class="form-control" id="model-name" value="gpt-3.5-turbo" required>
                             </div>
-                            <div class="col-4">
+                            <div class="col-2">
                                 <label for="temperature" class="form-label">Temperature</label>
                                 <input type="number" class="form-control" id="temperature"
                                        min="0.0" max="2.0" step="0.1" value="0.8" required>
                             </div>
-                            <div class="col-1"></div>
+                            <div class="col-2 d-flex flex-column align-items-center">
+                                <label class="form-check-label" for="auto-send-switch">
+                                    Auto send recording
+                                    <i class="fa-sharp fa-solid fa-circle-info"></i>
+                                </label>
+                                <div class="form-check form-switch mb-1">
+                                    <input class="form-check-input" type="checkbox" id="auto-send-switch" />
+                                </div>
+                            </div>
+                            <div class="col-3">
+                                <label for="filename" class="form-label">File Name (YAML)</label>
+                                <input type="text" class="form-control" id="filename" value="config.yml" required>
+                            </div>
                         </div>
                     </details>
                 </div>
                 <div class="col-1"></div>
             </div>
-            <button type="submit" class="btn btn-primary mb-5 mt-5" style="width: 100px;">
+            <button type="submit" class="btn btn-primary mb-3 mt-5" style="width: 100px;">
                 <i class="fa-sharp fa-solid fa-check fa-lg"></i>
             </button>
+            <br><em>App must be restarted for changes to take affect</em>
         </form>
     </div>
 </body>
