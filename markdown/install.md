@@ -1,7 +1,5 @@
 # Installing Dependencies
 
-_Companion requires Python >= 3.11_
-
 1. On Mac, run:
 ```bash
 brew install portaudio ffmpeg
