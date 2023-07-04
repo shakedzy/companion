@@ -1,0 +1,47 @@
+site_name: Companion Docs
+site_description: Generative-AI-Powered Foreign-Language Private Tutor (Docs Site)
+site_author: Shaked Zychlinski
+site_url: http://shakedzy.xyz/companion/
+repo_name: shakedzy/companion
+repo_url: https://github.com/shakedzy/companion
+copyright: Copyright &copy; Shaked Zychlinski
+nav:
+  - Home: 'index.md'
+  - Supported Languages: 'languages.md'
+  - Required Services: 'setting_up.md'
+  - Install & Configure: 'install.md'
+  - Using Companion: 'run.md'
+  - Licenses: 'licenses.md'
+theme:
+  name: material
+  logo: 'images/small_logo.png'
+  favicon: 'images/favicon.png'
+  features:
+    - navigation.top
+    - navigation.footer
+    - content.code.copy
+    - content.tabs.link
+plugins:
+  - search
+extra:
+  social:
+    - icon: material/web
+      link: https://shakedzy.xyz/
+    - icon: fontawesome/brands/github
+      link: https://github.com/shakedzy
+    - icon: fontawesome/brands/linkedin
+      link: https://www.linkedin.com/in/shakedzy/
+    - icon: fontawesome/brands/medium
+      link: https://shakedzy.medium.com/
+markdown_extensions:
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.superfences
+  - pymdownx.tabbed:
+      alternate_style: true
+  - admonition
+  - pymdownx.details
