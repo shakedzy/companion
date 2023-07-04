@@ -1,26 +1,36 @@
 # Installing Dependencies
 
-1. On Mac, run:
-```bash
-brew install portaudio ffmpeg
-```
-(on Linux, replace `brew` with `apt-get`)
+### Installing prerequisites
 
-2. _(Optional):_ create a new virtual environment
+=== "Mac"
 
-3. Clone the repository, either by downloading the files
-from GitHub or by running:
+    ```bash
+    brew install portaudio ffmpeg
+    ```
+
+=== "Linux"
+
+    ```bash
+    apt-get install portaudio ffmpeg
+    ```
+
+### Installing environment  
+
+
+1. Create a new virtual environment _(optional)_
+
+2. Clone the repository, either by downloading the files
+  from GitHub or by running:
 ```bash
 git clone https://github.com/shakedzy/companion.git
 ```
-
-4. From the main `companion` directory, run:
+3. From the main `companion` directory, run:
 ```bash
 pip install -r requirments.txt
 ```
 
 
-# Keys file [optional]
+## Keys file (optional)
 You may add a `keys.yml` file which will hold your OpenAI API key and/or a Google Cloud Service Account
 to be used to access these required services. This is optional, and is used only when you wish to override the local
 OpenAI API key or Google Cloud SDK (or when they cannot be installed).

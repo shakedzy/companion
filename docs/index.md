@@ -1,10 +1,10 @@
 <p align="center">
-  <img src="static/logo.png" style="width: 500px;">
+  <img src="images/logo.png" style="width: 500px;">
 </p>
 
 # Companion: Generative-AI-Powered Foreign-Language Private Tutor
 
-![demo](docs/images/demo.gif)
+![demo](images/demo.gif)
 
 
 Companion uses [OpenAI ChatGPT](https://chat.openai.com) & [Whisper](https://openai.com/research/whisper) and 
@@ -16,9 +16,3 @@ in both your native language and selected foreign language. It's also configured
 Companion is distributed free of charge for any non-commercial usage. Note that the different APIs
 and services used are not necessarily free, and might charge you based on your usage. 
 
-## Documentation
-See all docs on [shakedzy.xyz/companion](http://shakedzy.xyz/companion).
-
----
-
-[Companion Licences](/docs/licenses.md)
