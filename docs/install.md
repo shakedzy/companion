@@ -4,12 +4,14 @@
 
 === "Mac"
 
+    Run:
     ```bash
     brew install portaudio ffmpeg
     ```
 
 === "Linux"
 
+    Run:
     ```bash
     apt-get install portaudio ffmpeg
     ```
