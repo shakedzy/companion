@@ -23,13 +23,25 @@ Google Translate is used to translate your tutor's messages to your own language
 4. Click on the "Create" button to create the project
 
 ### 2. Setting up Google Cloud SDK
-1. Download the [Google Cloud SDK client](https://cloud.google.com/sdk/docs/install-sdk). Unzip and place in your home directory.
-2. Run `~/google-cloud-sdk/install.sh`
-3. Run `~/google-cloud-sdk/bin/gcloud init`
-4. **Open a new terminal** and run `gcloud auth application-default login`
-5. Enable Translate API on [Google Cloud](https://console.cloud.google.com/apis/library/translate.googleapis.com). MAke sure the project you created is the one appearing on thee dropdown box at the top.
+1. Download the [Google Cloud SDK client](https://cloud.google.com/sdk/docs/install-sdk). Unzip and place in your home directory
+2. Run: 
+```bash
+~/google-cloud-sdk/install.sh`
+```
+3. Run:
+```bash
+~/google-cloud-sdk/bin/gcloud init
+```
+4. **Open a new terminal** and run:
+```bash
+gcloud auth application-default login
+```
 
 ### 3. Enable APIs
+
+!!! info "Check your Google Cloud project"
+    When accessing the links below, make sure the project you created is the one appearing on the dropdown box at the top
+
 1. Enable [Google Translate API](https://console.cloud.google.com/marketplace/product/google/translate.googleapis.com) for your project
 2. Enable [Google Text-to-Speech API](https://console.cloud.google.com/marketplace/product/google/texttospeech.googleapis.com) for your project
 
