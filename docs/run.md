@@ -11,15 +11,15 @@ You may also add:
 -k KEYS_FILE    select a keys file
 ```
 Both options are optional.
-
-2. Go to **[127.0.0.1:5000](http://127.0.0.1:5000)** in your browser.
+<br><br>
+2. Go to **[127.0.0.1:5000](http://127.0.0.1:5000)** in your browser. Session will
+begin automatically. <br> **Note**: Refreshing the page will restart the chat.
 
 !!! info "Launching for the first time"
     If this is the first time you run the app (or if you'd like to change its configurations), 
-    go to **[127.0.0.1:5000/setup](http://127.0.0.1:5000/setup)** (_The app must be restarted
+    go to **[127.0.0.1:5000/setup](http://127.0.0.1:5000/setup)** <br>(_app must be relaunched
     after setup for changes to take effect_).
 
-**Note**: Refreshing the page will restart the chat.
 
 
 ## User Interface
