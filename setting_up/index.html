@@ -475,13 +475,22 @@ Google Translate is used to translate your tutor's messages to your own language
 </ol>
 <h3 id="2-setting-up-google-cloud-sdk">2. Setting up Google Cloud SDK</h3>
 <ol>
-<li>Download the <a href="https://cloud.google.com/sdk/docs/install-sdk">Google Cloud SDK client</a>. Unzip and place in your home directory.</li>
-<li>Run <code>~/google-cloud-sdk/install.sh</code></li>
-<li>Run <code>~/google-cloud-sdk/bin/gcloud init</code></li>
-<li><strong>Open a new terminal</strong> and run <code>gcloud auth application-default login</code></li>
-<li>Enable Translate API on <a href="https://console.cloud.google.com/apis/library/translate.googleapis.com">Google Cloud</a>. MAke sure the project you created is the one appearing on thee dropdown box at the top.</li>
+<li>Download the <a href="https://cloud.google.com/sdk/docs/install-sdk">Google Cloud SDK client</a>. Unzip and place in your home directory</li>
+<li>Run: 
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>~/google-cloud-sdk/install.sh<span class="sb">`</span>
+</span></code></pre></div></li>
+<li>Run:
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>~/google-cloud-sdk/bin/gcloud<span class="w"> </span>init
+</span></code></pre></div></li>
+<li><strong>Open a new terminal</strong> and run:
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>gcloud<span class="w"> </span>auth<span class="w"> </span>application-default<span class="w"> </span>login
+</span></code></pre></div></li>
 </ol>
 <h3 id="3-enable-apis">3. Enable APIs</h3>
+<div class="admonition info">
+<p class="admonition-title">Check your Google Cloud project</p>
+<p>When accessing the links below, make sure the project you created is the one appearing on the dropdown box at the top</p>
+</div>
 <ol>
 <li>Enable <a href="https://console.cloud.google.com/marketplace/product/google/translate.googleapis.com">Google Translate API</a> for your project</li>
 <li>Enable <a href="https://console.cloud.google.com/marketplace/product/google/texttospeech.googleapis.com">Google Text-to-Speech API</a> for your project</li>
