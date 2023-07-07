@@ -27,6 +27,9 @@ voices_by_features = dict()
 
 @app.route('/')
 def home():
+    """
+    Homepage of web UI
+    """
     global memory, chatbot
     memory = Memory()
     try:
@@ -57,6 +60,9 @@ def home():
 
 @app.route('/setup', methods=['GET', 'POST'])
 def setup():
+    """
+    Web page, setup page
+    """
     if request.method == 'POST':
         filename = request.form.get('filename')
         data = {
@@ -99,6 +105,9 @@ def setup():
 
 @app.route('/get_language_voices', methods=['POST'])
 def get_language_voices():
+    """
+    Get supported voices by TTS
+    """
     lang_locale = request.form['language']
     gender = request.form['gender'].lower()
     voices = voices_by_features.get(lang_locale, {}).get(gender, [])
@@ -107,9 +116,12 @@ def get_language_voices():
 
 @app.route('/play_bot_test_text', methods=['POST'])
 def play_bot_test_text():
+    """
+    Play testing text-to-speech text from setup page
+    """
     text = request.form['text']
     print(text)
-    filename = utils.bot_text_to_speech(text, "test", "test")
+    filename = utils.bot_text_to_speech(text, 0, 0)
     speech.play_mp3(filename)
     while pygame.mixer.music.get_busy():
         continue
@@ -118,6 +130,9 @@ def play_bot_test_text():
 
 @app.route('/get_response', methods=['POST'])
 def get_response():
+    """
+    Get response from chatbot
+    """
     error_message = None
     first_message = ''
     try:
@@ -138,6 +153,10 @@ def get_response():
 
 @app.route('/get_next_message', methods=['POST'])
 def get_next_message():
+    """
+    Helper endpoint for '/get_response', to handle the generator yielded by the chatbot.
+    It returns the next characters in generator till it is consumed.
+    """
     index = int(request.form['message_index'])
     if app_cache.message_generator is None:
         return jsonify({'message': None})
@@ -166,6 +185,9 @@ def get_next_message():
 
 @app.route('/start_recording', methods=['POST'])
 def start_recording():
+    """
+    Begin recording user voice
+    """
     filename = os.path.join(TEMP_DIR, f"user_recording_{len(memory)}.mp3")
     app_cache.user_recording = filename
     app_cache.recording_thread = Thread(target=speech.record, args=(filename,))
@@ -175,6 +197,9 @@ def start_recording():
 
 @app.route('/end_recording', methods=['POST'])
 def end_recording():
+    """
+    End user recording and send recording to speech-to-text service
+    """
     speech.stop_recording()
     app_cache.recording_thread.join()
 
@@ -190,7 +215,13 @@ def end_recording():
 
 
 @app.route('/store_message', methods=['POST'])
-def store_message(sender=None, message=None):
+def store_message(sender: Optional[str] = None, message: Optional[str] = None):
+    """
+    Save message in memory
+
+    :param sender: role of message creator ("system", "user" or "assistant")
+    :param message: message text
+    """
     sender = sender or request.form['sender']
     message = message or request.form['message']
     memory.add(role=sender, message=message, user_recording=app_cache.user_recording,
@@ -201,6 +232,9 @@ def store_message(sender=None, message=None):
 
 @app.route('/user_message_info', methods=['POST'])
 def user_message_info():
+    """
+    Get metadata regarding user message. This is required for tbe frontend.
+    """
     error_message = None
     message = request.form['message']
     try:
@@ -215,6 +249,9 @@ def user_message_info():
 
 @app.route('/play_bot_recording', methods=['POST'])
 def play_bot_message():
+    """
+    Play selected message's bot recording if exists. If not, send text to TTS and play audio
+    """
     index = int(request.form['message_id'].split('_')[1])
     recordings = memory[index]["recording"]
     if recordings is None or len(recordings) == 0:
@@ -228,6 +265,9 @@ def play_bot_message():
 
 @app.route('/play_user_recording', methods=['POST'])
 def play_user_message():
+    """
+    Play user recording if exists
+    """
     message_id = int(request.form['message_id'].split('_')[1])
     user_recording = memory[message_id]['user_recording']
     if user_recording:
@@ -237,6 +277,9 @@ def play_user_message():
 
 @app.route('/set_language', methods=['POST'])
 def set_language():
+    """
+    Set user recording language
+    """
     language = request.form['language']
     if language == 'A':
         language = None
@@ -246,6 +289,9 @@ def set_language():
 
 @app.route('/translate_text', methods=['POST'])
 def translate_text():
+    """
+    Translate message
+    """
     message = request.form["text"]
     sender = request.form["sender"]
     lang = config.language.native if sender == "assistant" else config.language.learning
@@ -259,6 +305,9 @@ def translate_text():
 
 @app.route('/save_session', methods=['GET'])
 def save_session():
+    """
+    Save current session as file
+    """
     data = list()
     for m in memory.get_chat_history()[1:]:
         data.append({"role": m["role"], "content": m["content"]})
@@ -273,6 +322,9 @@ def save_session():
 
 @app.route('/load_session', methods=['GET'])
 def load_session():
+    """
+    Load session from file
+    """
     global memory, chatbot
     if os.path.isfile(SAVED_SESSION_FILE):
         with open(SAVED_SESSION_FILE, 'r') as f:
@@ -300,6 +352,9 @@ def load_session():
 
 @app.route('/check_server_errors', methods=['GET'])
 def check_server_errors():
+    """
+    Check for errors saved in `app_cache`, and display on web UI
+    """
     server_errors = app_cache.server_errors.copy()
     app_cache.server_errors = []
     return jsonify({'server_errors': server_errors})
@@ -307,15 +362,27 @@ def check_server_errors():
 
 @app.route('/memory', methods=['GET'])
 def print_memory():
+    """
+    Helper endpoint for debugging. Print memory.
+    """
     return json.dumps(memory.list, indent=4)
 
 
 @app.route('/memory/updates', methods=['GET'])
 def print_memory_updates():
+    """
+    Helper endpoint for debugging. Print memory updates.
+    """
     return json.dumps(memory._updates, indent=4)
 
 
-def exit_graceful(signum, frame):
+def exit_graceful(signum, frame) -> None:
+    """
+    Stop threads when app terminates.
+
+    :param signum: required by `signal.signal`
+    :param frame: required by `signal.signal`
+    """
     app_cache.stop_threads_event.set()
     speech.stop_recording()
     for thread in [app_cache.text2speech_thread, app_cache.recording_thread, app_cache.play_recordings_thread]:
@@ -324,7 +391,10 @@ def exit_graceful(signum, frame):
     sys.exit(0)
 
 
-def refresh():
+def refresh() -> None:
+    """
+    Refresh memory and chatbot in order to restart session
+    """
     global memory, chatbot
     memory = Memory()
     chatbot = Chatbot(config=config, memory=memory)
@@ -336,7 +406,13 @@ def refresh():
         os.makedirs(TEMP_DIR)
 
 
-def run(config_file, keys_file=None):
+def run(config_file: str, keys_file: Optional[str] = None) -> None:
+    """
+    Run app
+
+    :param config_file: path to config YAML file
+    :param keys_file: path to keys YAML file if exists
+    """
     global config, voices_by_features
     try:
         config = Config.from_yml_file(config_file)
@@ -364,6 +440,11 @@ def run(config_file, keys_file=None):
 ########## THREADS ##########
 
 def bot_text_to_speech_queue_func():
+    """
+    This function is meant to run on a parallel thread.
+    It is responsible to send texts to the TTS service, and then place the filename in a different queue,
+    in order to be played
+    """
     global config, memory, app_cache
     while not app_cache.stop_threads_event.is_set():
         try:
@@ -383,6 +464,10 @@ def bot_text_to_speech_queue_func():
 
 
 def play_recordings_queue_func():
+    """
+    This function is meant to run on a parallel thread.
+    It is responsible for playing audio files waiting in a designated queue
+    """
     global app_cache
     while not app_cache.stop_threads_event.is_set():
         try:

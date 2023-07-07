@@ -1,19 +1,23 @@
 from queue import Queue
 from threading import Thread, Event
+from typing import Generator, List, Optional
 
 
 class AppCache:
-    message_generator = None
-    language = None
-    user_recording = None
-    bot_recordings = list()
-    server_errors = list()
+    """
+    Used to save data which needs to transfer between different threads and endpoints
+    """
+    message_generator: Optional[Generator] = None
+    language: Optional[str] = None
+    user_recording: Optional[str] = None
+    bot_recordings: List[str] = list()
+    server_errors: List[str] = list()
     sentences_counter: int = 0
     generated_message: str = ''
     last_sentence: str = ''
-    recording_thread: Thread = None
-    text2speech_thread: Thread = None
-    play_recordings_thread: Thread = None
-    stop_threads_event = Event()
-    text2speech_queue = Queue()
-    play_recordings_queue = Queue()
+    recording_thread: Optional[Thread] = None
+    text2speech_thread: Optional[Thread] = None
+    play_recordings_thread: Optional[Thread] = None
+    stop_threads_event: Event = Event()
+    text2speech_queue: Queue = Queue()
+    play_recordings_queue: Queue = Queue()

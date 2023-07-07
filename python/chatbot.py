@@ -33,6 +33,9 @@ TUTOR_INSTRUCTIONS = """
 
 
 class Chatbot:
+    """
+    This class is used to communicate with the tutor
+    """
     def __init__(self, config: Config, memory: Memory):
         self._memory = memory
         self._model = config.model.name
@@ -46,6 +49,15 @@ class Chatbot:
         )))
 
     def get_response(self, is_initial_message=False) -> Generator:
+        """
+        send previous messages (stored in `self._memory`) to GPT and receive a response.
+        The response is streamed, therefore a Generator is returned
+
+        :param is_initial_message: in order to make the chatbot speak first, the INITIAL_MESSAGE prompt is sent, and
+                                   the discarded from the message history. This flag specifies whether this special
+                                   behavior is required or not (used only on app launch)
+        :return: Generator, streamed response from OpenAI API
+        """
         history = self._memory.get_chat_history()
         if is_initial_message:
             history.append({"role": "user", "content": dedent(INITIAL_MESSAGE.format(language=self._language))})
@@ -63,5 +75,11 @@ class Chatbot:
         return self._generate_response(response)
 
     def _generate_response(self, response: Generator) -> Generator:
+        """
+        Helper function to return only the actual characters received from the actual generator chunks
+
+        :param response: the Generator returned by OpenAI API
+        :return: a simpler Generator
+        """
         for chunk in response:
             yield chunk['choices'][0]['delta'].get('content', '')

@@ -4,6 +4,7 @@ import pyaudio
 import wave
 import logging
 import pygame
+from typing import Dict, List
 from pydub import AudioSegment
 from google.oauth2.service_account import Credentials
 from google.cloud import texttospeech
@@ -17,7 +18,13 @@ t2s_client = texttospeech.TextToSpeechClient()
 t2s_voice = None
 
 
-def init_speech(config: Config, credentials: Credentials):
+def init_speech(config: Config, credentials: Credentials) -> None:
+    """
+    Initialize Google text-to-speech client
+
+    :param config: Config
+    :param credentials: a Google Credentials object
+    """
     global t2s_client, t2s_voice
 
     t2s_client = texttospeech.TextToSpeechClient(credentials=credentials)
@@ -26,12 +33,21 @@ def init_speech(config: Config, credentials: Credentials):
     t2s_voice = texttospeech.VoiceSelectionParams(name=config.bot.voice, language_code=f"{l[0]}-{l[1]}")
 
 
-def stop_recording():
+def stop_recording() -> None:
+    """
+    Stop recording loop (as it happens on a parallel thread)
+    """
     global _is_recording
     _is_recording = False
 
 
-def record(filename):
+def record(filename: str) -> str:
+    """
+    Record user audio
+
+    :param filename: filename to save recording to (a mp3 file)
+    :return: filename of mp3
+    """
     global _is_recording
     FORMAT = pyaudio.paInt16
     CHANNELS = 1
@@ -76,13 +92,26 @@ def record(filename):
     return mp3_filename
 
 
-def play_mp3(filename):
+def play_mp3(filename: str) -> None:
+    """
+    play a mp3 file
+
+    :param filename: file to play
+    """
     pygame.mixer.init()
     pygame.mixer.music.load(filename)
     pygame.mixer.music.play()
 
 
-def speech2text(filename, language):
+def speech2text(filename: str, language: str) -> str:
+    """
+    Convert mp3 filename containing recording to text
+
+    :param filename: mp3 filename with recording
+    :param language: ISO 639-1 code of the language spoken in the recording.
+                     If None, STT service will try to figure it out, by it might hurt performances
+    :return: transcribed text
+    """
     audio_file = open(filename, "rb")
     if language is None:
         transcript = openai.Audio.transcribe("whisper-1", audio_file)
@@ -91,7 +120,14 @@ def speech2text(filename, language):
     return transcript["text"]
 
 
-def text2speech(text, filename):
+def text2speech(text: str, filename: str) -> str:
+    """
+    Convert text to speech
+
+    :param text: text to be converted
+    :param filename: mp3 file with saved speech audio
+    :return: filename
+    """
     synthesis_input = texttospeech.SynthesisInput(text=text)
     speech = t2s_client.synthesize_speech(
         input=synthesis_input, voice=t2s_voice, audio_config=t2s_audio_config
@@ -101,7 +137,12 @@ def text2speech(text, filename):
     return filename
 
 
-def voices_by_features():  # Returns dict: {lang: {gender: [list of voices]}}
+def voices_by_features() -> Dict[str, Dict[str, List[str]]]:
+    """
+    Return voices supported by TTS, by language and gender
+
+    :return: Dict: {lang: {gender: [list of voices]}}
+    """
     voices_dict = dict()
     voices = t2s_client.list_voices().voices
 
