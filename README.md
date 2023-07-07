@@ -6,6 +6,7 @@
 
 ![demo](docs/images/demo.gif)
 
+![Supports Python 3.8 and above](https://img.shields.io/badge/Python-%3E=3.8-green?style=for-the-badge)
 
 Companion uses [OpenAI ChatGPT](https://chat.openai.com) & [Whisper](https://openai.com/research/whisper) and 
 [Google Text-to-Speech](https://cloud.google.com/text-to-speech) & 
