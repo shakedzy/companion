@@ -1,7 +1,7 @@
 $.getScript("/static/common.js");
 
 $(document).ready(function() {
-  get_response(is_initial_message=1);
+  // get_response(is_initial_message=1);
 
   $('#message-form').on('submit', function(e) {
     e.preventDefault();
@@ -61,6 +61,20 @@ $(document).ready(function() {
   Mousetrap.bindGlobal('alt+l', function(e) {
     e.preventDefault();
     $('#lang-toggle-button').click();
+  });
+
+  var textarea = document.getElementById('message-input');
+  textarea.addEventListener('input', function(e) {
+      autoResize(this);
+  });
+  autoResize(textarea);
+
+  document.getElementById('message-input').addEventListener('keydown', function(e) {
+      if (e.key === 'Enter' && e.shiftKey) {
+        e.preventDefault();
+        this.value += '\n';
+        autoResize(this);
+    }
   });
 
   var currentLanguageIndex = 0;
@@ -303,4 +317,9 @@ function loadPastMessages(messages) {
       add_message(msg.role, msg.content, false, msg.is_language_learning, true);
     }
     toggleLoadingIcon('hide');
+}
+
+function autoResize(textarea) {
+  textarea.style.height = '1.5em';
+  textarea.style.height = textarea.scrollHeight + 'px';
 }
