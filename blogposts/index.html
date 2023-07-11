@@ -12,20 +12,20 @@
         <meta name="author" content="Shaked Zychlinski">
       
       
-        <link rel="canonical" href="http://shakedzy.xyz/companion/run/">
+        <link rel="canonical" href="http://shakedzy.xyz/companion/blogposts/">
       
       
-        <link rel="prev" href="../install/">
+        <link rel="prev" href="../run/">
       
       
-        <link rel="next" href="../blogposts/">
+        <link rel="next" href="../licenses/">
       
       <link rel="icon" href="../images/favicon.png">
       <meta name="generator" content="mkdocs-1.4.3, mkdocs-material-9.1.15">
     
     
       
-        <title>Using Companion - Companion Docs</title>
+        <title>Related Blogposts - Companion Docs</title>
       
     
     
@@ -67,7 +67,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#using-companion" class="md-skip">
+        <a href="#related-blogposts" class="md-skip">
           Skip to content
         </a>
       
@@ -101,7 +101,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Using Companion
+              Related Blogposts
             
           </span>
         </div>
@@ -268,6 +268,21 @@
 
   
   
+  
+    <li class="md-nav__item">
+      <a href="../run/" class="md-nav__link">
+        Using Companion
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
     
   
   
@@ -279,63 +294,10 @@
         
       
       
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          Using Companion
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
       <a href="./" class="md-nav__link md-nav__link--active">
-        Using Companion
-      </a>
-      
-        
-
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#launching" class="md-nav__link">
-    Launching
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#user-interface" class="md-nav__link">
-    User Interface
-  </a>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-      
-    </li>
-  
-
-    
-      
-      
-      
-
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../blogposts/" class="md-nav__link">
         Related Blogposts
       </a>
+      
     </li>
   
 
@@ -375,28 +337,6 @@
     
   
   
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#launching" class="md-nav__link">
-    Launching
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#user-interface" class="md-nav__link">
-    User Interface
-  </a>
-  
-</li>
-      
-    </ul>
-  
 </nav>
                   </div>
                 </div>
@@ -413,44 +353,10 @@
   
 
 
-<h1 id="using-companion">Using Companion</h1>
-<h2 id="launching">Launching</h2>
-<ol>
-<li>From the <code>companion</code> directory in your terminal, run:
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>python<span class="w"> </span>companion.py
-</span></code></pre></div>
-You may also add:
-<div class="language-text highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>-c CONFIG_FILE  select an alternative configuration file
-</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>-k KEYS_FILE    select a keys file
-</span></code></pre></div>
-Both options are optional.
-<br><br></li>
-<li>Go to <strong><a href="http://127.0.0.1:5000">127.0.0.1:5000</a></strong> in your browser. Session will
-begin automatically. <br> <strong>Note</strong>: Refreshing the page will restart the chat.</li>
-</ol>
-<div class="admonition info">
-<p class="admonition-title">Launching for the first time</p>
-<p>If this is the first time you run the app (or if you'd like to change its configurations), 
-go to <strong><a href="http://127.0.0.1:5000/setup">127.0.0.1:5000/setup</a></strong> <br>(<em>app must be relaunched
-after setup for changes to take effect</em>).</p>
-</div>
-<h2 id="user-interface">User Interface</h2>
-<p><img alt="ui" src="../images/screen.png" /></p>
-<p>The UI should be quite straightforward, and resemble a standard chat. Here are some additional 
-useful functionalities available:</p>
-<ol>
-<li><strong>Recording</strong>: You are able to write to your tutor text messages, but you can also talk. Click the 
-recording button to begin recording (it will turn red), and once again to stop recording and process it.
-The language button next to the recording button indicates the language you speak in the recording. Click it to
-switch between your native language and the one you learn. There's also automatic language recognition option
-(marked by 'A'), but it is less recommended, as processing might take longer and might be more prone to errors.
-<em>You can use Alt+R to turn recording on and off, and Alt+L to switch languages.</em></li>
-<li><strong>Save &amp; load session</strong>: You can save your current session, and easily load it next time you launch the app</li>
-<li><strong>Translate</strong>: Clicking this button will add translation to your tutor messages in your selected native language.</li>
-<li><strong>Tutor reciting</strong>: Clicking this button will play the tutor reciting the text. You can also ask it to recite
-you messages, to hear how it pronounces it.</li>
-<li><strong>User recording</strong>: If your message is based on recording, clicking this button will play your recording.</li>
-</ol>
+<h1 id="related-blogposts">Related Blogposts</h1>
+<ul>
+<li><a href="https://shakedzy.medium.com/how-i-coded-my-own-private-french-tutor-out-of-chatgpt-16b3e15007bb">How I Coded My Own Private French Tutor Out of ChatGPT</a></li>
+</ul>
 
 
 
@@ -479,7 +385,7 @@ you messages, to hear how it pronounces it.</li>
       <nav class="md-footer__inner md-grid" aria-label="Footer" >
         
           
-          <a href="../install/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Install &amp; Configure" rel="prev">
+          <a href="../run/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Using Companion" rel="prev">
             <div class="md-footer__button md-icon">
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
             </div>
@@ -488,20 +394,20 @@ you messages, to hear how it pronounces it.</li>
                 Previous
               </span>
               <div class="md-ellipsis">
-                Install & Configure
+                Using Companion
               </div>
             </div>
           </a>
         
         
           
-          <a href="../blogposts/" class="md-footer__link md-footer__link--next" aria-label="Next: Related Blogposts" rel="next">
+          <a href="../licenses/" class="md-footer__link md-footer__link--next" aria-label="Next: Licenses" rel="next">
             <div class="md-footer__title">
               <span class="md-footer__direction">
                 Next
               </span>
               <div class="md-ellipsis">
-                Related Blogposts
+                Licenses
               </div>
             </div>
             <div class="md-footer__button md-icon">

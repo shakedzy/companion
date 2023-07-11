@@ -360,6 +360,21 @@
   
   
     <li class="md-nav__item">
+      <a href="../blogposts/" class="md-nav__link">
+        Related Blogposts
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../licenses/" class="md-nav__link">
         Licenses
       </a>
@@ -486,15 +501,25 @@
 <h2 id="keys-file-optional">Keys file (optional)</h2>
 <p>You may add a <code>keys.yml</code> file which will hold your OpenAI API key and/or a Google Cloud Service Account
 to be used to access these required services. This is optional, and is used only when you wish to override the local
-OpenAI API key or Google Cloud SDK (or when they cannot be installed).</p>
-<h4 id="openai">openai</h4>
+OpenAI API key or Google Cloud SDK (or when they cannot be installed). </p>
+<p>Keys file example:
+<div class="language-yaml highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="nt">openai</span><span class="p">:</span>
+</span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="w">  </span><span class="nt">api_key</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;sk-...&#39;</span>
+</span><span id="__span-4-3"><a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a>
+</span><span id="__span-4-4"><a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a><span class="nt">google_sa</span><span class="p">:</span>
+</span><span id="__span-4-5"><a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a><span class="w">  </span><span class="l l-Scalar l-Scalar-Plain">...</span>
+</span></code></pre></div></p>
+<h4 id="openai"><code>openai</code></h4>
 <ul>
 <li><code>api_key</code>: Use this Open API key instead of the one found in your <code>OPENAI_API_KEY</code> environment variable</li>
 </ul>
-<h4 id="google_sa">google_sa</h4>
+<h4 id="google_sa"><code>google_sa</code></h4>
 <p>Insert here all your Google Service Account credentials key-values in order to authenticate with Google Cloud
-using this Service Account instead of using Google Cloud SDK client. Note that this Service Account
-will require the "Service Usage Consumer" role.</p>
+using this Service Account instead of using Google Cloud SDK client. </p>
+<div class="admonition info">
+<p class="admonition-title">Service Account roles</p>
+<p>The Service Account used for this app will require the <em>Service Usage Consumer</em> role.</p>
+</div>
 
 
 
