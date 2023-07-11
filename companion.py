@@ -122,7 +122,7 @@ def play_bot_test_text():
     text = request.form['text']
     print(text)
     filename = utils.bot_text_to_speech(text, 0, 0)
-    speech.play_mp3(filename)
+    speech.play_audio(filename)
     while pygame.mixer.music.get_busy():
         continue
     return jsonify({'status': 'success'})
@@ -360,6 +360,39 @@ def check_server_errors():
     return jsonify({'server_errors': server_errors})
 
 
+@app.route('/is_audio_playing', methods=['GET'])
+def is_audio_playing():
+    """
+    Allow UI to check if audio is currently playing
+    """
+    print(app_cache.audio_playing)
+    return jsonify({'is_playing': int(app_cache.audio_playing)})
+
+
+@app.route('/stop_audio', methods=['GET'])
+def stop_audio():
+    """
+    Allow UI stop audio that is currently playing
+    """
+    speech.stop_audio()
+
+
+@app.route('/pause_audio', methods=['GET'])
+def pause_audio():
+    """
+    Allow UI pause audio that is currently playing
+    """
+    speech.pause_audio()
+
+
+@app.route('/unpause_audio', methods=['GET'])
+def unpause_audio():
+    """
+    Allow UI unpause audio that is currently playing
+    """
+    speech.unpause_audio()
+
+
 @app.route('/memory', methods=['GET'])
 def print_memory():
     """
@@ -373,7 +406,7 @@ def print_memory_updates():
     """
     Helper endpoint for debugging. Print memory updates.
     """
-    return json.dumps(memory._updates, indent=4)
+    return json.dumps(memory.updates, indent=4)
 
 
 def exit_graceful(signum, frame) -> None:
@@ -472,9 +505,10 @@ def play_recordings_queue_func():
     while not app_cache.stop_threads_event.is_set():
         try:
             filename = app_cache.play_recordings_queue.get(timeout=1)  # Wait for 1 second to get an item
-            speech.play_mp3(filename)
+            speech.play_audio(filename)
             while pygame.mixer.music.get_busy():
-                continue
+                app_cache.audio_playing = True
+            app_cache.audio_playing = False
         except EmptyQueue:
             continue
         except Exception as e:

@@ -92,15 +92,36 @@ def record(filename: str) -> str:
     return mp3_filename
 
 
-def play_mp3(filename: str) -> None:
+def play_audio(filename: str) -> None:
     """
-    play a mp3 file
+    play an audio file
 
     :param filename: file to play
     """
     pygame.mixer.init()
     pygame.mixer.music.load(filename)
     pygame.mixer.music.play()
+
+
+def stop_audio() -> None:
+    """
+    Stop audio from playing
+    """
+    pygame.mixer.stop()
+
+
+def pause_audio() -> None:
+    """
+    Pause audio
+    """
+    pygame.mixer.pause()
+
+
+def unpause_audio() -> None:
+    """
+    Unpause audio
+    """
+    pygame.mixer.unpause()
 
 
 def speech2text(filename: str, language: str) -> str:

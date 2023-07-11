@@ -15,6 +15,7 @@ class AppCache:
     sentences_counter: int = 0
     generated_message: str = ''
     last_sentence: str = ''
+    audio_playing: bool = False
     recording_thread: Optional[Thread] = None
     text2speech_thread: Optional[Thread] = None
     play_recordings_thread: Optional[Thread] = None
