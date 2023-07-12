@@ -103,27 +103,6 @@ def play_audio(filename: str) -> None:
     pygame.mixer.music.play()
 
 
-def stop_audio() -> None:
-    """
-    Stop audio from playing
-    """
-    pygame.mixer.stop()
-
-
-def pause_audio() -> None:
-    """
-    Pause audio
-    """
-    pygame.mixer.pause()
-
-
-def unpause_audio() -> None:
-    """
-    Unpause audio
-    """
-    pygame.mixer.unpause()
-
-
 def speech2text(filename: str, language: str) -> str:
     """
     Convert mp3 filename containing recording to text

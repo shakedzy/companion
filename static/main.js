@@ -69,6 +69,12 @@ $(document).ready(function() {
       autoResize(this);
   });
   autoResize(textarea);
+  $('#message-input').keydown(function(event) {
+    if (event.key === 'Enter') {
+      event.preventDefault();
+      $('#message-form').submit();
+    }
+  });
 
   document.getElementById('message-input').addEventListener('keydown', function(e) {
       if (e.key === 'Enter' && e.shiftKey) {
@@ -100,11 +106,28 @@ $(document).ready(function() {
     console.log(response.message);
   });
   $('#lang-toggle-button').on('click', function() {
-    currentLanguageIndex = (currentLanguageIndex + 1) % languages.length;
-    $('#lang-text').text(languages[currentLanguageIndex]);
-    $.post('/set_language', {'language': languages[currentLanguageIndex]}, function(response) {
-      console.log(response.message);
-    });
+      var lang_button = $('#lang-toggle-button');
+
+      if (lang_button.hasClass('btn-danger on')) {
+          // do nothing
+      }
+      else if (lang_button.attr('name') === 'pause') {
+          $.get('/pause_audio', function () {});
+          lang_button.attr('name', 'unpause');
+          $('#pause-icon').removeClass('fa-pause');
+          $('#pause-icon').addClass('fa-play');
+      }
+      else if (lang_button.attr('name') === 'unpause') {
+          $.get('/unpause_audio', function () {});
+          lang_button.attr('name', 'pause');
+          $('#pause-icon').removeClass('fa-play');
+          $('#pause-icon').addClass('fa-pause');
+      }
+      else {
+          currentLanguageIndex = (currentLanguageIndex + 1) % languages.length;
+          $('#lang-text').text(languages[currentLanguageIndex]);
+          $.post('/set_language', {'language': languages[currentLanguageIndex]}, function() {});
+      }
   });
 
   $('#dark-mode-button').on('click', function() {

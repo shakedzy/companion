@@ -374,7 +374,7 @@ def stop_audio():
     """
     Allow UI stop audio that is currently playing
     """
-    speech.stop_audio()
+    app_cache.audio_status_update = 'stop'
 
 
 @app.route('/pause_audio', methods=['GET'])
@@ -382,7 +382,7 @@ def pause_audio():
     """
     Allow UI pause audio that is currently playing
     """
-    speech.pause_audio()
+    app_cache.audio_status_update = 'pause'
 
 
 @app.route('/unpause_audio', methods=['GET'])
@@ -390,7 +390,7 @@ def unpause_audio():
     """
     Allow UI unpause audio that is currently playing
     """
-    speech.unpause_audio()
+    app_cache.audio_status_update = 'unpause'
 
 
 @app.route('/memory', methods=['GET'])
@@ -502,12 +502,29 @@ def play_recordings_queue_func():
     It is responsible for playing audio files waiting in a designated queue
     """
     global app_cache
+    pygame.mixer.init()
+
     while not app_cache.stop_threads_event.is_set():
         try:
             filename = app_cache.play_recordings_queue.get(timeout=1)  # Wait for 1 second to get an item
             speech.play_audio(filename)
-            while pygame.mixer.music.get_busy():
+
+            is_paused = False
+            while pygame.mixer.music.get_busy() or is_paused:
                 app_cache.audio_playing = True
+
+                if app_cache.audio_status_update == 'stop':
+                    pygame.mixer.music.stop()
+                    app_cache.play_recordings_queue.queue.clear()
+                elif app_cache.audio_status_update == 'pause':
+                    pygame.mixer.music.pause()
+                    is_paused = True
+                elif app_cache.audio_status_update == 'unpause':
+                    pygame.mixer.music.unpause()
+                    is_paused = False
+
+                app_cache.audio_status_update = None
+
             app_cache.audio_playing = False
         except EmptyQueue:
             continue

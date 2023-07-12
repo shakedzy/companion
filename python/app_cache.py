@@ -9,6 +9,7 @@ class AppCache:
     """
     message_generator: Optional[Generator] = None
     language: Optional[str] = None
+    audio_status_update: Optional[str] = None
     user_recording: Optional[str] = None
     bot_recordings: List[str] = list()
     server_errors: List[str] = list()
