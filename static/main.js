@@ -102,9 +102,7 @@ $(document).ready(function() {
     $('body').toggleClass('dark-mode');
   });
 
-  $.post('/set_language', {'language': languages[currentLanguageIndex]}, function(response) {
-    console.log(response.message);
-  });
+  $.post('/set_language', {'language': languages[currentLanguageIndex]}, function() {});
   $('#lang-toggle-button').on('click', function() {
       var lang_button = $('#lang-toggle-button');
 
@@ -114,12 +112,14 @@ $(document).ready(function() {
       else if (lang_button.attr('name') === 'pause') {
           $.get('/pause_audio', function () {});
           lang_button.attr('name', 'unpause');
+          lang_button.attr('title', 'Unpause Audio');
           $('#pause-icon').removeClass('fa-pause');
           $('#pause-icon').addClass('fa-play');
       }
       else if (lang_button.attr('name') === 'unpause') {
           $.get('/unpause_audio', function () {});
           lang_button.attr('name', 'pause');
+          lang_button.attr('title', 'Pause Audio');
           $('#pause-icon').removeClass('fa-play');
           $('#pause-icon').addClass('fa-pause');
       }
@@ -357,9 +357,7 @@ function updateUIByAudioStatus(is_playing) {
     var lang_button = $('#lang-toggle-button');
     var lang_text = $('#lang-text');
     var pause_icon = $('#pause-icon');
-
-    console.log(is_playing, record_button.attr('name'));
-
+    
     if (is_playing && record_button.attr('name') === 'record') {
         record_button.attr('name', 'stop');
         record_button.attr('title', 'Stop Audio');
@@ -373,6 +371,8 @@ function updateUIByAudioStatus(is_playing) {
 
         lang_text.css('display', 'none');
         pause_icon.css('display', 'block');
+        pause_icon.removeClass('fa-play');
+        pause_icon.addClass('fa-pause');
 
     } else if (!is_playing && record_button.attr('name') === 'stop') {
         record_button.attr('name', 'record');
