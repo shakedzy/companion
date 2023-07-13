@@ -1,7 +1,13 @@
 $.getScript("/static/common.js");
 
 $(document).ready(function() {
-  get_response(is_initial_message=1);
+  getResponse(1);
+
+  var currentLanguageIndex = 0;
+
+  // Check if the user's system prefers dark mode
+  var prefersDarkScheme = window.matchMedia('(prefers-color-scheme: dark)');
+  var darkMode = prefersDarkScheme.matches;
 
   $('#message-form').on('submit', function(e) {
     e.preventDefault();
@@ -15,8 +21,8 @@ $(document).ready(function() {
         if (error_message !== null) {
             showNotification(error_message);
         }
-        add_message('user', message, has_user_recording, is_language_learning);
-        get_response(is_initial_message=0);
+        addMessage('user', message, has_user_recording, is_language_learning);
+        getResponse(0);
       });
     }
   });
@@ -25,7 +31,10 @@ $(document).ready(function() {
     var recordButton = $(this);
     var langToggleButton = $('#lang-toggle-button'); // Select the lang-toggle-button
 
-    if (recordButton.hasClass('off')) {
+    if (recordButton.attr('name') === 'stop') {
+        $.get('/stop_audio', function () {});
+    }
+    else if (recordButton.hasClass('off')) {
       // Start recording
       recordButton.removeClass('btn-secondary off').addClass('btn-danger on');
       langToggleButton.removeClass('btn-secondary off').addClass('btn-danger on');
@@ -63,11 +72,23 @@ $(document).ready(function() {
     $('#lang-toggle-button').click();
   });
 
-  var currentLanguageIndex = 0;
-
-  // Check if the user's system prefers dark mode
-  var prefersDarkScheme = window.matchMedia('(prefers-color-scheme: dark)');
-  var darkMode = prefersDarkScheme.matches;
+  var textarea = document.getElementById('message-input');
+  textarea.addEventListener('input', function(e) {
+      autoResize(this);
+  });
+  autoResize(textarea);
+  $('#message-input').keydown(function(event) {
+    if (event.key === 'Enter' && !event.shiftKey) {
+      event.preventDefault();
+      $('#message-form').submit();
+      autoResize(this);
+    }
+    else if (event.key === 'Enter' && event.shiftKey) {
+        event.preventDefault();
+        this.value += '\n';
+        autoResize(this);
+    }
+  });
 
   // Set the initial dark mode state
   setDarkMode(darkMode);
@@ -77,19 +98,36 @@ $(document).ready(function() {
     setDarkMode(darkMode);
   });
 
-   $('#dark-mode-button').on('click', function() {
+  $('#dark-mode-button').on('click', function() {
     $('body').toggleClass('dark-mode');
   });
 
-  $.post('/set_language', {'language': languages[currentLanguageIndex]}, function(response) {
-    console.log(response.message);
-  });
+  $.post('/set_language', {'language': languages[currentLanguageIndex]}, function() {});
   $('#lang-toggle-button').on('click', function() {
-    currentLanguageIndex = (currentLanguageIndex + 1) % languages.length;
-    $('#lang-text').text(languages[currentLanguageIndex]);
-    $.post('/set_language', {'language': languages[currentLanguageIndex]}, function(response) {
-      console.log(response.message);
-    });
+      var lang_button = $('#lang-toggle-button');
+
+      if (lang_button.hasClass('btn-danger on')) {
+          // do nothing
+      }
+      else if (lang_button.attr('name') === 'pause') {
+          $.get('/pause_audio', function () {});
+          lang_button.attr('name', 'unpause');
+          lang_button.attr('title', 'Unpause Audio');
+          $('#pause-icon').removeClass('fa-pause');
+          $('#pause-icon').addClass('fa-play');
+      }
+      else if (lang_button.attr('name') === 'unpause') {
+          $.get('/unpause_audio', function () {});
+          lang_button.attr('name', 'pause');
+          lang_button.attr('title', 'Pause Audio');
+          $('#pause-icon').removeClass('fa-play');
+          $('#pause-icon').addClass('fa-pause');
+      }
+      else {
+          currentLanguageIndex = (currentLanguageIndex + 1) % languages.length;
+          $('#lang-text').text(languages[currentLanguageIndex]);
+          $.post('/set_language', {'language': languages[currentLanguageIndex]}, function() {});
+      }
   });
 
   $('#dark-mode-button').on('click', function() {
@@ -145,10 +183,17 @@ $(document).ready(function() {
         }
     });
   });
+
+    setInterval(function () {
+        $.get('/is_audio_playing', function (response) {
+            var is_playing = response['is_playing'];
+            updateUIByAudioStatus(is_playing);
+        });
+    }, 500);
 });
 
 var message_counter = 1;
-function add_message(sender, message, has_user_recording, is_language_learning, do_not_store) {
+function addMessage(sender, message, has_user_recording, is_language_learning, do_not_store) {
   var message_box = $('#message-box');
   var message_row = $('<div class="row mb-3"></div>');
   var message_col = $('<div class="col d-flex align-items-start"></div>');  // Changed to d-flex and align-items-start
@@ -240,7 +285,7 @@ function toggleLoadingIcon(action) {
 }
 
 
-function get_response(is_initial_message) {
+function getResponse(is_initial_message) {
   toggleLoadingIcon('show');
   $.post('/get_response', {'is_initial_message': is_initial_message}, function(response) {
       var bot_message = response['message'];
@@ -249,18 +294,13 @@ function get_response(is_initial_message) {
       if (error_message !== null) {
           showNotification(error_message);
       }
-      add_message('assistant', bot_message, false);
-      get_next_message(message_index);
+      addMessage('assistant', bot_message, false);
+      getNextMessage(message_index);
   });
 }
 
 
-function play_bot() {
-  $.get('/play_bot', function(response) {});
-}
-
-
-function get_next_message(message_index) {
+function getNextMessage(message_index) {
     $.post('/get_next_message', {'message_index': message_index}, function(response) {
         var bot_message = response['message'];
         if (bot_message === null) {
@@ -269,13 +309,13 @@ function get_next_message(message_index) {
             return;
         }
         bot_message = bot_message.replace(/\n/g, "<br>");
-        update_last_message(bot_message);
-        get_next_message(message_index)
+        updateLastMessage(bot_message);
+        getNextMessage(message_index)
     });
 }
 
 
-function update_last_message(newContent) {
+function updateLastMessage(newContent) {
   var message_box = $('#message-box');
   var last_message_row = message_box.find('.row:last');
   var last_message_card_body = last_message_row.find('.card-body');
@@ -300,7 +340,52 @@ function loadPastMessages(messages) {
     message_box.html("");
     for (var i = 0; i < messages.length; i++) {
       var msg = messages[i];
-      add_message(msg.role, msg.content, false, msg.is_language_learning, true);
+      addMessage(msg.role, msg.content, false, msg.is_language_learning, true);
     }
     toggleLoadingIcon('hide');
+}
+
+function autoResize(textarea) {
+  textarea.style.height = '1.5em';
+  textarea.style.height = textarea.scrollHeight + 'px';
+}
+
+function updateUIByAudioStatus(is_playing) {
+
+    var record_button = $('#record-button');
+    var record_icon = $('#record-icon');
+    var lang_button = $('#lang-toggle-button');
+    var lang_text = $('#lang-text');
+    var pause_icon = $('#pause-icon');
+
+    if (is_playing && record_button.attr('name') === 'record') {
+        record_button.attr('name', 'stop');
+        record_button.attr('title', 'Stop Audio');
+        lang_button.attr('name', 'pause');
+        lang_button.attr('title', 'Pause Audio');
+
+        record_icon.removeClass('fas');
+        record_icon.removeClass('fa-microphone');
+        record_icon.addClass('fa-solid');
+        record_icon.addClass('fa-stop');
+
+        lang_text.css('display', 'none');
+        pause_icon.css('display', 'block');
+        pause_icon.removeClass('fa-play');
+        pause_icon.addClass('fa-pause');
+
+    } else if (!is_playing && record_button.attr('name') === 'stop') {
+        record_button.attr('name', 'record');
+        record_button.attr('title', 'Record Message [Alt+R]');
+        lang_button.attr('name', 'lang-record');
+        lang_button.attr('title', 'Switch Recording Language [Alt+L]');
+
+        record_icon.addClass('fas');
+        record_icon.addClass('fa-microphone');
+        record_icon.removeClass('fa-solid');
+        record_icon.removeClass('fa-stop');
+
+        lang_text.css('display', 'block');
+        pause_icon.css('display', 'none');
+    }
 }

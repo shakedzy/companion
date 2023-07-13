@@ -120,9 +120,8 @@ def play_bot_test_text():
     Play testing text-to-speech text from setup page
     """
     text = request.form['text']
-    print(text)
     filename = utils.bot_text_to_speech(text, 0, 0)
-    speech.play_mp3(filename)
+    speech.play_audio(filename)
     while pygame.mixer.music.get_busy():
         continue
     return jsonify({'status': 'success'})
@@ -360,6 +359,41 @@ def check_server_errors():
     return jsonify({'server_errors': server_errors})
 
 
+@app.route('/is_audio_playing', methods=['GET'])
+def is_audio_playing():
+    """
+    Allow UI to check if audio is currently playing
+    """
+    return jsonify({'is_playing': int(app_cache.audio_playing)})
+
+
+@app.route('/stop_audio', methods=['GET'])
+def stop_audio():
+    """
+    Allow UI stop audio that is currently playing
+    """
+    app_cache.audio_status_update = 'stop'
+    return jsonify({'status': 'success'})
+
+
+@app.route('/pause_audio', methods=['GET'])
+def pause_audio():
+    """
+    Allow UI pause audio that is currently playing
+    """
+    app_cache.audio_status_update = 'pause'
+    return jsonify({'status': 'success'})
+
+
+@app.route('/unpause_audio', methods=['GET'])
+def unpause_audio():
+    """
+    Allow UI unpause audio that is currently playing
+    """
+    app_cache.audio_status_update = 'unpause'
+    return jsonify({'status': 'success'})
+
+
 @app.route('/memory', methods=['GET'])
 def print_memory():
     """
@@ -373,7 +407,7 @@ def print_memory_updates():
     """
     Helper endpoint for debugging. Print memory updates.
     """
-    return json.dumps(memory._updates, indent=4)
+    return json.dumps(memory.updates, indent=4)
 
 
 def exit_graceful(signum, frame) -> None:
@@ -469,12 +503,31 @@ def play_recordings_queue_func():
     It is responsible for playing audio files waiting in a designated queue
     """
     global app_cache
+    pygame.mixer.init()
+
     while not app_cache.stop_threads_event.is_set():
         try:
             filename = app_cache.play_recordings_queue.get(timeout=1)  # Wait for 1 second to get an item
-            speech.play_mp3(filename)
-            while pygame.mixer.music.get_busy():
-                continue
+            speech.play_audio(filename)
+
+            is_paused = False
+            while pygame.mixer.music.get_busy() or is_paused:
+                app_cache.audio_playing = True
+
+                if app_cache.audio_status_update == 'stop':
+                    is_paused = False
+                    pygame.mixer.music.stop()
+                    app_cache.play_recordings_queue.queue.clear()
+                elif app_cache.audio_status_update == 'pause':
+                    pygame.mixer.music.pause()
+                    is_paused = True
+                elif app_cache.audio_status_update == 'unpause':
+                    pygame.mixer.music.unpause()
+                    is_paused = False
+
+                app_cache.audio_status_update = None
+
+            app_cache.audio_playing = False
         except EmptyQueue:
             continue
         except Exception as e:

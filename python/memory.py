@@ -1,5 +1,5 @@
 import re
-from typing import List
+from typing import List, Dict, Union
 
 
 class Memory:
@@ -7,8 +7,8 @@ class Memory:
     This class is used to remember all messages sent and received, along with metadata such as recording files, etc.
     """
     def __init__(self):
-        self._memory: List[dict] = list()
-        self._updates: List[dict] = list()
+        self._memory: List[Dict[str, Union[str, List[str]]]] = list()
+        self._updates: List[Dict[str, Union[str, List[str], int]]] = list()
 
     def __getitem__(self, index):
         return self._memory[index]
@@ -20,8 +20,12 @@ class Memory:
         return len(self._memory)
 
     @property
-    def list(self) -> List[dict]:
+    def list(self) -> List[Dict[str, Union[str, List[str]]]]:
         return self._memory
+
+    @property
+    def updates(self) -> List[Dict[str, Union[str, List[str], int]]]:
+        return self._updates
 
     def add(self, role, message, recording=None, user_recording=None) -> None:
         """

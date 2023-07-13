@@ -92,9 +92,9 @@ def record(filename: str) -> str:
     return mp3_filename
 
 
-def play_mp3(filename: str) -> None:
+def play_audio(filename: str) -> None:
     """
-    play a mp3 file
+    play an audio file
 
     :param filename: file to play
     """

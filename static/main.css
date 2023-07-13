@@ -125,3 +125,10 @@ img.profile-pic {
 .fa-spinner {
     filter: var(--fa-filter);
 }
+
+#message-input {
+  overflow-y: auto;
+  height: 1.5em; /* 1 line */
+  max-height: 4.5em; /* 3 lines */
+  resize: none;
+}
