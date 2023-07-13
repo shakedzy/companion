@@ -1,7 +1,13 @@
 $.getScript("/static/common.js");
 
 $(document).ready(function() {
-  //getResponse(1);
+  getResponse(1);
+
+  var currentLanguageIndex = 0;
+
+  // Check if the user's system prefers dark mode
+  var prefersDarkScheme = window.matchMedia('(prefers-color-scheme: dark)');
+  var darkMode = prefersDarkScheme.matches;
 
   $('#message-form').on('submit', function(e) {
     e.preventDefault();
@@ -25,7 +31,10 @@ $(document).ready(function() {
     var recordButton = $(this);
     var langToggleButton = $('#lang-toggle-button'); // Select the lang-toggle-button
 
-    if (recordButton.hasClass('off')) {
+    if (recordButton.attr('name') === 'stop') {
+        $.get('/stop_audio', function () {});
+    }
+    else if (recordButton.hasClass('off')) {
       // Start recording
       recordButton.removeClass('btn-secondary off').addClass('btn-danger on');
       langToggleButton.removeClass('btn-secondary off').addClass('btn-danger on');
@@ -81,12 +90,6 @@ $(document).ready(function() {
     }
   });
 
-  var currentLanguageIndex = 0;
-
-  // Check if the user's system prefers dark mode
-  var prefersDarkScheme = window.matchMedia('(prefers-color-scheme: dark)');
-  var darkMode = prefersDarkScheme.matches;
-
   // Set the initial dark mode state
   setDarkMode(darkMode);
 
@@ -95,7 +98,7 @@ $(document).ready(function() {
     setDarkMode(darkMode);
   });
 
-   $('#dark-mode-button').on('click', function() {
+  $('#dark-mode-button').on('click', function() {
     $('body').toggleClass('dark-mode');
   });
 
@@ -186,7 +189,7 @@ $(document).ready(function() {
             var is_playing = response['is_playing'];
             updateUIByAudioStatus(is_playing);
         });
-    }, 1000);
+    }, 500);
 });
 
 var message_counter = 1;

@@ -120,7 +120,6 @@ def play_bot_test_text():
     Play testing text-to-speech text from setup page
     """
     text = request.form['text']
-    print(text)
     filename = utils.bot_text_to_speech(text, 0, 0)
     speech.play_audio(filename)
     while pygame.mixer.music.get_busy():
@@ -365,7 +364,6 @@ def is_audio_playing():
     """
     Allow UI to check if audio is currently playing
     """
-    print(app_cache.audio_playing)
     return jsonify({'is_playing': int(app_cache.audio_playing)})
 
 
@@ -375,6 +373,7 @@ def stop_audio():
     Allow UI stop audio that is currently playing
     """
     app_cache.audio_status_update = 'stop'
+    return jsonify({'status': 'success'})
 
 
 @app.route('/pause_audio', methods=['GET'])
@@ -383,6 +382,7 @@ def pause_audio():
     Allow UI pause audio that is currently playing
     """
     app_cache.audio_status_update = 'pause'
+    return jsonify({'status': 'success'})
 
 
 @app.route('/unpause_audio', methods=['GET'])
@@ -391,6 +391,7 @@ def unpause_audio():
     Allow UI unpause audio that is currently playing
     """
     app_cache.audio_status_update = 'unpause'
+    return jsonify({'status': 'success'})
 
 
 @app.route('/memory', methods=['GET'])
@@ -514,6 +515,7 @@ def play_recordings_queue_func():
                 app_cache.audio_playing = True
 
                 if app_cache.audio_status_update == 'stop':
+                    is_paused = False
                     pygame.mixer.music.stop()
                     app_cache.play_recordings_queue.queue.clear()
                 elif app_cache.audio_status_update == 'pause':
