@@ -1,7 +1,7 @@
 $.getScript("/static/common.js");
 
 $(document).ready(function() {
-  // get_response(is_initial_message=1);
+  //getResponse(1);
 
   $('#message-form').on('submit', function(e) {
     e.preventDefault();
@@ -16,7 +16,7 @@ $(document).ready(function() {
             showNotification(error_message);
         }
         addMessage('user', message, has_user_recording, is_language_learning);
-        getResponse(is_initial_message=0);
+        getResponse(0);
       });
     }
   });
@@ -69,15 +69,13 @@ $(document).ready(function() {
   });
   autoResize(textarea);
   $('#message-input').keydown(function(event) {
-    if (event.key === 'Enter') {
+    if (event.key === 'Enter' && !event.shiftKey) {
       event.preventDefault();
       $('#message-form').submit();
+      autoResize(this);
     }
-  });
-
-  document.getElementById('message-input').addEventListener('keydown', function(e) {
-      if (e.key === 'Enter' && e.shiftKey) {
-        e.preventDefault();
+    else if (event.key === 'Enter' && event.shiftKey) {
+        event.preventDefault();
         this.value += '\n';
         autoResize(this);
     }
