@@ -357,7 +357,7 @@ function updateUIByAudioStatus(is_playing) {
     var lang_button = $('#lang-toggle-button');
     var lang_text = $('#lang-text');
     var pause_icon = $('#pause-icon');
-    
+
     if (is_playing && record_button.attr('name') === 'record') {
         record_button.attr('name', 'stop');
         record_button.attr('title', 'Stop Audio');
