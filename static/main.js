@@ -1,7 +1,6 @@
 $.getScript("/static/common.js");
 
 $(document).ready(function() {
-  var audio_playing = false;
   // get_response(is_initial_message=1);
 
   $('#message-form').on('submit', function(e) {
