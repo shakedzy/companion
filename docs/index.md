@@ -7,7 +7,7 @@
 ![demo](images/demo.gif)
 
 ![Supports Python 3.8 and above](https://img.shields.io/badge/Python-%3E=3.8-green?style=for-the-badge)
-[![License](https://img.shields.io/badge/License-CC%20Attr.%20Non--Commercial%20ShareAlike%202.0-blue?style=for-the-badge)](LICENSE)
+[![License](https://img.shields.io/badge/License-CC%20BY--NC%204.0-blue?style=for-the-badge)](https://creativecommons.org/licenses/by-nc/4.0/)
 
 
 Companion uses [OpenAI ChatGPT](https://chat.openai.com) & [Whisper](https://openai.com/research/whisper) and 
