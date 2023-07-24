@@ -4,7 +4,7 @@ import pyaudio
 import wave
 import logging
 import pygame
-from typing import Dict, List
+from typing import Dict, List, Optional
 from pydub import AudioSegment
 from google.oauth2.service_account import Credentials
 from google.cloud import texttospeech
@@ -14,8 +14,8 @@ from python.config import Config
 _is_recording = False
 
 t2s_audio_config = texttospeech.AudioConfig(audio_encoding=texttospeech.AudioEncoding.MP3)
-t2s_client = texttospeech.TextToSpeechClient()
-t2s_voice = None
+t2s_client: Optional[texttospeech.TextToSpeechClient] = None
+t2s_voice: Optional[texttospeech.VoiceSelectionParams] = None
 
 
 def init_speech(config: Config, credentials: Credentials) -> None:
@@ -30,7 +30,18 @@ def init_speech(config: Config, credentials: Credentials) -> None:
     t2s_client = texttospeech.TextToSpeechClient(credentials=credentials)
 
     l = config.bot.voice.split("-")
-    t2s_voice = texttospeech.VoiceSelectionParams(name=config.bot.voice, language_code=f"{l[0]}-{l[1]}")
+    t2s_voice = get_voice_object(voice_name=config.bot.voice, language_code=f"{l[0]}-{l[1]}")
+
+
+def get_voice_object(voice_name: str, language_code: str) -> texttospeech.VoiceSelectionParams:
+    """
+    Create a VoiceSelectionParams object
+
+    :param voice_name: voice name
+    :param language_code: language code and locale (i.e. 'en-US')
+    :return: a VoiceSelectionParams object
+    """
+    return texttospeech.VoiceSelectionParams(name=voice_name, language_code=language_code)
 
 
 def stop_recording() -> None:
@@ -120,17 +131,19 @@ def speech2text(filename: str, language: str) -> str:
     return transcript["text"]
 
 
-def text2speech(text: str, filename: str) -> str:
+def text2speech(text: str, filename: str, voice: Optional[texttospeech.VoiceSelectionParams] = None) -> str:
     """
     Convert text to speech
 
     :param text: text to be converted
     :param filename: mp3 file with saved speech audio
+    :param voice: an optional alternative voice, instead of the default one
     :return: filename
     """
+    voice = voice or t2s_voice
     synthesis_input = texttospeech.SynthesisInput(text=text)
     speech = t2s_client.synthesize_speech(
-        input=synthesis_input, voice=t2s_voice, audio_config=t2s_audio_config
+        input=synthesis_input, voice=voice, audio_config=t2s_audio_config
     ).audio_content
     with open(filename, "wb") as mp3_file:
         mp3_file.write(speech)

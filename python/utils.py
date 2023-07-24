@@ -1,8 +1,9 @@
 import re
 import os
 import openai
-from typing import List
+from typing import List, Optional
 from google.oauth2.service_account import Credentials
+from google.cloud.texttospeech import VoiceSelectionParams
 from python import speech
 from python.config import Config
 from python.consts import TEMP_DIR
@@ -40,7 +41,7 @@ def split_to_sentences(text: str) -> List[str]:
     return split_list
 
 
-def bot_text_to_speech(text: str, message_index: int, counter: int) -> str:
+def bot_text_to_speech(text: str, message_index: int, counter: int, voice: Optional[VoiceSelectionParams] = None) -> str:
     """
     Helper function to create a mp3 file with recording and logical name.
 
@@ -48,10 +49,11 @@ def bot_text_to_speech(text: str, message_index: int, counter: int) -> str:
     :param message_index: index of message in memory
     :param counter: number of this file from all speech files created for this message (as messages are split as
                     they are been written, and fill sentences are sent to be converted to speech)
+    :param voice: an optional alternative voice, instead of the default one
     :return: file name of speech recording
     """
     filename = os.path.join(TEMP_DIR, f"bot_speech_{message_index}_{counter}.mp3")
-    speech.text2speech(text, filename)
+    speech.text2speech(text, filename, voice=voice)
     return filename
 
 
