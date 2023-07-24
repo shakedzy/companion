@@ -22,7 +22,7 @@ def split_to_sentences(text: str) -> List[str]:
     """
     characters = [c+' ' for c in ['.', '!', "?", ":", ";"]]
     escaped_characters = [re.escape(c) for c in characters]
-    text = re.sub('_+', '_', text)  # see issue #39
+    text = re.sub('_+', 'mmm', text)  # see issue #39
     if any([c in text for c in characters]):
         pattern = '|'.join(escaped_characters)
         split_list = re.split(pattern, text)
