@@ -4,14 +4,14 @@
 
 === "Mac"
 
-    Run:
+    On Mac, Run:
     ```bash
     brew install portaudio ffmpeg
     ```
 
 === "Linux"
 
-    Run:
+    On Linux, Run:
     ```bash
     apt-get install portaudio ffmpeg
     ```
@@ -28,7 +28,7 @@ git clone https://github.com/shakedzy/companion.git
 ```
 3. From the main `companion` directory, run:
 ```bash
-pip install -r requirments.txt
+pip install -r requirements.txt
 ```
 
 
