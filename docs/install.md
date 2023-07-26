@@ -32,9 +32,11 @@ pip install -r requirements.txt
 ```
 
 
-## Keys file (optional)
+## Keys file
+**This is optional, and not required.**
+
 You may add a `keys.yml` file which will hold your OpenAI API key and/or a Google Cloud Service Account
-to be used to access these required services. This is optional, and is used only when you wish to override the local
+to be used to access these required services. It allows you` to override the local
 OpenAI API key or Google Cloud SDK (or when they cannot be installed). 
 
 Keys file example:
