@@ -501,8 +501,15 @@
 <h2 id="keys-file">Keys file</h2>
 <p><strong>This is optional, and not required.</strong></p>
 <p>You may add a <code>keys.yml</code> file which will hold your OpenAI API key and/or a Google Cloud Service Account
-to be used to access these required services. It allows you` to override the local
-OpenAI API key or Google Cloud SDK (or when they cannot be installed). </p>
+to be used to access these required services. It allows you to override the local
+OpenAI API key or Google Cloud SDK (or when they cannot be installed).</p>
+<div class="admonition warning">
+<p class="admonition-title">Private keys</p>
+<p>Your API and Service Account keys are private and shouldn't be shared, as they
+allow access your OpenAI and Google Cloud services without any password or additional logins.
+Do not save or share this file publicly online nor commit it to GitHub. This file should
+remain only on your machine.</p>
+</div>
 <p>Keys file example:
 <div class="language-yaml highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="nt">openai</span><span class="p">:</span>
 </span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="w">  </span><span class="nt">api_key</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;sk-...&#39;</span>
