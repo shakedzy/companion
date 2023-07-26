@@ -281,11 +281,11 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#google" class="md-nav__link">
-    Google
+  <a href="#google-cloud" class="md-nav__link">
+    Google Cloud
   </a>
   
-    <nav class="md-nav" aria-label="Google">
+    <nav class="md-nav" aria-label="Google Cloud">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -416,11 +416,11 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#google" class="md-nav__link">
-    Google
+  <a href="#google-cloud" class="md-nav__link">
+    Google Cloud
   </a>
   
-    <nav class="md-nav" aria-label="Google">
+    <nav class="md-nav" aria-label="Google Cloud">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -478,7 +478,12 @@
 <div class="language-bash highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nb">export</span><span class="w"> </span><span class="nv">OPENAI_API_KEY</span><span class="o">=</span><span class="s2">&quot;YOUR_KEY&quot;</span>
 </span></code></pre></div></li>
 </ol>
-<h2 id="google">Google</h2>
+<div class="admonition tip">
+<p class="admonition-title">Using a keys file</p>
+<p>If you're unable to save your OpenAI API key as a permanent environment variable, you can add it to 
+a keys file. See <a href="../install/#keys-file">Keys file</a> on <em>Installing Dependencies</em>.</p>
+</div>
+<h2 id="google-cloud">Google Cloud</h2>
 <p>Google Text-to-Speech is used to narrate your tutor, and 
 Google Translate is used to translate your tutor's messages to your own language.</p>
 <h3 id="1-setting-up-a-google-cloud-project">1. Setting up a Google Cloud Project</h3>
@@ -488,19 +493,15 @@ Google Translate is used to translate your tutor's messages to your own language
 <li>In the "New Project" dialog, enter a name for your project</li>
 <li>Click on the "Create" button to create the project</li>
 </ol>
+<div class="admonition abstract">
+<p class="admonition-title">Google Cloud project ID</p>
+<p>The SDK installation process (see below) will require your project ID, and not the name you gave it.
+You can find your project ID on your <a href="https://console.cloud.google.com/home/dashboard">Google Cloud Dashboard</a>.
+Choose your project from the dropdown at the top of the screen, and you'll see your project ID under <em>Project Info</em>.</p>
+</div>
 <h3 id="2-setting-up-google-cloud-sdk">2. Setting up Google Cloud SDK</h3>
-<ol>
-<li>Download the <a href="https://cloud.google.com/sdk/docs/install-sdk">Google Cloud SDK client</a>. Unzip and place in your home directory</li>
-<li>Run: 
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>~/google-cloud-sdk/install.sh<span class="sb">`</span>
-</span></code></pre></div></li>
-<li>Run:
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>~/google-cloud-sdk/bin/gcloud<span class="w"> </span>init
-</span></code></pre></div></li>
-<li><strong>Open a new terminal</strong> and run:
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>gcloud<span class="w"> </span>auth<span class="w"> </span>application-default<span class="w"> </span>login
-</span></code></pre></div></li>
-</ol>
+<p>Download the <a href="https://cloud.google.com/sdk/docs/install-sdk">Google Cloud SDK client</a>. 
+Follow the installation instructions for your operating system.</p>
 <h3 id="3-enable-apis">3. Enable APIs</h3>
 <div class="admonition info">
 <p class="admonition-title">Check your Google Cloud project</p>
