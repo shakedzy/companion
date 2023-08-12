@@ -120,7 +120,10 @@ def play_bot_test_text():
     Play testing text-to-speech text from setup page
     """
     text = request.form['text']
-    filename = utils.bot_text_to_speech(text, 0, 0)
+    lang_code = request.form['lang']
+    voice_name = request.form['voice']
+    voice = speech.get_voice_object(voice_name=voice_name, language_code=lang_code)
+    filename = utils.bot_text_to_speech(text, 0, 0, voice=voice)
     speech.play_audio(filename)
     while pygame.mixer.music.get_busy():
         continue
@@ -451,7 +454,7 @@ def run(config_file: str, keys_file: Optional[str] = None) -> None:
     try:
         config = Config.from_yml_file(config_file)
     except FileNotFoundError:
-        app_cache.server_errors.append("Config file not found. Got to /setup to configure the app.")
+        app_cache.server_errors.append("Config file not found. Go to /setup to configure the app.")
         config = Config({'bot': {'voice': 'xx-xx'}})
 
     if keys_file:

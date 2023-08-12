@@ -4,14 +4,14 @@
 
 === "Mac"
 
-    Run:
+    On Mac, Run:
     ```bash
     brew install portaudio ffmpeg
     ```
 
 === "Linux"
 
-    Run:
+    On Linux, Run:
     ```bash
     apt-get install portaudio ffmpeg
     ```
@@ -28,14 +28,22 @@ git clone https://github.com/shakedzy/companion.git
 ```
 3. From the main `companion` directory, run:
 ```bash
-pip install -r requirments.txt
+pip install -r requirements.txt
 ```
 
 
-## Keys file (optional)
+## Keys file
+**This is optional, and not required.**
+
 You may add a `keys.yml` file which will hold your OpenAI API key and/or a Google Cloud Service Account
-to be used to access these required services. This is optional, and is used only when you wish to override the local
-OpenAI API key or Google Cloud SDK (or when they cannot be installed). 
+to be used to access these required services. It allows you to override the local
+OpenAI API key or Google Cloud SDK (or when they cannot be installed).
+
+!!! warning "Private keys"
+    Your API and Service Account keys are private and shouldn't be shared, as they
+    allow access your OpenAI and Google Cloud services without any password or additional logins.
+    Do not save or share this file publicly online nor commit it to GitHub. This file should
+    remain only on your machine.
 
 Keys file example:
 ```yaml

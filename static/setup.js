@@ -35,7 +35,11 @@ $(document).ready(function(){
     $('#listen-to-tutor').click(function () {
         var text = prompt("Enter text:");
         console.log(text);
-        $.post('/play_bot_test_text', {'text': text}, function(response) {});
+        $.post('/play_bot_test_text', {
+            'text': text,
+            'lang': $('#tutor-lang-dropdown').val(),
+            'voice': $('#voices-dropdown').val()
+        }, function(response) {});
     });
 
     $('#setup-form').on('submit', function(e) {

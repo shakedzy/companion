@@ -9,6 +9,12 @@ $(document).ready(function() {
   var prefersDarkScheme = window.matchMedia('(prefers-color-scheme: dark)');
   var darkMode = prefersDarkScheme.matches;
 
+  var textarea = document.getElementById('message-input');
+  textarea.addEventListener('input', function(e) {
+      autoResize(this);
+  });
+  autoResize(textarea);
+
   $('#message-form').on('submit', function(e) {
     e.preventDefault();
     var message = $('#message-input').val();
@@ -58,25 +64,25 @@ $(document).ready(function() {
         } else {
           $('#message-input').focus();
         }
+        autoResize(textarea);
         toggleLoadingIcon('hide');
         });
       }
   });
 
   Mousetrap.bindGlobal('alt+r', function(e) {
-    e.preventDefault();
-    $('#record-button').click();
+      if ($('#record-button').attr('name') === 'record') {
+          e.preventDefault();
+          $('#record-button').click();
+      }
   });
   Mousetrap.bindGlobal('alt+l', function(e) {
-    e.preventDefault();
-    $('#lang-toggle-button').click();
+      if ($('#lang-toggle-button').attr('name') === 'lang-record') {
+          e.preventDefault();
+          $('#lang-toggle-button').click();
+      }
   });
 
-  var textarea = document.getElementById('message-input');
-  textarea.addEventListener('input', function(e) {
-      autoResize(this);
-  });
-  autoResize(textarea);
   $('#message-input').keydown(function(event) {
     if (event.key === 'Enter' && !event.shiftKey) {
       event.preventDefault();

@@ -1,7 +1,7 @@
 # Using Companion
 
 ## Launching
-1. From the `companion` directory in your terminal, run:
+From the `companion` directory in your terminal, run:
 ```bash
 python companion.py
 ```
@@ -11,14 +11,16 @@ You may also add:
 -k KEYS_FILE    select a keys file
 ```
 Both options are optional.
-<br><br>
-2. Go to **[127.0.0.1:5000](http://127.0.0.1:5000)** in your browser. Session will
-begin automatically. <br> **Note**: Refreshing the page will restart the chat.
 
 !!! info "Launching for the first time"
     If this is the first time you run the app (or if you'd like to change its configurations), 
     go to **[127.0.0.1:5000/setup](http://127.0.0.1:5000/setup)** <br>(_app must be relaunched
     after setup for changes to take effect_).
+
+Go to **[127.0.0.1:5000](http://127.0.0.1:5000)** in your browser. Session will
+begin automatically.
+
+**Note**: Refreshing the page will restart the chat.
 
 
 
