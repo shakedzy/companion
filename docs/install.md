@@ -13,7 +13,7 @@
 
     On Linux, Run:
     ```bash
-    apt-get install portaudio ffmpeg
+    apt-get install libasound-dev portaudio19-dev libportaudio2 libportaudiocpp0 ffmpeg
     ```
 
 ### Installing environment  
