@@ -3,6 +3,7 @@
   <head>
     <meta charset="utf-8">
     <title>Companion</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css">
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
@@ -25,6 +26,15 @@
   </head>
   <body>
     <div id="notification-area"></div>
+    <div class="topnav" id="myTopnav">
+      <a href="javascript:void(0);" class="icon" onclick="menuToggle()">
+        <i class="fa fa-bars"></i>
+      </a>
+      <a id="menu-language"><b>[&nbsp;<span id="menu-lang-text">fr</span>&nbsp;]</b>&nbsp;&nbsp;Toggle Recording Language</a>
+      <a id="menu-dark-mode"><i id="menu-mode-icon" class="fas fa-moon"></i>&nbsp;&nbsp;Dark/Light Mode</a>
+      <a id="menu-load-session"><i id="menu-load-saved-icon" class="fa-solid fa-rotate-right"></i>&nbsp;&nbsp;Load Saved Session</a>
+      <a id="menu-save-session"><i id="menu-save-icon" class="fa-solid fa-floppy-disk"></i>&nbsp;&nbsp;Save Session</a>
+    </div>
     <div class="container my-0">
       <div class="d-flex justify-content-center align-items-center mb-4">
         <h1 class="mb-0"><img src="/static/logo.png" style="max-width: 300px;" id="logo-image"></h1>

@@ -3,15 +3,18 @@
   --primary: #007bff;
   --secondary: #2c2c2c;
   --font-color: #000000;
+  --menu-font-color: #000000;
   --card-color: #f8f9fa;
   --shadow: rgba(0, 0, 0, 0.1);
   --fa-filter: none;
+  --logo-color: #90b2e3;
 }
 
 .dark-mode {
     --background: #121212;
     --secondary: #7e7e7e;
     --font-color: #9c9c9c;
+    --menu-font-color: #ffffff;
     --card-color: #ededed;
     --shadow: rgba(255, 255, 255, 0.1);
     --fa-filter: invert(1);
@@ -131,4 +134,50 @@ img.profile-pic {
   height: 1.5em; /* 1 line */
   max-height: 4.5em; /* 3 lines */
   resize: none;
+}
+
+
+/* Add a black background color to the top navigation */
+.topnav {
+  z-index: 1;
+  overflow: hidden;
+  display: none;
+  position: absolute;
+  background: var(--background);
+  color: var(--menu-font-color);
+}
+
+/* Style the links inside the navigation bar */
+.topnav a {
+  float: left;
+  display: block;
+  text-align: center;
+  padding: 14px 16px;
+  text-decoration: none;
+  font-size: 17px;
+}
+.topnav a.icon {
+  position: relative;
+  color: var(--logo-color);
+}
+
+/* When the screen is less than 600 pixels wide, hide all links, except for the first one ("Home"). Show the link that contains should open and close the topnav (.icon) */
+/* The "responsive" class is added to the topnav with JavaScript when the user clicks on the icon. This class makes the topnav look good on small screens (display the links vertically instead of horizontally) */
+@media screen and (max-width: 600px) {
+  .topnav { display: block; }
+  .topnav a {display: none;}
+  .topnav a.icon {
+    float: right;
+    display: block;
+  }
+  .topnav.responsive a.icon {
+    right: 0;
+    top: 0;
+    color: var(--menu-font-color);;
+  }
+  .topnav.responsive a {
+    float: none;
+    display: block;
+    text-align: left;
+  }
 }

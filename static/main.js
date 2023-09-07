@@ -1,7 +1,7 @@
 $.getScript("/static/common.js");
 
 $(document).ready(function() {
-  getResponse(1);
+  // getResponse(1);
 
   var currentLanguageIndex = 0;
 
@@ -394,4 +394,15 @@ function updateUIByAudioStatus(is_playing) {
         lang_text.css('display', 'block');
         pause_icon.css('display', 'none');
     }
+}
+
+
+/* Toggle between adding and removing the "responsive" class to topnav when the user clicks on the icon */
+function menuToggle() {
+  var x = document.getElementById("myTopnav");
+  if (x.className === "topnav") {
+    x.className += " responsive";
+  } else {
+    x.className = "topnav";
+  }
 }
