@@ -303,11 +303,11 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#keys-file-optional" class="md-nav__link">
-    Keys file (optional)
+  <a href="#keys-file" class="md-nav__link">
+    Keys file
   </a>
   
-    <nav class="md-nav" aria-label="Keys file (optional)">
+    <nav class="md-nav" aria-label="Keys file">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -423,11 +423,11 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#keys-file-optional" class="md-nav__link">
-    Keys file (optional)
+  <a href="#keys-file" class="md-nav__link">
+    Keys file
   </a>
   
-    <nav class="md-nav" aria-label="Keys file (optional)">
+    <nav class="md-nav" aria-label="Keys file">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -472,13 +472,13 @@
 <div class="tabbed-set tabbed-alternate" data-tabs="1:2"><input checked="checked" id="__tabbed_1_1" name="__tabbed_1" type="radio" /><input id="__tabbed_1_2" name="__tabbed_1" type="radio" /><div class="tabbed-labels"><label for="__tabbed_1_1">Mac</label><label for="__tabbed_1_2">Linux</label></div>
 <div class="tabbed-content">
 <div class="tabbed-block">
-<p>Run:
+<p>On Mac, Run:
 <div class="language-bash highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>brew<span class="w"> </span>install<span class="w"> </span>portaudio<span class="w"> </span>ffmpeg
 </span></code></pre></div></p>
 </div>
 <div class="tabbed-block">
-<p>Run:
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>apt-get<span class="w"> </span>install<span class="w"> </span>portaudio<span class="w"> </span>ffmpeg
+<p>On Linux, Run:
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>apt-get<span class="w"> </span>install<span class="w"> </span>libasound-dev<span class="w"> </span>portaudio19-dev<span class="w"> </span>libportaudio2<span class="w"> </span>libportaudiocpp0<span class="w"> </span>ffmpeg
 </span></code></pre></div></p>
 </div>
 </div>
@@ -495,13 +495,21 @@
 </span></code></pre></div></p>
 </li>
 <li>From the main <code>companion</code> directory, run:
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>pip<span class="w"> </span>install<span class="w"> </span>-r<span class="w"> </span>requirments.txt
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>pip<span class="w"> </span>install<span class="w"> </span>-r<span class="w"> </span>requirements.txt
 </span></code></pre></div></li>
 </ol>
-<h2 id="keys-file-optional">Keys file (optional)</h2>
+<h2 id="keys-file">Keys file</h2>
+<p><strong>This is optional, and not required.</strong></p>
 <p>You may add a <code>keys.yml</code> file which will hold your OpenAI API key and/or a Google Cloud Service Account
-to be used to access these required services. This is optional, and is used only when you wish to override the local
-OpenAI API key or Google Cloud SDK (or when they cannot be installed). </p>
+to be used to access these required services. It allows you to override the local
+OpenAI API key or Google Cloud SDK (or when they cannot be installed).</p>
+<div class="admonition warning">
+<p class="admonition-title">Private keys</p>
+<p>Your API and Service Account keys are private and shouldn't be shared, as they
+allow access your OpenAI and Google Cloud services without any password or additional logins.
+Do not save or share this file publicly online nor commit it to GitHub. This file should
+remain only on your machine.</p>
+</div>
 <p>Keys file example:
 <div class="language-yaml highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="nt">openai</span><span class="p">:</span>
 </span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="w">  </span><span class="nt">api_key</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;sk-...&#39;</span>
