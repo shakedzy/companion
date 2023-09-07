@@ -1,7 +1,7 @@
 $.getScript("/static/common.js");
 
 $(document).ready(function() {
-  // getResponse(1);
+  getResponse(1);
 
   var currentLanguageIndex = 0;
 
