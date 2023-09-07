@@ -139,13 +139,14 @@ img.profile-pic {
 
 /* Add a black background color to the top navigation */
 .topnav {
-  z-index: 1;
+  z-index: 9;
   overflow: hidden;
   display: none;
   position: absolute;
   background: var(--background);
   color: var(--menu-font-color);
 }
+.topnav.desktop-menu { display: block; }
 
 /* Style the links inside the navigation bar */
 .topnav a {
@@ -155,6 +156,7 @@ img.profile-pic {
   padding: 14px 16px;
   text-decoration: none;
   font-size: 17px;
+  color: inherit;
 }
 .topnav a.icon {
   position: relative;
@@ -165,6 +167,8 @@ img.profile-pic {
 /* The "responsive" class is added to the topnav with JavaScript when the user clicks on the icon. This class makes the topnav look good on small screens (display the links vertically instead of horizontally) */
 @media screen and (max-width: 600px) {
   .topnav { display: block; }
+  .topnav.desktop-menu { display: none; }
+  .topnav.responsive { border: solid 1px var(--logo-color) }
   .topnav a {display: none;}
   .topnav a.icon {
     float: right;
@@ -179,5 +183,16 @@ img.profile-pic {
     float: none;
     display: block;
     text-align: left;
+  }
+  .non-mobile {
+    display: none;
+  }
+  .btn {
+    border-radius: 0;
+  }
+  img.profile-pic {
+    align-self: flex-start;
+    width: 35px;
+    height: 35px;
   }
 }

@@ -103,9 +103,9 @@ $(document).ready(function() {
     darkMode = !darkMode;
     setDarkMode(darkMode);
   });
-
-  $('#dark-mode-button').on('click', function() {
-    $('body').toggleClass('dark-mode');
+  $('#menu-dark-mode').on('click', function() {
+    darkMode = !darkMode;
+    setDarkMode(darkMode);
   });
 
   $.post('/set_language', {'language': languages[currentLanguageIndex]}, function() {});
@@ -132,12 +132,15 @@ $(document).ready(function() {
       else {
           currentLanguageIndex = (currentLanguageIndex + 1) % languages.length;
           $('#lang-text').text(languages[currentLanguageIndex]);
+          $('#menu-lang-text').text(languages[currentLanguageIndex]);
           $.post('/set_language', {'language': languages[currentLanguageIndex]}, function() {});
       }
   });
-
-  $('#dark-mode-button').on('click', function() {
-    $('body').toggleClass('dark-mode');
+  $('#menu-language').on('click', function() {
+      currentLanguageIndex = (currentLanguageIndex + 1) % languages.length;
+      $('#lang-text').text(languages[currentLanguageIndex]);
+      $('#menu-lang-text').text(languages[currentLanguageIndex]);
+      $.post('/set_language', {'language': languages[currentLanguageIndex]}, function() {});
   });
 
   $('#save-session').on('click', function() {
@@ -157,6 +160,24 @@ $(document).ready(function() {
                 saveIcon.removeClass('fa-bounce');
                 saveIcon.addClass('fa-floppy-disk');
             }, 2000); // 2000 ms = 2 seconds
+        }
+    });
+  });
+  $('#menu-save-session').on('click', function() {
+    $.get("/save_session", function(response) {
+        if (response['success']) {
+            var saveIcon = $('#menu-save-icon');
+
+            saveIcon.removeClass('fa-floppy-disk');
+            saveIcon.addClass('fa-check');
+            saveIcon.addClass('fa-bounce');
+
+            setTimeout(function () {
+                saveIcon.removeClass('fa-check');
+                saveIcon.removeClass('fa-bounce');
+                saveIcon.addClass('fa-floppy-disk');
+                menuToggle();
+            }, 1000); // 2000 ms = 2 seconds
         }
     });
   });
@@ -182,6 +203,31 @@ $(document).ready(function() {
 
             setTimeout(function () {
                 loadButton.removeClass('btn-danger off');
+                loadIcon.removeClass('fa-comment-slash');
+                loadIcon.removeClass('fa-shake');
+                loadIcon.addClass('fa-rotate-right');
+            }, 2000); // 2000 ms = 2 seconds
+        }
+    });
+  });
+  $('#menu-load-session').on('click', function() {
+    var loadIcon = $('#menu-load-icon');
+    loadIcon.addClass("fa-spin");
+    $.get("/load_session", function(response) {
+        var messages = response['messages'];
+        if (messages.length > 0) {
+            loadPastMessages(messages);
+            setTimeout(function () {
+                loadIcon.removeClass("fa-spin")
+                menuToggle();
+            }, 1000);
+        } else {
+            loadIcon.removeClass("fa-spin");
+            loadIcon.removeClass('fa-rotate-right');
+            loadIcon.addClass('fa-comment-slash');
+            loadIcon.addClass('fa-shake');
+
+            setTimeout(function () {
                 loadIcon.removeClass('fa-comment-slash');
                 loadIcon.removeClass('fa-shake');
                 loadIcon.addClass('fa-rotate-right');
@@ -332,10 +378,12 @@ function updateLastMessage(newContent) {
 function setDarkMode(isDarkMode) {
     if (isDarkMode) {
       $('body').addClass('dark-mode');
-      $('#mode-icon').removeClass('fa-moon').addClass('fa-sun');
+      $('#mode-icon').removeClass('fa-sun').addClass('fa-moon');
+      $('#menu-mode-icon').removeClass('fa-sun').addClass('fa-moon');
     } else {
       $('body').removeClass('dark-mode');
-      $('#mode-icon').removeClass('fa-sun').addClass('fa-moon');
+      $('#mode-icon').removeClass('fa-moon').addClass('fa-sun');
+      $('#menu-mode-icon').removeClass('fa-moon').addClass('fa-sun');
     }
 }
 
@@ -399,7 +447,7 @@ function updateUIByAudioStatus(is_playing) {
 
 /* Toggle between adding and removing the "responsive" class to topnav when the user clicks on the icon */
 function menuToggle() {
-  var x = document.getElementById("myTopnav");
+  var x = document.getElementById("topnav");
   if (x.className === "topnav") {
     x.className += " responsive";
   } else {

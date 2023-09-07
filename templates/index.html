@@ -26,14 +26,20 @@
   </head>
   <body>
     <div id="notification-area"></div>
-    <div class="topnav" id="myTopnav">
+    <div class="topnav desktop-menu" id="desktop-menu">
+      <a href="/setup" class="icon">
+        <i class="fas fa-cog"></i>
+      </a>
+    </div>
+    <div class="topnav" id="topnav">
       <a href="javascript:void(0);" class="icon" onclick="menuToggle()">
         <i class="fa fa-bars"></i>
       </a>
       <a id="menu-language"><b>[&nbsp;<span id="menu-lang-text">fr</span>&nbsp;]</b>&nbsp;&nbsp;Toggle Recording Language</a>
       <a id="menu-dark-mode"><i id="menu-mode-icon" class="fas fa-moon"></i>&nbsp;&nbsp;Dark/Light Mode</a>
-      <a id="menu-load-session"><i id="menu-load-saved-icon" class="fa-solid fa-rotate-right"></i>&nbsp;&nbsp;Load Saved Session</a>
+      <a id="menu-load-session"><i id="menu-load-icon" class="fa-solid fa-rotate-right"></i>&nbsp;&nbsp;Load Saved Session</a>
       <a id="menu-save-session"><i id="menu-save-icon" class="fa-solid fa-floppy-disk"></i>&nbsp;&nbsp;Save Session</a>
+      <a id="menu-settings" href="/setup"><i id="menu-settings-icon" class="fas fa-cog"></i>&nbsp;&nbsp;Settings</a>
     </div>
     <div class="container my-0">
       <div class="d-flex justify-content-center align-items-center mb-4">
@@ -42,20 +48,20 @@
       <div id="message-box" class="bg-light p-3"></div>
       <form id="message-form" class="d-flex">
         <div class="input-group">
-          <button type="button" id="mode-toggle-button" class="btn btn-secondary" title="Dark/Light Mode">
+          <button type="button" id="mode-toggle-button" class="btn btn-secondary non-mobile" title="Dark/Light Mode">
             <i id="mode-icon" class="fas fa-moon"></i>
           </button>
-          <button type="button" id="load-saved-session" class="btn btn-secondary" title="Continue last saved session">
+          <button type="button" id="load-saved-session" class="btn btn-secondary non-mobile" title="Continue last saved session">
             <i id="load-saved-icon" class="fa-solid fa-rotate-right"></i>
           </button>
-          <button type="button" id="save-session" class="btn btn-secondary" title="Save session for later">
+          <button type="button" id="save-session" class="btn btn-secondary non-mobile" title="Save session for later">
             <i id="save-icon" class="fa-solid fa-floppy-disk"></i>
           </button>
           <textarea autocomplete="off" class="form-control" id="message-input" placeholder="Type your message here..."></textarea>
           <button type="submit" id="submit-button" class="btn btn-primary" title="Submit Message">
             <i class="fas fa-paper-plane"></i>
           </button>
-          <button type="button" id="lang-toggle-button" class="btn btn-secondary" name="lang-record" title="Switch Recording Language [Alt+L]">
+          <button type="button" id="lang-toggle-button" class="btn btn-secondary non-mobile" name="lang-record" title="Switch Recording Language [Alt+L]">
             <span id="lang-text" style="display: block">fr</span>
             <i class="fa-solid fa-pause" id="pause-icon" style="display: none"></i>
           </button>
