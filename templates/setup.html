@@ -75,7 +75,7 @@
                         <input class="form-check-tutor" type="radio" id="{{females[i] | lower}}-female"
                                name="tutor" value="{{ females[i] }}-female" style="display: none;">
                         <label class="form-check-label image-label" for="{{females[i] | lower}}-female">
-                            <img src="/static/bots_profile/{{females[i] | lower}}.png" alt="{{ females[i] }}"
+                            <img src="/static/bots_profile/{{females[i] | convert_special | lower}}.png" alt="{{ females[i] }}"
                                  class="profile-img"> {{ females[i] }}
                         </label>
                     </div>
@@ -83,7 +83,7 @@
                         <input class="form-check-tutor" type="radio" id="{{males[i] | lower}}-male"
                                name="tutor" value="{{ males[i] }}-male" style="display: none;">
                         <label class="form-check-label image-label" for="{{males[i] | lower}}-male">
-                            <img src="/static/bots_profile/{{males[i] | lower}}.png" alt="{{ males[i] }}"
+                            <img src="/static/bots_profile/{{males[i] | convert_special | lower}}.png" alt="{{ males[i] }}"
                                  class="profile-img"> {{ males[i] }}
                         </label>
                     </div>

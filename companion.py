@@ -7,6 +7,7 @@ import pygame
 import argparse
 from typing import Optional
 from threading import Thread
+from unidecode import unidecode
 from flask import Flask, render_template, request, jsonify
 from queue import Empty as EmptyQueue
 from python import speech, language, utils
@@ -24,6 +25,12 @@ memory: Optional[Memory] = None
 chatbot: Optional[Chatbot] = None
 app_cache = AppCache()
 voices_by_features = dict()
+
+
+@app.template_filter('convert_special')
+def convert_special_letters(input_str):
+    return unidecode(input_str)
+
 
 @app.route('/')
 def home():
