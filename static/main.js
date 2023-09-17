@@ -1,4 +1,5 @@
 $.getScript("/static/common.js");
+$.getScript("/static/audio.js");
 
 $(document).ready(function() {
   getResponse(1);
