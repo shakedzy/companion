@@ -492,28 +492,29 @@ def run(config_file: str, keys_file: Optional[str] = None) -> None:
     :param config_file: path to config YAML file
     :param keys_file: path to keys YAML file if exists
     """
-    global config, voices_by_features
-    try:
-        config = Config.from_yml_file(config_file)
-    except FileNotFoundError:
-        app_cache.server_errors.append("Config file not found. Go to /setup to configure the app.")
-        config = Config({'bot': {'voice': 'xx-xx'}})
-
-    if keys_file:
-        config.update_from_yml_file(keys_file)
-
-    utils.init_openai(config)
-    gcs_creds = utils.get_gcs_credentials(config)
-    language.init_language(credentials=gcs_creds)
-    speech.init_speech(config=config, credentials=gcs_creds)
-    voices_by_features = speech.voices_by_features()
-
-    app_cache.text2speech_thread = Thread(target=bot_text_to_speech_queue_func)
-    app_cache.text2speech_thread.start()
+    # global config, voices_by_features
+    # try:
+    #     config = Config.from_yml_file(config_file)
+    # except FileNotFoundError:
+    #     app_cache.server_errors.append("Config file not found. Go to /setup to configure the app.")
+    #     config = Config({'bot': {'voice': 'xx-xx'}})
+    #
+    # if keys_file:
+    #     config.update_from_yml_file(keys_file)
+    #
+    # utils.init_openai(config)
+    # gcs_creds = utils.get_gcs_credentials(config)
+    # language.init_language(credentials=gcs_creds)
+    # speech.init_speech(config=config, credentials=gcs_creds)
+    # voices_by_features = speech.voices_by_features()
+    #
+    # app_cache.text2speech_thread = Thread(target=bot_text_to_speech_queue_func)
+    # app_cache.text2speech_thread.start()
+    #
     # app_cache.play_recordings_thread = Thread(target=play_recordings_queue_func)
     # app_cache.play_recordings_thread.start()
 
-    app.run(debug=True)
+    app.run()
 
 
 ########## THREADS ##########
