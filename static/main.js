@@ -2,8 +2,6 @@ $.getScript("/static/common.js");
 $.getScript("/static/audio.js");
 
 $(document).ready(function() {
-  getResponse(1);
-
   var currentLanguageIndex = 0;
 
   // Check if the user's system prefers dark mode
@@ -264,7 +262,8 @@ function addMessage(sender, message, has_user_recording, is_language_learning, d
       var record_button = $('<div class="d-block"><button class="btn btn-link user-button play-user-button"><i class="fa-solid fa-user"></i></button></div>');
       button_container.append(record_button);
         record_button.on('click', function() {
-        $.post('/play_user_recording', {'message_id': message_body.id}, function (response) {});
+            stopPlaying = false;
+            $.post('/play_user_recording', {'message_id': message_body.id}, function (response) {});
       });
     } else {
       var record_button = null;
@@ -309,6 +308,7 @@ function addMessage(sender, message, has_user_recording, is_language_learning, d
     }
   if (sound_on_button !== null) {
     sound_on_button.on('click', function() {
+      stopPlaying = false;
       $.post('/play_bot_recording', {'message_id': message_body.id, 'text': message_body.text(), 'play_existing': 1}, function (response) {});
   });
   }
@@ -405,4 +405,11 @@ function menuToggle() {
   } else {
     x.className = "topnav";
   }
+}
+
+function initChat() {
+    initAudio();
+    $('#audio-init').hide();
+    $('#main-chat').show();
+    getResponse(1);
 }

@@ -3,6 +3,7 @@
 tmp/*
 ltm/*
 uploads/*
+static/tmp/*
 config.yml
 keys.yml
 

@@ -34,7 +34,9 @@ $(document).ready(function(){
 
     $('#listen-to-tutor').click(function () {
         var text = prompt("Enter text:");
-        console.log(text);
+        if (audioCtx !== undefined) {
+            audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        }
         $.post('/play_bot_test_text', {
             'text': text,
             'lang': $('#tutor-lang-dropdown').val(),

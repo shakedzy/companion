@@ -7,10 +7,19 @@ let startTime = 0;
 let pauseTime = 0;
 let isPlaying = false;
 let isPaused = false;
+let stopPlaying = false;
 let recordedChunks = [];
 
 
 $(document).ready(function() {
+    audioBuffers = [];
+    startTime = 0;
+    pauseTime = 0;
+    isPlaying = false;
+    isPaused = false;
+    stopPlaying = false;
+    recordedChunks = [];
+
     setInterval(function () {
         if (audioCtx !== undefined) {loadAudioFromCache();}
     }, 1000);
@@ -32,7 +41,7 @@ function loadAudioFromCache() {
 
                 // Decode the audio data from the MP3 file
                 audioBuffers.push(await audioCtx.decodeAudioData(arrayBuffer));
-                if (!isPlaying && !isPaused) {
+                if (!isPlaying && !isPaused && !stopPlaying) {
                     playAudio();
                 }
             }
@@ -46,6 +55,7 @@ function loadAudioFromCache() {
 function playAudio() {
     if (!isPlaying) {
         isPaused = false;
+        stopPlaying = false;
         source = audioCtx.createBufferSource();
         source.buffer = audioBuffers[0];
         source.connect(audioCtx.destination);
@@ -92,8 +102,11 @@ function pauseAudio() {
 
 function stopAudio() {
     if (isPlaying) {
+        stopPlaying = true;
         source.stop();
+        $.get('/clear_audio_cache', function (response) {});
         audioBuffers = [];
+        source.stop();
         isPlaying = false;
         pauseTime = 0;  // Reset the pause time so the audio starts from the beginning next time
         updateUIByAudioStatus(isPlaying);

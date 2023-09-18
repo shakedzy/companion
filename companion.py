@@ -112,12 +112,18 @@ def setup():
 def get_next_in_audio_cache():
     try:
         filename = app_cache.play_recordings_queue.get(timeout=1)
+        filename = url_for('static', filename=f'{TEMP_DIR_NAME}/{filename.split("/")[-1]}')
         empty = False
     except EmptyQueue:
         filename = None
         empty = True
-    return jsonify({'file_url': url_for('static', filename=f'{TEMP_DIR_NAME}/{filename}'),
-                    'empty': int(empty)})
+    return jsonify({'file_url': filename, 'empty': int(empty)})
+
+
+@app.route("/clear_audio_cache", methods=['GET'])
+def clear_audio_cache():
+    app_cache.play_recordings_queue.queue.clear()
+    return jsonify({'message': 'Audio cache cleared'})
 
 
 @app.route('/upload_recording', methods=['POST'])
@@ -470,6 +476,7 @@ def bot_text_to_speech_queue_func():
                 app_cache.bot_recordings.append(filename)
                 memory.update(idx, recording=app_cache.bot_recordings)
             app_cache.play_recordings_queue.put(filename)
+
         except EmptyQueue:
             continue
         except Exception as e:
