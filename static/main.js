@@ -39,21 +39,20 @@ $(document).ready(function() {
     var langToggleButton = $('#lang-toggle-button'); // Select the lang-toggle-button
 
     if (recordButton.attr('name') === 'stop') {
-        $.get('/stop_audio', function () {});
+        stopAudio();
     }
     else if (recordButton.hasClass('off')) {
       // Start recording
       recordButton.removeClass('btn-secondary off').addClass('btn-danger on');
       langToggleButton.removeClass('btn-secondary off').addClass('btn-danger on');
-      $.post('/start_recording', {}, function(response) {
-        console.log(response.message);  // Log the server's response
-      });
+      startRecording();
     } else {
       // Stop recording and get the recorded text
       recordButton.removeClass('btn-danger on').addClass('btn-secondary off');
       langToggleButton.removeClass('btn-danger on').addClass('btn-secondary off');
       toggleLoadingIcon('show');
-      $.post('/end_recording', {}, function(response) {
+      stopRecording();
+      $.post('/transcribe_recording', {}, function(response) {
         var recorded_text = response['recorded_text'];
         var error_message = response['error'];
         if (error_message !== null) {
@@ -117,14 +116,14 @@ $(document).ready(function() {
           // do nothing
       }
       else if (lang_button.attr('name') === 'pause') {
-          $.get('/pause_audio', function () {});
+          pauseAudio();
           lang_button.attr('name', 'unpause');
           lang_button.attr('title', 'Unpause Audio');
           $('#pause-icon').removeClass('fa-pause');
           $('#pause-icon').addClass('fa-play');
       }
       else if (lang_button.attr('name') === 'unpause') {
-          $.get('/unpause_audio', function () {});
+          playAudio();
           lang_button.attr('name', 'pause');
           lang_button.attr('title', 'Pause Audio');
           $('#pause-icon').removeClass('fa-play');
@@ -236,13 +235,6 @@ $(document).ready(function() {
         }
     });
   });
-
-    setInterval(function () {
-        $.get('/is_audio_playing', function (response) {
-            var is_playing = response['is_playing'];
-            updateUIByAudioStatus(is_playing);
-        });
-    }, 500);
 });
 
 var message_counter = 1;
@@ -404,47 +396,6 @@ function autoResize(textarea) {
   textarea.style.height = '1.5em';
   textarea.style.height = textarea.scrollHeight + 'px';
 }
-
-function updateUIByAudioStatus(is_playing) {
-
-    var record_button = $('#record-button');
-    var record_icon = $('#record-icon');
-    var lang_button = $('#lang-toggle-button');
-    var lang_text = $('#lang-text');
-    var pause_icon = $('#pause-icon');
-
-    if (is_playing && record_button.attr('name') === 'record') {
-        record_button.attr('name', 'stop');
-        record_button.attr('title', 'Stop Audio');
-        lang_button.attr('name', 'pause');
-        lang_button.attr('title', 'Pause Audio');
-
-        record_icon.removeClass('fas');
-        record_icon.removeClass('fa-microphone');
-        record_icon.addClass('fa-solid');
-        record_icon.addClass('fa-stop');
-
-        lang_text.css('display', 'none');
-        pause_icon.css('display', 'block');
-        pause_icon.removeClass('fa-play');
-        pause_icon.addClass('fa-pause');
-
-    } else if (!is_playing && record_button.attr('name') === 'stop') {
-        record_button.attr('name', 'record');
-        record_button.attr('title', 'Record Message [Alt+R]');
-        lang_button.attr('name', 'lang-record');
-        lang_button.attr('title', 'Switch Recording Language [Alt+L]');
-
-        record_icon.addClass('fas');
-        record_icon.addClass('fa-microphone');
-        record_icon.removeClass('fa-solid');
-        record_icon.removeClass('fa-stop');
-
-        lang_text.css('display', 'block');
-        pause_icon.css('display', 'none');
-    }
-}
-
 
 /* Toggle between adding and removing the "responsive" class to topnav when the user clicks on the icon */
 function menuToggle() {

@@ -7,7 +7,7 @@
     <script src="{{ url_for('static', filename='audio.js') }}"></script>
     <script>
         let filename = "{{ url_for('static', filename='tmp/f1.mp3') }}";
-        let upload_endpoint = "{{ url_for('upload') }}";
+        let upload_endpoint = "{{ url_for('upload_recording') }}";
     </script>
 <title>Web Audio API MP3 Player</title>
 </head>

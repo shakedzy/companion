@@ -1,23 +1,6 @@
 # Installing Dependencies
 
-### Installing prerequisites
-
-=== "Mac"
-
-    On Mac, Run:
-    ```bash
-    brew install portaudio ffmpeg
-    ```
-
-=== "Linux"
-
-    On Linux, Run:
-    ```bash
-    apt-get install libasound-dev portaudio19-dev libportaudio2 libportaudiocpp0 ffmpeg
-    ```
-
-### Installing environment  
-
+### Installing environment
 
 1. Create a new virtual environment _(optional)_
 

@@ -39,7 +39,10 @@ $(document).ready(function(){
             'text': text,
             'lang': $('#tutor-lang-dropdown').val(),
             'voice': $('#voices-dropdown').val()
-        }, function(response) {});
+        }, function(response) {
+            let file_url = response['file_url'];
+            playSingleAudioFile(file_url);
+        });
     });
 
     $('#setup-form').on('submit', function(e) {

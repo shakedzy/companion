@@ -22,6 +22,9 @@ begin automatically.
 
 **Note**: Refreshing the page will restart the chat.
 
+!!! warning "Running on an Apple device?"
+    For some reason, recordings don't seem to always work well when running on an Apple device
+    using a browser other than Safari. If you seem to encounter similar issues, try using Safari.
 
 
 ## User Interface

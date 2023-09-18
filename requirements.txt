@@ -1,8 +1,5 @@
 Flask~=2.3.2
 PyYAML~=6.0
-PyAudio~=0.2.13
-pydub~=0.25.1
-pygame~=2.4.0
 openai~=0.27.6
 langcodes~=3.3.0
 language_data~=1.1
