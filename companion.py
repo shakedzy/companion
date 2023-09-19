@@ -24,6 +24,7 @@ memory: Optional[Memory] = None
 chatbot: Optional[Chatbot] = None
 app_cache = AppCache()
 voices_by_features = dict()
+audio_queue_reject_remaining_fragments = False
 
 
 @app.template_filter('convert_special')
@@ -108,8 +109,8 @@ def setup():
                                                                    for k in voices_by_features.keys()]
                                )
 
-@app.route("/audio_cache", methods=['GET'])
-def get_next_in_audio_cache():
+@app.route("/get_next_from_audio_queue", methods=['GET'])
+def get_next_from_audio_queue():
     try:
         filename = app_cache.play_recordings_queue.get(timeout=1)
         filename = url_for('static', filename=f'{TEMP_DIR_NAME}/{filename.split("/")[-1]}')
@@ -120,10 +121,29 @@ def get_next_in_audio_cache():
     return jsonify({'file_url': filename, 'empty': int(empty)})
 
 
-@app.route("/clear_audio_cache", methods=['GET'])
-def clear_audio_cache():
+@app.route("/clear_audio_queue", methods=['GET'])
+def clear_audio_queue():
+    global audio_queue_reject_remaining_fragments
+    audio_queue_reject_remaining_fragments = True
     app_cache.play_recordings_queue.queue.clear()
     return jsonify({'message': 'Audio cache cleared'})
+
+
+def put_in_audio_queue(filename: str) -> bool:
+    """
+    Helper function to put filename in audio queue
+
+    :param filename: filename to put in queue
+    """
+    global audio_queue_reject_remaining_fragments
+    if audio_queue_reject_remaining_fragments:
+        fragment_index = int(filename.split('_')[-1].split('.')[0])
+        if fragment_index > 0:
+            return False
+        else:
+            audio_queue_reject_remaining_fragments = False
+    app_cache.play_recordings_queue.put(filename)
+    return True
 
 
 @app.route('/upload_recording', methods=['POST'])
@@ -131,8 +151,7 @@ def upload_recording():
     return_json = dict()
     if 'file' in request.files:
         file = request.files['file']
-        # filename = os.path.join(TEMP_DIR, f"user_recording_{len(memory)}.mp3")
-        filename = os.path.join(TEMP_DIR, f"user_recording.mp3")
+        filename = os.path.join(TEMP_DIR, f"user_recording_{len(memory)}_0.mp3")
         file.save(filename)
         return_json['filename'] = filename
         app_cache.last_recording = filename
@@ -282,7 +301,7 @@ def play_bot_message():
                                          "message_index": index, 'skip_cache': True})
     else:
         for r in recordings:
-            app_cache.play_recordings_queue.put(r)
+            put_in_audio_queue(r)
     return jsonify({'message': 'Recordings inserted to queue'})
 
 
@@ -294,7 +313,7 @@ def play_user_message():
     message_id = int(request.form['message_id'].split('_')[1])
     user_recording = memory[message_id]['user_recording']
     if user_recording:
-        app_cache.play_recordings_queue.put(user_recording)
+        put_in_audio_queue(user_recording)
     return jsonify({'message': 'User message played successfully'})
 
 
@@ -475,7 +494,7 @@ def bot_text_to_speech_queue_func():
             else:
                 app_cache.bot_recordings.append(filename)
                 memory.update(idx, recording=app_cache.bot_recordings)
-            app_cache.play_recordings_queue.put(filename)
+            put_in_audio_queue(filename)
 
         except EmptyQueue:
             continue

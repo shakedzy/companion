@@ -21,7 +21,7 @@ $(document).ready(function() {
     recordedChunks = [];
 
     setInterval(function () {
-        if (audioCtx !== undefined) {loadAudioFromCache();}
+        if (audioCtx !== undefined) {loadAudioFromQueue();}
     }, 1000);
 });
 
@@ -31,21 +31,24 @@ function initAudio() {
 }
 
 
-function loadAudioFromCache() {
+function loadAudioFromQueue() {
     try {
-        $.get('/audio_cache', async function (response) {
-            if (!response['empty']) {
-                const file_url = response['file_url'];
-                const fetchResponse = await fetch(file_url);
-                const arrayBuffer = await fetchResponse.arrayBuffer();
+        if (!stopPlaying) {
+            $.get('/get_next_from_audio_queue', async function (response) {
+                if (!response['empty']) {
+                    const file_url = response['file_url'];
+                    console.log('Fetching audio file:', file_url);
+                    const fetchResponse = await fetch(file_url);
+                    const arrayBuffer = await fetchResponse.arrayBuffer();
 
-                // Decode the audio data from the MP3 file
-                audioBuffers.push(await audioCtx.decodeAudioData(arrayBuffer));
-                if (!isPlaying && !isPaused && !stopPlaying) {
-                    playAudio();
+                    // Decode the audio data from the MP3 file
+                    audioBuffers.push(await audioCtx.decodeAudioData(arrayBuffer));
+                    if (!isPlaying && !isPaused && !stopPlaying) {
+                        playAudio();
+                    }
                 }
-            }
-        });
+            });
+        }
     } catch (error) {
         console.error('Error loading audio:', error);
     }
@@ -54,6 +57,7 @@ function loadAudioFromCache() {
 
 function playAudio() {
     if (!isPlaying) {
+        isPlaying = true;
         isPaused = false;
         stopPlaying = false;
         source = audioCtx.createBufferSource();
@@ -65,7 +69,11 @@ function playAudio() {
             isPlaying = false;
             if (!isPaused) {
                 audioBuffers.shift();
-                if (audioBuffers.length > 0) {playAudio();}
+                if (audioBuffers.length > 0) {
+                    startTime = 0;
+                    pauseTime = 0;
+                    playAudio();
+                }
             }
         };
 
@@ -73,7 +81,6 @@ function playAudio() {
         let offset = pauseTime;
         source.start(0, offset);
         startTime = audioCtx.currentTime - offset;
-        isPlaying = true;
         updateUIByAudioStatus(isPlaying);
     }
 }
@@ -91,26 +98,23 @@ async function playSingleAudioFile(file_url) {
 
 
 function pauseAudio() {
-    if (isPlaying) {
-        isPaused = true;
-        source.stop();
-        pauseTime = audioCtx.currentTime - startTime;
-        isPlaying = false;
-    }
+    isPaused = true;
+    source.stop();
+    pauseTime = audioCtx.currentTime - startTime;
+    isPlaying = false;
 }
 
 
 function stopAudio() {
-    if (isPlaying) {
-        stopPlaying = true;
-        source.stop();
-        $.get('/clear_audio_cache', function (response) {});
-        audioBuffers = [];
-        source.stop();
-        isPlaying = false;
-        pauseTime = 0;  // Reset the pause time so the audio starts from the beginning next time
-        updateUIByAudioStatus(isPlaying);
-    }
+    stopPlaying = true;
+    isPlaying = false;
+    isPaused = false;
+    source.stop();
+    $.get('/clear_audio_queue', function (response) {});
+    audioBuffers = [];
+    pauseTime = 0;  // Reset the pause time so the audio starts from the beginning next time
+    startTime = 0;
+    updateUIByAudioStatus(isPlaying);
 }
 
 
@@ -129,7 +133,6 @@ async function startRecording() {
         mediaRecorder.onstop = () => {
             const blob = new Blob(recordedChunks, { type: 'audio/mp3' });
             recordedChunks = [];
-            console.log('Blob created:', blob);
             uploadAudio(blob);
         };
 
