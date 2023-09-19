@@ -37,7 +37,7 @@ def home():
     """
     Homepage of web UI
     """
-    global memory, chatbot
+    global memory, chatbot, config
 
     should_restart = bool(request.args.get('restart', 0))
     if should_restart:
