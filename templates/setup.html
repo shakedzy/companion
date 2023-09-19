@@ -48,20 +48,24 @@
                 <div class="col-1"></div>
             </div>
             <div class="row mb-5 mt-3 profile-input">
-                <div class="col-1"></div>
+                <div class="col-3"></div>
                 <div class="col-4">
                     <label for="user-lang-dropdown" class="form-label">You speak</label>
                     <select class="form-select" id="user-lang-dropdown" name="user-lang-dropdown" required>
                         <option selected disabled value="">Choose...</option>
                     </select>
                 </div>
+                <div class="col-3"></div>
+            </div>
+            <hr>
+            <div class="row mb-3 mt-5 align-items-center justify-content-center">
+                <div class="col-3"></div>
                 <div class="col-4">
                     <label for="lang-level" class="form-label">Your foreign-language level</label>
                     <input type="text" class="form-control" id="lang-level" name="lang-level" value="intermediate" required>
                 </div>
-                <div class="col-1"></div>
+                <div class="col-3"></div>
             </div>
-            <hr>
             <div class="row mt-5 d-flex align-items-center justify-content-center">
                 <div class="col-2">
                     <label for="tutors" class="form-label">Your tutor is</label>
@@ -109,7 +113,7 @@
                             <label for="listen-to-tutor">Try voice</label>
                         </div>
                         <div class="col-12 d-flex justify-content-center mt-sm-2">
-                            <button class="btn btn-primary" id="listen-to-tutor" style="width: 100%">
+                            <button type="button" class="btn btn-primary" id="listen-to-tutor" style="width: 100%">
                                 <i class="fas fa-volume-up"></i>
                             </button>
                         </div>
@@ -150,10 +154,13 @@ Turn on for a smoother experience.">
                 </div>
                 <div class="col-1"></div>
             </div>
-            <button type="submit" id="submit" name="submit" class="btn btn-primary mb-3 mt-5" style="width: 100px;">
-                <i class="fa-sharp fa-solid fa-check fa-lg" id="submit-icon"></i>
+            <button type="submit" id="submit" name="submit" class="btn btn-primary mb-3 mt-5">
+                <i class="fa-sharp fa-solid fa-check fa-lg" id="submit-icon"></i>&nbsp;&nbsp;Save Changes
             </button>
-            <br><em>App must be restarted for changes to take effect</em>
+            <button type="button" id="restart" name="restart" class="btn btn-warning mb-3 mt-5"
+                onclick="window.location.href='/?reset=1';">
+                <i class="fa-solid fa-arrows-rotate fa-lg" id="restart-icon"></i>&nbsp;&nbsp;Restart App
+            </button>
         </form>
     </div>
 </body>

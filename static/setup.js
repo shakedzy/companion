@@ -1,4 +1,5 @@
 $.getScript("/static/common.js");
+$.getScript("/static/audio.js");
 
 $(document).ready(function(){
     for (const input_code_and_lang of input_languages_codes_and_names) {  // [iso-6391, language_name]
@@ -34,9 +35,6 @@ $(document).ready(function(){
 
     $('#listen-to-tutor').click(function () {
         var text = prompt("Enter text:");
-        if (audioCtx !== undefined) {
-            audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        }
         $.post('/play_bot_test_text', {
             'text': text,
             'lang': $('#tutor-lang-dropdown').val(),

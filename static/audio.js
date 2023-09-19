@@ -87,6 +87,9 @@ function playAudio() {
 
 
 async function playSingleAudioFile(file_url) {
+    if (audioCtx === undefined) {
+        initAudio();
+    }
     const fetchResponse = await fetch(file_url);
     const arrayBuffer = await fetchResponse.arrayBuffer();
     const audioBuffer = await audioCtx.decodeAudioData(arrayBuffer);

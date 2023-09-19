@@ -7,7 +7,7 @@ import argparse
 from typing import Optional
 from threading import Thread
 from unidecode import unidecode
-from flask import Flask, render_template, request, jsonify, url_for
+from flask import Flask, render_template, request, jsonify, url_for, redirect
 from queue import Empty as EmptyQueue
 from python import speech, language, utils
 from python.memory import Memory
@@ -38,6 +38,11 @@ def home():
     Homepage of web UI
     """
     global memory, chatbot
+
+    should_restart = bool(request.args.get('restart', 0))
+    if should_restart:
+        restart()
+
     memory = Memory()
     try:
         chatbot = Chatbot(config=config, memory=memory)
@@ -72,6 +77,7 @@ def setup():
     """
     if request.method == 'POST':
         filename = request.form.get('filename')
+        app_cache.config_file = filename
         data = {
             "model": {
                 "name": request.form.get('model-name'),
@@ -431,44 +437,33 @@ def exit_graceful(signum, frame) -> None:
     sys.exit(0)
 
 
-def refresh() -> None:
+def restart() -> None:
     """
-    Refresh memory and chatbot in order to restart session
+    Restart app
     """
-    global memory, chatbot
-    memory = Memory()
-    chatbot = Chatbot(config=config, memory=memory)
-
-    if os.path.exists(TEMP_DIR):
-        for f in os.listdir(TEMP_DIR):
-            os.remove(os.path.join(TEMP_DIR, f))
-    else:
-        os.makedirs(TEMP_DIR)
-
-
-def run(config_file: str, keys_file: Optional[str] = None) -> None:
-    """
-    Run app
-
-    :param config_file: path to config YAML file
-    :param keys_file: path to keys YAML file if exists
-    """
-    global config, voices_by_features
+    global config
     try:
-        config = Config.from_yml_file(config_file)
+        config = Config.from_yml_file(app_cache.config_file)
     except FileNotFoundError:
         app_cache.server_errors.append("Config file not found. Go to /setup to configure the app.")
         config = Config({'bot': {'voice': 'xx-xx'}})
 
-    if keys_file:
-        config.update_from_yml_file(keys_file)
+    if app_cache.keys_file:
+        config.update_from_yml_file(app_cache.keys_file)
 
     utils.init_openai(config)
     gcs_creds = utils.get_gcs_credentials(config)
     language.init_language(credentials=gcs_creds)
     speech.init_speech(config=config, credentials=gcs_creds)
-    voices_by_features = speech.voices_by_features()
 
+
+def run() -> None:
+    """
+    Run app
+    """
+    global voices_by_features
+    restart()
+    voices_by_features = speech.voices_by_features()
     app_cache.text2speech_thread = Thread(target=bot_text_to_speech_queue_func)
     app_cache.text2speech_thread.start()
 
@@ -512,4 +507,6 @@ if __name__ == '__main__':
     args = parser.parse_args()
     signal.signal(signal.SIGINT, exit_graceful)
     signal.signal(signal.SIGTERM, exit_graceful)
-    run(args.config_file, args.keys_file)
+    app_cache.config_file = args.config_file
+    app_cache.keys_file = args.keys_file
+    run()
