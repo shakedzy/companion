@@ -11,6 +11,7 @@ nav:
   - Required Services: 'setting_up.md'
   - Install & Configure: 'install.md'
   - Using Companion: 'run.md'
+  - Use on Mobile with GitHub Codespaces: 'codespace.md'
   - Related Blogposts: 'blogposts.md'
   - Licenses: 'licenses.md'
 theme:
