@@ -174,7 +174,7 @@ async function uploadAudio(blob) {
         const data = await response.json();
         filename = data.filename;
         if (response.ok && filename !== null) {
-            filename = response.filename;
+            filename = data.filename;
         } else if (response.ok && filename === null) {
             console.error('Error uploading audio: no file found on request');
         } else {
