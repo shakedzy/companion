@@ -12,17 +12,17 @@ You may also add:
 ```
 Both options are optional.
 
+To begin, go to **[127.0.0.1:5000](http://127.0.0.1:5000)** in your browser. 
+**Note**: Refreshing the page will restart the chat. 
+
 !!! info "Launching for the first time"
-    If this is the first time you run the app (or if you'd like to change its configurations), 
-    go to **[127.0.0.1:5000/setup](http://127.0.0.1:5000/setup)** <br>(_app must be relaunched
-    after setup for changes to take effect_).
+    If this is the first time you run the app, you'll need to first configure your tutor. To do so, 
+    click Settings
+    (<img src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/92/Cog_font_awesome.svg/1200px-Cog_font_awesome.svg.png" style="height: 1.2em; vertical-align: middle">) 
+    on the top-left corner of the main screen, or go to **[127.0.0.1:5000/setup](http://127.0.0.1:5000/setup)**.
+    <br>(_app must be relaunched after setup for changes to take effect_).
 
-Go to **[127.0.0.1:5000](http://127.0.0.1:5000)** in your browser. Session will
-begin automatically.
-
-**Note**: Refreshing the page will restart the chat.
-
-!!! warning "Running on an Apple device?"
+!!! warning ":fontawesome-brands-apple: Running on an Apple device?"
     For some reason, recordings don't seem to always work well when running on an Apple device
     using a browser other than Safari. If you seem to encounter similar issues, try using Safari.
 
