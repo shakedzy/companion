@@ -73,6 +73,8 @@ function playAudio() {
                     startTime = 0;
                     pauseTime = 0;
                     playAudio();
+                } else {
+                    stopAudio();
                 }
             }
         };

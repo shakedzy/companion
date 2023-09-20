@@ -348,6 +348,7 @@ function toggleLoadingIcon(action) {
 
 function getResponse(is_initial_message) {
   toggleLoadingIcon('show');
+  stopPlaying = false;
   $.post('/get_response', {'is_initial_message': is_initial_message}, function(response) {
       var bot_message = response['message'];
       var message_index = response['message_index'];
