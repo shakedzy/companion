@@ -1,6 +1,26 @@
 # Installing Dependencies
 
-### Installing environment
+## Installing prerequisites
+
+=== ":simple-apple: Mac"
+
+    ```bash
+    brew install ffmpeg
+    ```
+
+=== ":simple-linux: Linux"
+
+    ```bash
+    apt-get install ffmpeg libavcodec-extra
+    ```  
+
+=== ":fontawesome-brands-windows: Windows"
+
+    1. Download and extract `libav` from the [Windows binaries](http://builds.libav.org/windows/).
+    2. Add the `libav`'s `/bin` folder to your `PATH` envvar
+
+
+## Installing environment
 
 1. Create a new virtual environment _(optional)_
 

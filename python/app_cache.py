@@ -12,7 +12,6 @@ class AppCache:
     user_recording: Optional[str] = None
     bot_recordings: List[str] = list()
     server_errors: List[str] = list()
-    last_recording: Optional[str] = None
     keys_file: Optional[str] = None
     config_file: str = ''
     sentences_counter: int = 0

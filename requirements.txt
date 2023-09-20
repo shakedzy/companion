@@ -6,3 +6,4 @@ language_data~=1.1
 google-cloud-translate~=3.11.1
 google-cloud-texttospeech~=2.14.1
 unidecode~=1.3.6
+pydub~=0.25.1

@@ -32,6 +32,7 @@ $(document).ready(function() {
     }
   });
 
+  let recordedBlobPromise;
   $('#record-button').on('click', function() {
     var recordButton = $(this);
     var langToggleButton = $('#lang-toggle-button'); // Select the lang-toggle-button
@@ -43,28 +44,43 @@ $(document).ready(function() {
       // Start recording
       recordButton.removeClass('btn-secondary off').addClass('btn-danger on');
       langToggleButton.removeClass('btn-secondary off').addClass('btn-danger on');
-      startRecording();
+      recordedBlobPromise = startRecording();
     } else {
       // Stop recording and get the recorded text
       recordButton.removeClass('btn-danger on').addClass('btn-secondary off');
       langToggleButton.removeClass('btn-danger on').addClass('btn-secondary off');
       toggleLoadingIcon('show');
       stopRecording();
-      $.post('/transcribe_recording', {}, function(response) {
-        var recorded_text = response['recorded_text'];
-        var error_message = response['error'];
-        if (error_message !== null) {
-            showNotification(error_message);
-        }
-        $('#message-input').val(recorded_text);
-        if (auto_send_recording) {
-          $('#submit-button').click();
-        } else {
-          $('#message-input').focus();
-        }
-        autoResize(textarea);
-        toggleLoadingIcon('hide');
-        });
+      recordedBlobPromise.then(blob => {
+          uploadAudio(blob).then(filename => {
+              $.post('/transcribe_recording', {'filename': filename}, function(response) {
+                  var recorded_text = response['recorded_text'];
+                  var error_message = response['error'];
+                  if (error_message !== null) {
+                      showNotification(error_message);
+                  }
+                  $('#message-input').val(recorded_text);
+                  if (auto_send_recording) {
+                    $('#submit-button').click();
+                  } else {
+                    $('#message-input').focus();
+                  }
+                  autoResize(textarea);
+                  toggleLoadingIcon('hide');
+              });
+          }).catch(error => {
+                console.error('Error uploading recording:', error);
+                showNotification(error)
+                autoResize(textarea);
+                toggleLoadingIcon('hide');
+          });
+      }).catch(error => {
+          console.error('Error in recording:', error);
+          showNotification(error)
+          autoResize(textarea);
+          toggleLoadingIcon('hide');
+      });
+
       }
   });
 

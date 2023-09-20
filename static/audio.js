@@ -121,7 +121,8 @@ function stopAudio() {
 }
 
 
-async function startRecording() {
+function startRecording() {
+    return new Promise(async (resolve, reject) => {
     try {
         stopAudio();
         mediaStream = await navigator.mediaDevices.getUserMedia({ audio: true });
@@ -134,15 +135,22 @@ async function startRecording() {
         };
 
         mediaRecorder.onstop = () => {
-            const blob = new Blob(recordedChunks, { type: 'audio/mp3' });
+            const blob = new Blob(recordedChunks, { type: 'audio/mpeg-3' });
             recordedChunks = [];
-            uploadAudio(blob);
+            resolve(blob);
+        };
+
+        mediaRecorder.onerror = (event) => {
+            reject(event.error);
         };
 
         mediaRecorder.start();
-    } catch (error) {
-        console.error('Error starting recording:', error);
-    }
+
+        } catch (error) {
+            console.error('Error starting recording:', error);
+            reject(error);
+        }
+    });
 }
 
 

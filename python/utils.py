@@ -1,12 +1,23 @@
 import re
 import os
 import openai
-from typing import List, Optional
+from pydub import AudioSegment
+from typing import List, Optional, Dict
 from google.oauth2.service_account import Credentials
 from google.cloud.texttospeech import VoiceSelectionParams
 from python import speech
 from python.config import Config
 from python.consts import TEMP_DIR
+
+
+def convert_file_and_save_as_mp3(audio_file_path: str, output_mp3_file_path: str) -> None:
+    """
+    Convert an audio file to mp3 format and save it to a file
+
+    :param audio_file_path: file to convert
+    :param output_mp3_file_path: path or output mp3 file
+    """
+    AudioSegment.from_file(audio_file_path).export(output_mp3_file_path, format="mp3")
 
 
 def split_to_sentences(text: str) -> List[str]:

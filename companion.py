@@ -157,10 +157,15 @@ def upload_recording():
     return_json = dict()
     if 'file' in request.files:
         file = request.files['file']
-        filename = os.path.join(TEMP_DIR, f"user_recording_{len(memory)}_0.mp3")
-        file.save(filename)
-        return_json['filename'] = filename
-        app_cache.last_recording = filename
+        raw_recording_filename = os.path.join(TEMP_DIR, "raw_recording")
+        file.save(raw_recording_filename)
+        try:
+            mp3_filename = os.path.join(TEMP_DIR, f"user_recording_{len(memory)}_0.mp3")
+            utils.convert_file_and_save_as_mp3(raw_recording_filename, mp3_filename)
+        except Exception as e:
+            app_cache.server_errors.append(utils.get_error_message_from_exception(e))
+            mp3_filename = None
+        return_json['filename'] = mp3_filename
     else:
         return_json['filename'] = None
     return jsonify(return_json)
@@ -252,7 +257,7 @@ def transcribe_recording():
     """
     recorded_text = None
     error_message = None
-    filename = request.form['filename'] or app_cache.last_recording
+    filename = request.form['filename']
     try:
         recorded_text = speech.speech2text(filename, language=app_cache.language)
     except Exception as e:
