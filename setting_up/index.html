@@ -360,6 +360,21 @@
   
   
     <li class="md-nav__item">
+      <a href="../codespace/" class="md-nav__link">
+        Use on Mobile with GitHub Codespaces
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../blogposts/" class="md-nav__link">
         Related Blogposts
       </a>
@@ -500,8 +515,12 @@ You can find your project ID on your <a href="https://console.cloud.google.com/h
 Choose your project from the dropdown at the top of the screen, and you'll see your project ID under <em>Project Info</em>.</p>
 </div>
 <h3 id="2-setting-up-google-cloud-sdk">2. Setting up Google Cloud SDK</h3>
-<p>Download the <a href="https://cloud.google.com/sdk/docs/install-sdk">Google Cloud SDK client</a>. 
-Follow the installation instructions for your operating system.</p>
+<ol>
+<li>Download the <a href="https://cloud.google.com/sdk/docs/install-sdk">Google Cloud SDK client</a>. Follow the installation instructions for your operating system.</li>
+<li>Create your credential file by running:
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>gcloud<span class="w"> </span>auth<span class="w"> </span>application-default<span class="w"> </span>login
+</span></code></pre></div></li>
+</ol>
 <h3 id="3-enable-apis">3. Enable APIs</h3>
 <div class="admonition info">
 <p class="admonition-title">Check your Google Cloud project</p>
