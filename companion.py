@@ -3,18 +3,18 @@ import sys
 import json
 import yaml
 import signal
-import pygame
 import argparse
 from typing import Optional
 from threading import Thread
-from flask import Flask, render_template, request, jsonify
+from unidecode import unidecode
+from flask import Flask, render_template, request, jsonify, url_for, redirect
 from queue import Empty as EmptyQueue
 from python import speech, language, utils
 from python.memory import Memory
 from python.config import Config
 from python.chatbot import Chatbot
 from python.app_cache import AppCache
-from python.consts import TEMP_DIR, LTM_DIR, SAVED_SESSION_FILE, MALE_TUTORS, FEMALE_TUTORS, INPUT_LANGUAGES
+from python.consts import TEMP_DIR_NAME, TEMP_DIR, LTM_DIR, SAVED_SESSION_FILE, MALE_TUTORS, FEMALE_TUTORS, INPUT_LANGUAGES
 
 
 app = Flask(__name__)
@@ -24,13 +24,25 @@ memory: Optional[Memory] = None
 chatbot: Optional[Chatbot] = None
 app_cache = AppCache()
 voices_by_features = dict()
+audio_queue_reject_remaining_fragments = False
+
+
+@app.template_filter('convert_special')
+def convert_special_letters(input_str):
+    return unidecode(input_str)
+
 
 @app.route('/')
 def home():
     """
     Homepage of web UI
     """
-    global memory, chatbot
+    global memory, chatbot, config
+
+    should_restart = bool(request.args.get('restart', 0))
+    if should_restart:
+        restart()
+
     memory = Memory()
     try:
         chatbot = Chatbot(config=config, memory=memory)
@@ -65,6 +77,7 @@ def setup():
     """
     if request.method == 'POST':
         filename = request.form.get('filename')
+        app_cache.config_file = filename
         data = {
             "model": {
                 "name": request.form.get('model-name'),
@@ -102,6 +115,61 @@ def setup():
                                                                    for k in voices_by_features.keys()]
                                )
 
+@app.route("/get_next_from_audio_queue", methods=['GET'])
+def get_next_from_audio_queue():
+    try:
+        filename = app_cache.play_recordings_queue.get(timeout=1)
+        filename = url_for('static', filename=f'{TEMP_DIR_NAME}/{filename.split("/")[-1]}')
+        empty = False
+    except EmptyQueue:
+        filename = None
+        empty = True
+    return jsonify({'file_url': filename, 'empty': int(empty)})
+
+
+@app.route("/clear_audio_queue", methods=['GET'])
+def clear_audio_queue():
+    global audio_queue_reject_remaining_fragments
+    audio_queue_reject_remaining_fragments = True
+    app_cache.play_recordings_queue.queue.clear()
+    return jsonify({'message': 'Audio cache cleared'})
+
+
+def put_in_audio_queue(filename: str) -> bool:
+    """
+    Helper function to put filename in audio queue
+
+    :param filename: filename to put in queue
+    """
+    global audio_queue_reject_remaining_fragments
+    if audio_queue_reject_remaining_fragments:
+        fragment_index = int(filename.split('_')[-1].split('.')[0])
+        if fragment_index > 0:
+            return False
+        else:
+            audio_queue_reject_remaining_fragments = False
+    app_cache.play_recordings_queue.put(filename)
+    return True
+
+
+@app.route('/upload_recording', methods=['POST'])
+def upload_recording():
+    return_json = dict()
+    if 'file' in request.files:
+        file = request.files['file']
+        raw_recording_filename = os.path.join(TEMP_DIR, "raw_recording")
+        file.save(raw_recording_filename)
+        try:
+            mp3_filename = os.path.join(TEMP_DIR, f"user_recording_{len(memory)}_0.mp3")
+            utils.convert_file_and_save_as_mp3(raw_recording_filename, mp3_filename)
+        except Exception as e:
+            app_cache.server_errors.append(utils.get_error_message_from_exception(e))
+            mp3_filename = None
+        return_json['filename'] = mp3_filename
+    else:
+        return_json['filename'] = None
+    return jsonify(return_json)
+
 
 @app.route('/get_language_voices', methods=['POST'])
 def get_language_voices():
@@ -124,10 +192,7 @@ def play_bot_test_text():
     voice_name = request.form['voice']
     voice = speech.get_voice_object(voice_name=voice_name, language_code=lang_code)
     filename = utils.bot_text_to_speech(text, 0, 0, voice=voice)
-    speech.play_audio(filename)
-    while pygame.mixer.music.get_busy():
-        continue
-    return jsonify({'status': 'success'})
+    return jsonify({'file_url': url_for('static', filename=f'{TEMP_DIR_NAME}/{filename.split("/")[-1]}')})
 
 
 @app.route('/get_response', methods=['POST'])
@@ -185,30 +250,16 @@ def get_next_message():
         return jsonify({'message': None})
 
 
-@app.route('/start_recording', methods=['POST'])
-def start_recording():
+@app.route('/transcribe_recording', methods=['POST'])
+def transcribe_recording():
     """
-    Begin recording user voice
+    Transcribe user recording using speech-to-text service
     """
-    filename = os.path.join(TEMP_DIR, f"user_recording_{len(memory)}.mp3")
-    app_cache.user_recording = filename
-    app_cache.recording_thread = Thread(target=speech.record, args=(filename,))
-    app_cache.recording_thread.start()
-    return jsonify({'message': 'Recording started'})
-
-
-@app.route('/end_recording', methods=['POST'])
-def end_recording():
-    """
-    End user recording and send recording to speech-to-text service
-    """
-    speech.stop_recording()
-    app_cache.recording_thread.join()
-
     recorded_text = None
     error_message = None
+    filename = request.form['filename']
     try:
-        recorded_text = speech.speech2text(app_cache.user_recording, language=app_cache.language)
+        recorded_text = speech.speech2text(filename, language=app_cache.language)
     except Exception as e:
         error_message = utils.get_error_message_from_exception(e)
     finally:
@@ -261,7 +312,7 @@ def play_bot_message():
                                          "message_index": index, 'skip_cache': True})
     else:
         for r in recordings:
-            app_cache.play_recordings_queue.put(r)
+            put_in_audio_queue(r)
     return jsonify({'message': 'Recordings inserted to queue'})
 
 
@@ -273,7 +324,7 @@ def play_user_message():
     message_id = int(request.form['message_id'].split('_')[1])
     user_recording = memory[message_id]['user_recording']
     if user_recording:
-        app_cache.play_recordings_queue.put(user_recording)
+        put_in_audio_queue(user_recording)
     return jsonify({'message': 'User message played successfully'})
 
 
@@ -362,41 +413,6 @@ def check_server_errors():
     return jsonify({'server_errors': server_errors})
 
 
-@app.route('/is_audio_playing', methods=['GET'])
-def is_audio_playing():
-    """
-    Allow UI to check if audio is currently playing
-    """
-    return jsonify({'is_playing': int(app_cache.audio_playing)})
-
-
-@app.route('/stop_audio', methods=['GET'])
-def stop_audio():
-    """
-    Allow UI stop audio that is currently playing
-    """
-    app_cache.audio_status_update = 'stop'
-    return jsonify({'status': 'success'})
-
-
-@app.route('/pause_audio', methods=['GET'])
-def pause_audio():
-    """
-    Allow UI pause audio that is currently playing
-    """
-    app_cache.audio_status_update = 'pause'
-    return jsonify({'status': 'success'})
-
-
-@app.route('/unpause_audio', methods=['GET'])
-def unpause_audio():
-    """
-    Allow UI unpause audio that is currently playing
-    """
-    app_cache.audio_status_update = 'unpause'
-    return jsonify({'status': 'success'})
-
-
 @app.route('/memory', methods=['GET'])
 def print_memory():
     """
@@ -421,55 +437,40 @@ def exit_graceful(signum, frame) -> None:
     :param frame: required by `signal.signal`
     """
     app_cache.stop_threads_event.set()
-    speech.stop_recording()
-    for thread in [app_cache.text2speech_thread, app_cache.recording_thread, app_cache.play_recordings_thread]:
-        if thread is not None:
-            thread.join()
+    if app_cache.text2speech_thread is not None:
+        app_cache.text2speech_thread.join()
     sys.exit(0)
 
 
-def refresh() -> None:
+def restart() -> None:
     """
-    Refresh memory and chatbot in order to restart session
+    Restart app
     """
-    global memory, chatbot
-    memory = Memory()
-    chatbot = Chatbot(config=config, memory=memory)
-
-    if os.path.exists(TEMP_DIR):
-        for f in os.listdir(TEMP_DIR):
-            os.remove(os.path.join(TEMP_DIR, f))
-    else:
-        os.makedirs(TEMP_DIR)
-
-
-def run(config_file: str, keys_file: Optional[str] = None) -> None:
-    """
-    Run app
-
-    :param config_file: path to config YAML file
-    :param keys_file: path to keys YAML file if exists
-    """
-    global config, voices_by_features
+    global config
     try:
-        config = Config.from_yml_file(config_file)
+        config = Config.from_yml_file(app_cache.config_file)
     except FileNotFoundError:
         app_cache.server_errors.append("Config file not found. Go to /setup to configure the app.")
         config = Config({'bot': {'voice': 'xx-xx'}})
 
-    if keys_file:
-        config.update_from_yml_file(keys_file)
+    if app_cache.keys_file:
+        config.update_from_yml_file(app_cache.keys_file)
 
     utils.init_openai(config)
     gcs_creds = utils.get_gcs_credentials(config)
     language.init_language(credentials=gcs_creds)
     speech.init_speech(config=config, credentials=gcs_creds)
-    voices_by_features = speech.voices_by_features()
 
+
+def run() -> None:
+    """
+    Run app
+    """
+    global voices_by_features
+    restart()
+    voices_by_features = speech.voices_by_features()
     app_cache.text2speech_thread = Thread(target=bot_text_to_speech_queue_func)
     app_cache.text2speech_thread.start()
-    app_cache.play_recordings_thread = Thread(target=play_recordings_queue_func)
-    app_cache.play_recordings_thread.start()
 
     app.run()
 
@@ -493,48 +494,13 @@ def bot_text_to_speech_queue_func():
             else:
                 app_cache.bot_recordings.append(filename)
                 memory.update(idx, recording=app_cache.bot_recordings)
-            app_cache.play_recordings_queue.put(filename)
+            put_in_audio_queue(filename)
+
         except EmptyQueue:
             continue
         except Exception as e:
             app_cache.server_errors.append(utils.get_error_message_from_exception(e))
 
-
-def play_recordings_queue_func():
-    """
-    This function is meant to run on a parallel thread.
-    It is responsible for playing audio files waiting in a designated queue
-    """
-    global app_cache
-    pygame.mixer.init()
-
-    while not app_cache.stop_threads_event.is_set():
-        try:
-            filename = app_cache.play_recordings_queue.get(timeout=1)  # Wait for 1 second to get an item
-            speech.play_audio(filename)
-
-            is_paused = False
-            while pygame.mixer.music.get_busy() or is_paused:
-                app_cache.audio_playing = True
-
-                if app_cache.audio_status_update == 'stop':
-                    is_paused = False
-                    pygame.mixer.music.stop()
-                    app_cache.play_recordings_queue.queue.clear()
-                elif app_cache.audio_status_update == 'pause':
-                    pygame.mixer.music.pause()
-                    is_paused = True
-                elif app_cache.audio_status_update == 'unpause':
-                    pygame.mixer.music.unpause()
-                    is_paused = False
-
-                app_cache.audio_status_update = None
-
-            app_cache.audio_playing = False
-        except EmptyQueue:
-            continue
-        except Exception as e:
-            app_cache.server_errors.append(utils.get_error_message_from_exception(e))
 
 #############################
 
@@ -546,4 +512,6 @@ if __name__ == '__main__':
     args = parser.parse_args()
     signal.signal(signal.SIGINT, exit_graceful)
     signal.signal(signal.SIGTERM, exit_graceful)
-    run(args.config_file, args.keys_file)
+    app_cache.config_file = args.config_file
+    app_cache.keys_file = args.keys_file
+    run()

@@ -18,10 +18,11 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/mousetrap/1.6.5/plugins/global-bind/mousetrap-global-bind.min.js"></script>
     <link rel="icon" type="image/png" href="/static/favicon.png">
     <script>
-      var languages = {{ languages | tojson }};
-      var auto_send_recording = {{ auto_send_recording }};
-      var user_profile_img = "{{ user_profile_img }}";
-      var bot_profile_img = "{{ bot_profile_img }}";
+      let languages = {{ languages | tojson }};
+      let auto_send_recording = {{ auto_send_recording }};
+      let user_profile_img = "{{ user_profile_img }}";
+      let bot_profile_img = "{{ bot_profile_img }}";
+      let upload_endpoint = "{{ url_for('upload_recording') }}";
     </script>
   </head>
   <body>
@@ -29,6 +30,9 @@
     <div class="topnav desktop-menu" id="desktop-menu">
       <a href="/setup" class="icon">
         <i class="fas fa-cog"></i>
+      </a>
+      <a href="https://shakedzy.xyz/companion" target="_blank" class="icon">
+        <i class="fa-solid fa-book"></i>
       </a>
     </div>
     <div class="topnav" id="topnav">
@@ -39,9 +43,22 @@
       <a id="menu-dark-mode"><i id="menu-mode-icon" class="fas fa-moon"></i>&nbsp;&nbsp;Dark/Light Mode</a>
       <a id="menu-load-session"><i id="menu-load-icon" class="fa-solid fa-rotate-right"></i>&nbsp;&nbsp;Load Saved Session</a>
       <a id="menu-save-session"><i id="menu-save-icon" class="fa-solid fa-floppy-disk"></i>&nbsp;&nbsp;Save Session</a>
+      <hr>
       <a id="menu-settings" href="/setup"><i id="menu-settings-icon" class="fas fa-cog"></i>&nbsp;&nbsp;Settings</a>
+      <a id="menu-documentation" href="https://shakedzy.xyz/companion" target="_blank"><i id="menu-documentation-icon" class="fa-solid fa-book"></i>&nbsp;&nbsp;Documentation</a>
     </div>
-    <div class="container my-0">
+    <div class="container my-0" id="audio-init">
+      <div class="d-flex justify-content-center align-items-center mb-4">
+        <h1 class="mb-0"><img src="/static/logo.png" style="max-width: 300px;"></h1>
+      </div>
+      <div class="d-flex justify-content-center align-items-center mb-4" style="padding-top: 20px;">
+        <button type="button" class="btn btn-primary" style="padding: 15px; border-radius: 50px" onclick="initChat();">
+          <i class="fa-solid fa-play"></i>
+          Click to Begin
+        </button>
+      </div>
+    </div>
+    <div class="container my-0" id="main-chat" style="display: none">
       <div class="d-flex justify-content-center align-items-center mb-4">
         <h1 class="mb-0"><img src="/static/logo.png" style="max-width: 300px;" id="logo-image"></h1>
       </div>

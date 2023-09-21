@@ -1,11 +1,5 @@
-import os
 import openai
-import pyaudio
-import wave
-import logging
-import pygame
 from typing import Dict, List, Optional
-from pydub import AudioSegment
 from google.oauth2.service_account import Credentials
 from google.cloud import texttospeech
 from python.config import Config
@@ -42,76 +36,6 @@ def get_voice_object(voice_name: str, language_code: str) -> texttospeech.VoiceS
     :return: a VoiceSelectionParams object
     """
     return texttospeech.VoiceSelectionParams(name=voice_name, language_code=language_code)
-
-
-def stop_recording() -> None:
-    """
-    Stop recording loop (as it happens on a parallel thread)
-    """
-    global _is_recording
-    _is_recording = False
-
-
-def record(filename: str) -> str:
-    """
-    Record user audio
-
-    :param filename: filename to save recording to (a mp3 file)
-    :return: filename of mp3
-    """
-    global _is_recording
-    FORMAT = pyaudio.paInt16
-    CHANNELS = 1
-    RATE = 44100
-    CHUNK = 1024
-
-    audio = pyaudio.PyAudio()
-
-    # Start recording
-    _is_recording = True
-    stream = audio.open(format=FORMAT, channels=CHANNELS, rate=RATE, input=True, frames_per_buffer=CHUNK)
-    logging.info(f"Recording started ({filename})")
-    frames = []
-
-    while _is_recording:
-        data = stream.read(CHUNK)
-        frames.append(data)
-    logging.info("Recording ended")
-
-    # Stop recording
-    stream.stop_stream()
-    stream.close()
-    audio.terminate()
-
-    # Save the recorded audio as a WAV file
-    wav_filename = f"{filename}_TEMP.wav"
-    wf = wave.open(wav_filename, "wb")
-    wf.setnchannels(CHANNELS)
-    wf.setsampwidth(audio.get_sample_size(FORMAT))
-    wf.setframerate(RATE)
-    wf.writeframes(b"".join(frames))
-    wf.close()
-
-    # Convert the WAV file to an MP3 file
-    mp3_filename = filename
-    wav_audio = AudioSegment.from_wav(wav_filename)
-    wav_audio.export(mp3_filename, format="mp3")
-
-    # Remove the temporary WAV file
-    os.remove(wav_filename)
-    logging.info(f"Saved recording as {mp3_filename}")
-    return mp3_filename
-
-
-def play_audio(filename: str) -> None:
-    """
-    play an audio file
-
-    :param filename: file to play
-    """
-    pygame.mixer.init()
-    pygame.mixer.music.load(filename)
-    pygame.mixer.music.play()
 
 
 def speech2text(filename: str, language: str) -> str:

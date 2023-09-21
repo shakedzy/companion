@@ -31,8 +31,11 @@ Google Translate is used to translate your tutor's messages to your own language
     Choose your project from the dropdown at the top of the screen, and you'll see your project ID under _Project Info_.
 
 ### 2. Setting up Google Cloud SDK
-Download the [Google Cloud SDK client](https://cloud.google.com/sdk/docs/install-sdk). 
-Follow the installation instructions for your operating system.
+1. Download the [Google Cloud SDK client](https://cloud.google.com/sdk/docs/install-sdk). Follow the installation instructions for your operating system.
+2. Create your credential file by running:
+```bash
+gcloud auth application-default login
+```
 
 ### 3. Enable APIs
 

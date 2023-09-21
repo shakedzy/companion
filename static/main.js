@@ -1,8 +1,7 @@
 $.getScript("/static/common.js");
+$.getScript("/static/audio.js");
 
 $(document).ready(function() {
-  getResponse(1);
-
   var currentLanguageIndex = 0;
 
   // Check if the user's system prefers dark mode
@@ -33,40 +32,55 @@ $(document).ready(function() {
     }
   });
 
+  let recordedBlobPromise;
   $('#record-button').on('click', function() {
     var recordButton = $(this);
     var langToggleButton = $('#lang-toggle-button'); // Select the lang-toggle-button
 
     if (recordButton.attr('name') === 'stop') {
-        $.get('/stop_audio', function () {});
+        stopAudio();
     }
     else if (recordButton.hasClass('off')) {
       // Start recording
       recordButton.removeClass('btn-secondary off').addClass('btn-danger on');
       langToggleButton.removeClass('btn-secondary off').addClass('btn-danger on');
-      $.post('/start_recording', {}, function(response) {
-        console.log(response.message);  // Log the server's response
-      });
+      recordedBlobPromise = startRecording();
     } else {
       // Stop recording and get the recorded text
       recordButton.removeClass('btn-danger on').addClass('btn-secondary off');
       langToggleButton.removeClass('btn-danger on').addClass('btn-secondary off');
       toggleLoadingIcon('show');
-      $.post('/end_recording', {}, function(response) {
-        var recorded_text = response['recorded_text'];
-        var error_message = response['error'];
-        if (error_message !== null) {
-            showNotification(error_message);
-        }
-        $('#message-input').val(recorded_text);
-        if (auto_send_recording) {
-          $('#submit-button').click();
-        } else {
-          $('#message-input').focus();
-        }
-        autoResize(textarea);
-        toggleLoadingIcon('hide');
-        });
+      stopRecording();
+      recordedBlobPromise.then(blob => {
+          uploadAudio(blob).then(filename => {
+              $.post('/transcribe_recording', {'filename': filename}, function(response) {
+                  var recorded_text = response['recorded_text'];
+                  var error_message = response['error'];
+                  if (error_message !== null) {
+                      showNotification(error_message);
+                  }
+                  $('#message-input').val(recorded_text);
+                  if (auto_send_recording) {
+                    $('#submit-button').click();
+                  } else {
+                    $('#message-input').focus();
+                  }
+                  autoResize(textarea);
+                  toggleLoadingIcon('hide');
+              });
+          }).catch(error => {
+                console.error('Error uploading recording:', error);
+                showNotification(error)
+                autoResize(textarea);
+                toggleLoadingIcon('hide');
+          });
+      }).catch(error => {
+          console.error('Error in recording:', error);
+          showNotification(error)
+          autoResize(textarea);
+          toggleLoadingIcon('hide');
+      });
+
       }
   });
 
@@ -116,14 +130,14 @@ $(document).ready(function() {
           // do nothing
       }
       else if (lang_button.attr('name') === 'pause') {
-          $.get('/pause_audio', function () {});
+          pauseAudio();
           lang_button.attr('name', 'unpause');
           lang_button.attr('title', 'Unpause Audio');
           $('#pause-icon').removeClass('fa-pause');
           $('#pause-icon').addClass('fa-play');
       }
       else if (lang_button.attr('name') === 'unpause') {
-          $.get('/unpause_audio', function () {});
+          playAudio();
           lang_button.attr('name', 'pause');
           lang_button.attr('title', 'Pause Audio');
           $('#pause-icon').removeClass('fa-play');
@@ -235,13 +249,6 @@ $(document).ready(function() {
         }
     });
   });
-
-    setInterval(function () {
-        $.get('/is_audio_playing', function (response) {
-            var is_playing = response['is_playing'];
-            updateUIByAudioStatus(is_playing);
-        });
-    }, 500);
 });
 
 var message_counter = 1;
@@ -271,7 +278,8 @@ function addMessage(sender, message, has_user_recording, is_language_learning, d
       var record_button = $('<div class="d-block"><button class="btn btn-link user-button play-user-button"><i class="fa-solid fa-user"></i></button></div>');
       button_container.append(record_button);
         record_button.on('click', function() {
-        $.post('/play_user_recording', {'message_id': message_body.id}, function (response) {});
+            stopPlaying = false;
+            $.post('/play_user_recording', {'message_id': message_body.id}, function (response) {});
       });
     } else {
       var record_button = null;
@@ -316,6 +324,7 @@ function addMessage(sender, message, has_user_recording, is_language_learning, d
     }
   if (sound_on_button !== null) {
     sound_on_button.on('click', function() {
+      stopPlaying = false;
       $.post('/play_bot_recording', {'message_id': message_body.id, 'text': message_body.text(), 'play_existing': 1}, function (response) {});
   });
   }
@@ -339,6 +348,7 @@ function toggleLoadingIcon(action) {
 
 function getResponse(is_initial_message) {
   toggleLoadingIcon('show');
+  stopPlaying = false;
   $.post('/get_response', {'is_initial_message': is_initial_message}, function(response) {
       var bot_message = response['message'];
       var message_index = response['message_index'];
@@ -404,47 +414,6 @@ function autoResize(textarea) {
   textarea.style.height = textarea.scrollHeight + 'px';
 }
 
-function updateUIByAudioStatus(is_playing) {
-
-    var record_button = $('#record-button');
-    var record_icon = $('#record-icon');
-    var lang_button = $('#lang-toggle-button');
-    var lang_text = $('#lang-text');
-    var pause_icon = $('#pause-icon');
-
-    if (is_playing && record_button.attr('name') === 'record') {
-        record_button.attr('name', 'stop');
-        record_button.attr('title', 'Stop Audio');
-        lang_button.attr('name', 'pause');
-        lang_button.attr('title', 'Pause Audio');
-
-        record_icon.removeClass('fas');
-        record_icon.removeClass('fa-microphone');
-        record_icon.addClass('fa-solid');
-        record_icon.addClass('fa-stop');
-
-        lang_text.css('display', 'none');
-        pause_icon.css('display', 'block');
-        pause_icon.removeClass('fa-play');
-        pause_icon.addClass('fa-pause');
-
-    } else if (!is_playing && record_button.attr('name') === 'stop') {
-        record_button.attr('name', 'record');
-        record_button.attr('title', 'Record Message [Alt+R]');
-        lang_button.attr('name', 'lang-record');
-        lang_button.attr('title', 'Switch Recording Language [Alt+L]');
-
-        record_icon.addClass('fas');
-        record_icon.addClass('fa-microphone');
-        record_icon.removeClass('fa-solid');
-        record_icon.removeClass('fa-stop');
-
-        lang_text.css('display', 'block');
-        pause_icon.css('display', 'none');
-    }
-}
-
-
 /* Toggle between adding and removing the "responsive" class to topnav when the user clicks on the icon */
 function menuToggle() {
   var x = document.getElementById("topnav");
@@ -453,4 +422,11 @@ function menuToggle() {
   } else {
     x.className = "topnav";
   }
+}
+
+function initChat() {
+    initAudio();
+    $('#audio-init').hide();
+    $('#main-chat').show();
+    getResponse(1);
 }

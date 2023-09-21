@@ -1,7 +1,7 @@
 import os
 
-
-TEMP_DIR = os.path.join(os.getcwd(), "tmp")
+TEMP_DIR_NAME = "tmp"
+TEMP_DIR = os.path.join(os.getcwd(), f"static/{TEMP_DIR_NAME}")
 LTM_DIR = os.path.join(os.getcwd(), "ltm")  # Long Term Memory
 SAVED_SESSION_FILE = os.path.join(LTM_DIR, "last_session.json")
 

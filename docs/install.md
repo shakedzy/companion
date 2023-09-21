@@ -1,23 +1,26 @@
 # Installing Dependencies
 
-### Installing prerequisites
+## Installing prerequisites
 
-=== "Mac"
+=== ":simple-apple: Mac"
 
-    On Mac, Run:
     ```bash
-    brew install portaudio ffmpeg
+    brew install ffmpeg
     ```
 
-=== "Linux"
+=== ":simple-linux: Linux"
 
-    On Linux, Run:
     ```bash
-    apt-get install libasound-dev portaudio19-dev libportaudio2 libportaudiocpp0 ffmpeg
-    ```
+    apt-get install ffmpeg libavcodec-extra
+    ```  
 
-### Installing environment  
+=== ":fontawesome-brands-windows: Windows"
 
+    1. Download and extract `libav` from the [Windows binaries](http://builds.libav.org/windows/).
+    2. Add the `libav`'s `/bin` folder to your `PATH` envvar
+
+
+## Installing environment
 
 1. Create a new virtual environment _(optional)_
 
