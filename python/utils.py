@@ -2,7 +2,7 @@ import re
 import os
 from openai import OpenAI
 from pydub import AudioSegment
-from typing import List, Optional, Dict
+from typing import List, Optional
 from google.oauth2.service_account import Credentials
 from google.cloud.texttospeech import VoiceSelectionParams
 from python import speech
