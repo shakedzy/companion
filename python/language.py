@@ -1,11 +1,12 @@
 from langcodes import Language, find
 from google.cloud import translate_v2
 from google.oauth2.service_account import Credentials
+from typing import Optional
 
 translate_client = translate_v2.Client()
 
 
-def init_language(credentials: Credentials) -> None:
+def init_language(credentials: Optional[Credentials]) -> None:
     """
     Initialize Google Translate client
 

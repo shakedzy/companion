@@ -79,7 +79,7 @@ def init_openai(config: Config) -> None:
         openai.api_key = openai_config["api_key"]
 
 
-def get_gcs_credentials(config: Config) -> Credentials:
+def get_gcs_credentials(config: Config) -> Optional[Credentials]:
     """
     Ger Google Credentials object from Config configurations
 

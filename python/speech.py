@@ -12,7 +12,7 @@ t2s_client: Optional[texttospeech.TextToSpeechClient] = None
 t2s_voice: Optional[texttospeech.VoiceSelectionParams] = None
 
 
-def init_speech(config: Config, credentials: Credentials) -> None:
+def init_speech(config: Config, credentials: Optional[Credentials]) -> None:
     """
     Initialize Google text-to-speech client
 
