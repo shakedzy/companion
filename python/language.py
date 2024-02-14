@@ -5,7 +5,7 @@ from google.oauth2.service_account import Credentials
 translate_client = translate_v2.Client()
 
 
-def init_language(credentials: Credentials) -> None:
+def init_language(credentials: Credentials | None) -> None:
     """
     Initialize Google Translate client
 

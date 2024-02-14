@@ -1,4 +1,4 @@
-import openai
+from openai import OpenAI
 from textwrap import dedent
 from typing import Generator
 from python.memory import Memory
@@ -37,6 +37,7 @@ class Chatbot:
     This class is used to communicate with the tutor
     """
     def __init__(self, config: Config, memory: Memory):
+        self.client = config.openai.client
         self._memory = memory
         self._model = config.model.name
         self._temperature = config.model.temperature
@@ -66,11 +67,11 @@ class Chatbot:
                 language=iso6391_to_language_name(self._language))
             )
 
-        response = openai.ChatCompletion.create(
+        response = self.client.chat.completions.create(
             model=self._model,
             temperature=self._temperature,
-            stream=True,
-            messages=history
+            messages=history,  # type: ignore
+            stream=True
         )
         return self._generate_response(response)
 
@@ -82,4 +83,4 @@ class Chatbot:
         :return: a simpler Generator
         """
         for chunk in response:
-            yield chunk['choices'][0]['delta'].get('content', '')
+            yield chunk.choices[0].delta.content or ''
