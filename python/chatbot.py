@@ -1,4 +1,3 @@
-from openai import OpenAI
 from textwrap import dedent
 from typing import Generator
 from python.memory import Memory
