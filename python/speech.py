@@ -1,26 +1,26 @@
-import openai
+from openai import OpenAI
 from typing import Dict, List, Optional
 from google.oauth2.service_account import Credentials
 from google.cloud import texttospeech
 from python.config import Config
 
 
-_is_recording = False
-
 t2s_audio_config = texttospeech.AudioConfig(audio_encoding=texttospeech.AudioEncoding.MP3)
 t2s_client: Optional[texttospeech.TextToSpeechClient] = None
 t2s_voice: Optional[texttospeech.VoiceSelectionParams] = None
+openai_client: Optional[OpenAI] = None
 
 
 def init_speech(config: Config, credentials: Optional[Credentials]) -> None:
     """
-    Initialize Google text-to-speech client
+    Initialize Google text-to-speech client and OpenAI client
 
     :param config: Config
     :param credentials: a Google Credentials object
     """
-    global t2s_client, t2s_voice
+    global t2s_client, t2s_voice, openai_client
 
+    openai_client = config.openai.client
     t2s_client = texttospeech.TextToSpeechClient(credentials=credentials)
 
     l = config.bot.voice.split("-")
@@ -49,10 +49,10 @@ def speech2text(filename: str, language: str) -> str:
     """
     audio_file = open(filename, "rb")
     if language is None:
-        transcript = openai.Audio.transcribe("whisper-1", audio_file)
+        transcript = openai_client.audio.transcriptions.create(model="whisper-1", file=audio_file, response_format="text")
     else:
-        transcript = openai.Audio.transcribe("whisper-1", audio_file, language=language)
-    return transcript["text"]
+        transcript = openai_client.audio.transcriptions.create(model="whisper-1", file=audio_file, response_format="text", language=language)
+    return transcript
 
 
 def text2speech(text: str, filename: str, voice: Optional[texttospeech.VoiceSelectionParams] = None) -> str:

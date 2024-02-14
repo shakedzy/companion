@@ -456,7 +456,9 @@ def restart() -> None:
     if app_cache.keys_file:
         config.update_from_yml_file(app_cache.keys_file)
 
-    utils.init_openai(config)
+    openai_client = utils.init_openai(config)
+    config.update(openai={'client': openai_client})
+    
     gcs_creds = utils.get_gcs_credentials(config)
     language.init_language(credentials=gcs_creds)
     speech.init_speech(config=config, credentials=gcs_creds)

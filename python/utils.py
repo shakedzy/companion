@@ -1,6 +1,6 @@
 import re
 import os
-import openai
+from openai import OpenAI
 from pydub import AudioSegment
 from typing import List, Optional, Dict
 from google.oauth2.service_account import Credentials
@@ -68,7 +68,7 @@ def bot_text_to_speech(text: str, message_index: int, counter: int, voice: Optio
     return filename
 
 
-def init_openai(config: Config) -> None:
+def init_openai(config: Config) -> OpenAI:
     """
     Initialize OpenAI configurations from Config
 
@@ -76,7 +76,10 @@ def init_openai(config: Config) -> None:
     """
     openai_config = config.get("openai", None)
     if openai_config and "api_key" in openai_config:
-        openai.api_key = openai_config["api_key"]
+        api_key = openai_config["api_key"]
+    else:
+        api_key = None
+    return OpenAI(api_key=api_key)
 
 
 def get_gcs_credentials(config: Config) -> Optional[Credentials]:
