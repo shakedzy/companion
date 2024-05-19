@@ -16,6 +16,10 @@
 
 === ":fontawesome-brands-windows: Windows"
 
+    !!! bug "libav.org is down"
+        It seems the Windows binaries website is down. If you find an alternative method to install Companion on Windows,
+        please update on the [open issue on GitHub](https://github.com/shakedzy/companion/issues/52).
+
     1. Download and extract `libav` from the [Windows binaries](http://builds.libav.org/windows/).
     2. Add the `libav`'s `/bin` folder to your `PATH` envvar
 
