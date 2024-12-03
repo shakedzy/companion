@@ -74,12 +74,12 @@ def init_openai(config: Config) -> OpenAI:
 
     :param config: Config
     """
-    openai_config = config.get("openai", None)
-    if openai_config and "api_key" in openai_config:
-        api_key = openai_config["api_key"]
-    else:
-        api_key = None
-    return OpenAI(api_key=api_key)
+    openai_config: dict[str, str] = config.get("openai", {})
+    api_key = openai_config.get('api_key', None)
+    base_url = openai_config.get('base_url', None)
+    if api_key and api_key.startswith('$'):
+        api_key = os.environ[api_key.strip('$')]
+    return OpenAI(api_key=api_key, base_url=base_url)
 
 
 def get_gcs_credentials(config: Config) -> Optional[Credentials]:

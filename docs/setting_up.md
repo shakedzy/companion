@@ -1,7 +1,13 @@
 # Setting Up Required Services
 
-## OpenAI
-The OpenAI API will be used both for the chat (using ChatGPT) and Speech-to-Text (using Whisper).
+## OpenAI (or OpenAI alternative)
+Companion was developed over the OpenAI SDK and tested with OpenAI's GPT models. You can choose to use OpenAI's platform,
+or any other LLM-service which supports the OpenAI API interface.
+
+**Note:** Companion uses the OpenAI API for both the chat (using ChatGPT) and Speech-to-Text (using Whisper),
+so any OpenAI alternative will require to support both cases.
+
+### OpenAI
 
 1. Create an account on [OpenAI's website](https://openai.com/)
 2. Set up a [Paid Account](https://platform.openai.com/account/billing/overview)
@@ -13,6 +19,11 @@ export OPENAI_API_KEY="YOUR_KEY"
 !!! tip "Using a keys file"
     If you're unable to save your OpenAI API key as a permanent environment variable, you can add it to 
     a keys file. See [Keys file](install.md#keys-file) on _Installing Dependencies_.
+
+### OpenAI Alternative
+
+To use another service instead of OpenAI, a [keys file](install.md#keys-file) is recommended.
+Under `openai`, save the new `base_url` and `api_key` to the alternative service.
 
 
 ## Google Cloud

@@ -42,7 +42,7 @@ pip install -r requirements.txt
 ## Keys file
 **This is optional, and not required.**
 
-You may add a `keys.yml` file which will hold your OpenAI API key and/or a Google Cloud Service Account
+You may add a `keys.yml` file which will hold your OpenAI API configurations and/or a Google Cloud Service Account
 to be used to access these required services. It allows you to override the local
 OpenAI API key or Google Cloud SDK (or when they cannot be installed).
 
@@ -56,14 +56,15 @@ Keys file example:
 ```yaml
 openai:
   api_key: 'sk-...'
+  base_url: '...'
 
 google_sa:
   ...
 ```
 
 #### `openai`
-* `api_key`: Use this Open API key instead of the one found in your `OPENAI_API_KEY` environment variable
-
+* `api_key`: Use this Open API key instead of the one found in your `OPENAI_API_KEY` environment variable. You can redirect to another environment variable by using the variable name with a prefix `$` prefix (i.e. `$ANOTHER_SERVICE_API_KEY`)
+* `base_url`: Use this URL instead of the default one
 #### `google_sa`
 Insert here all your Google Service Account credentials key-values in order to authenticate with Google Cloud
 using this Service Account instead of using Google Cloud SDK client. 
